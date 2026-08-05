@@ -293,7 +293,7 @@ CABECA = """<!DOCTYPE html>
 <meta name="description" content="{descricao}">
 <link rel="canonical" href="{dominio}/leitura/{iso}.html">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../css/style.css?v=14">
+<link rel="stylesheet" href="../css/style.css?v=15">
 <script type="application/ld+json">
 {jsonld}
 </script>
@@ -313,7 +313,7 @@ CABECA = """<!DOCTYPE html>
       <a href="../indice-kp-agora.html">Índice Kp</a>
       <a href="../aurora-esta-noite.html">Auroras</a>
       <a href="../faq.html">Perguntas</a>
-      <a href="../apoiar.html" class="cta">Apoiar</a>
+      <a href="../apoiar.html" class="cta" data-apoio-direto>Apoiar</a>
     </nav>
   </div>
 </header>
@@ -366,7 +366,7 @@ CABECA = """<!DOCTYPE html>
   </div>
 </footer>
 
-<script src="../js/app.js?v=14"></script>
+<script src="../js/app.js?v=15"></script>
 </body>
 </html>
 """
@@ -558,7 +558,7 @@ def escrever_indice(itens):
 <meta name="description" content="Arquivo das leituras diárias: o estado do campo geomagnético, do Sol e do vento solar, dia a dia, em português.">
 <link rel="canonical" href="{DOMINIO}/leitura/">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../css/style.css?v=14">
+<link rel="stylesheet" href="../css/style.css?v=15">
 </head>
 <body>
 
@@ -575,7 +575,7 @@ def escrever_indice(itens):
       <a href="../indice-kp-agora.html">Índice Kp</a>
       <a href="../aurora-esta-noite.html">Auroras</a>
       <a href="../faq.html">Perguntas</a>
-      <a href="../apoiar.html" class="cta">Apoiar</a>
+      <a href="../apoiar.html" class="cta" data-apoio-direto>Apoiar</a>
     </nav>
   </div>
 </header>
@@ -600,7 +600,7 @@ def escrever_indice(itens):
   </div>
 </footer>
 
-<script src="../js/app.js?v=14"></script>
+<script src="../js/app.js?v=15"></script>
 </body>
 </html>
 """
@@ -688,6 +688,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 

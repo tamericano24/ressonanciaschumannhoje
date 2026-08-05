@@ -293,7 +293,7 @@ CABECA = """<!DOCTYPE html>
 <meta name="description" content="{descricao}">
 <link rel="canonical" href="{dominio}/leitura/{iso}.html">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../css/style.css?v=17">
+<link rel="stylesheet" href="../css/style.css?v=18">
 <script type="application/ld+json">
 {jsonld}
 </script>
@@ -306,7 +306,6 @@ CABECA = """<!DOCTYPE html>
       <span class="brand-mark">〰️</span>
       <span class="brand-text">Ressonância de Schumann<small>Dados ao vivo · 7,83 Hz</small></span>
     </a>
-    <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
     <nav class="nav">
       <a href="../index.html">Painel</a>
       <a href="index.html">Leituras</a>
@@ -315,6 +314,7 @@ CABECA = """<!DOCTYPE html>
       <a href="../faq.html">Perguntas</a>
       <a href="../apoiar.html" class="cta" data-apoio-direto>Apoiar</a>
     </nav>
+      <button class="nav-toggle" type="button" aria-label="Abrir menu do site"><span class="barras"><i></i><i></i><i></i></span>Menu</button>
   </div>
 </header>
 
@@ -366,7 +366,7 @@ CABECA = """<!DOCTYPE html>
   </div>
 </footer>
 
-<script src="../js/app.js?v=17"></script>
+<script src="../js/app.js?v=18"></script>
 </body>
 </html>
 """
@@ -558,7 +558,7 @@ def escrever_indice(itens):
 <meta name="description" content="Arquivo das leituras diárias: o estado do campo geomagnético, do Sol e do vento solar, dia a dia, em português.">
 <link rel="canonical" href="{DOMINIO}/leitura/">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../css/style.css?v=17">
+<link rel="stylesheet" href="../css/style.css?v=18">
 </head>
 <body>
 
@@ -568,7 +568,6 @@ def escrever_indice(itens):
       <span class="brand-mark">〰️</span>
       <span class="brand-text">Ressonância de Schumann<small>Dados ao vivo · 7,83 Hz</small></span>
     </a>
-    <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
     <nav class="nav">
       <a href="../index.html">Painel</a>
       <a href="index.html">Leituras</a>
@@ -600,7 +599,7 @@ def escrever_indice(itens):
   </div>
 </footer>
 
-<script src="../js/app.js?v=17"></script>
+<script src="../js/app.js?v=18"></script>
 </body>
 </html>
 """
@@ -688,6 +687,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 

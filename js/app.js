@@ -2069,15 +2069,147 @@
     $$("[data-year]").forEach(function (e) { e.textContent = new Date().getFullYear(); });
   }
 
-  function wireNav() {
-    var btn = document.querySelector(".nav-toggle");
-    var nav = document.querySelector(".nav");
-    if (btn && nav) {
-      btn.addEventListener("click", function () {
-        nav.classList.toggle("open");
-        btn.setAttribute("aria-expanded", nav.classList.contains("open") ? "true" : "false");
+  // ----------------------------------------------------------
+  // Painel de navegação
+  //
+  // Definido uma única vez aqui e injetado em todas as páginas. Assim
+  // acrescentar uma página ao site é mudar uma linha, em vez de editar
+  // dezasseis ficheiros e esquecer um.
+  // ----------------------------------------------------------
+
+  var MENU = [
+    { grupo: "Ao vivo", itens: [
+      { ic: "📡", txt: "Painel",            href: "index.html",             nota: "Ao vivo" },
+      { ic: "🧭", txt: "Índice Kp agora",   href: "indice-kp-agora.html" },
+      { ic: "🌌", txt: "Aurora esta noite", href: "aurora-esta-noite.html" },
+      { ic: "〰️", txt: "Espectrograma",     href: "index.html#espectrograma" },
+      { ic: "🌋", txt: "Sismos e vulcões",  href: "index.html#terra" }
+    ]},
+    { grupo: "Registos", itens: [
+      { ic: "📄", txt: "Leituras diárias",  href: "leitura/index.html",     nota: "Diário" },
+      { ic: "📅", txt: "Arquivo de 30 dias", href: "arquivo.html" }
+    ]},
+    { grupo: "Aprender", itens: [
+      { ic: "❓", txt: "O que é a Ressonância", href: "blog/o-que-e-a-ressonancia-de-schumann.html" },
+      { ic: "💛", txt: "Sintomas relatados",    href: "sintomas.html" },
+      { ic: "📚", txt: "Artigos",               href: "blog/index.html" },
+      { ic: "💬", txt: "Perguntas frequentes",  href: "faq.html" }
+    ]},
+    { grupo: "O projeto", itens: [
+      { ic: "🔬", txt: "Metodologia",       href: "metodologia.html" },
+      { ic: "🧩", txt: "Widget gratuito",   href: "incorporar.html",        nota: "Grátis" },
+      { ic: "ℹ️", txt: "Sobre",             href: "sobre.html" },
+      { ic: "🔒", txt: "Privacidade",       href: "privacidade.html" }
+    ]}
+  ];
+
+  // Páginas dentro de blog/ e leitura/ precisam de subir um nível.
+  function prefixo() {
+    return /\/(blog|leitura)\//.test(location.pathname) ? "../" : "";
+  }
+
+  // Caminho da página atual a partir da raiz do site, por exemplo
+  // "index.html", "blog/index.html", "leitura/2026-08-05.html".
+  // Comparar só o nome do ficheiro não chega: há três "index.html" no site.
+  function caminhoAtual() {
+    var p = location.pathname.replace(/^\/+/, "");
+    if (p === "" || p.slice(-1) === "/") p += "index.html";
+    return p;
+  }
+
+  function ehPaginaAtual(href) {
+    var alvo = href.split("#")[0];
+    if (href.indexOf("#") > -1) return false;      // âncoras não marcam página
+    var atual = caminhoAtual();
+    if (alvo === atual) return true;
+    // uma leitura diária mantém aceso o item "Leituras diárias"
+    var pasta = alvo.replace(/index\.html$/, "");
+    return pasta !== "" && alvo.slice(-10) === "index.html" && atual.indexOf(pasta) === 0;
+  }
+
+  function renderMenu() {
+    if (document.querySelector(".menu-painel")) return;
+    var p = prefixo();
+
+    var corpo = MENU.map(function (g) {
+      var itens = g.itens.map(function (it) {
+        return '<a class="menu-item' + (ehPaginaAtual(it.href) ? " atual" : "") + '" href="' + p + it.href + '">' +
+               '<span class="ic">' + it.ic + "</span><span>" + it.txt + "</span>" +
+               (it.nota ? '<span class="nota">' + it.nota + "</span>" : "") + "</a>";
+      }).join("");
+      return '<div class="menu-grupo">' + g.grupo + '</div><nav class="menu-lista">' + itens + "</nav>";
+    }).join("");
+
+    var fundo = document.createElement("div");
+    fundo.className = "menu-fundo";
+    fundo.hidden = true;
+
+    var painel = document.createElement("aside");
+    painel.className = "menu-painel";
+    painel.setAttribute("aria-label", "Navegação do site");
+    painel.innerHTML =
+      '<div class="menu-topo"><b>Ressonância de Schumann</b>' +
+        '<button class="menu-fechar" type="button" aria-label="Fechar menu">✕</button></div>' +
+      '<div class="menu-vivo">' +
+        '<div><span>Índice Kp</span><b id="menu-kp">…</b></div>' +
+        '<div><span>Energia</span><b id="menu-energia">…</b></div>' +
+      "</div>" + corpo +
+      '<div class="menu-rodape">' +
+        '<a class="btn" data-apoio-direto href="' + p + 'apoiar.html">Apoiar o projeto</a>' +
+        "<p>Sem publicidade e sem rastreadores</p>" +
+      "</div>";
+
+    document.body.appendChild(fundo);
+    document.body.appendChild(painel);
+
+    function abrir() {
+      fundo.hidden = false;
+      requestAnimationFrame(function () {
+        fundo.classList.add("aberto");
+        painel.classList.add("aberto");
       });
+      document.body.classList.add("menu-aberto");
+      var bt = painel.querySelector(".menu-fechar");
+      if (bt) bt.focus();
+      espelhaValoresNoMenu();
     }
+
+    function fechar() {
+      fundo.classList.remove("aberto");
+      painel.classList.remove("aberto");
+      document.body.classList.remove("menu-aberto");
+      setTimeout(function () { fundo.hidden = true; }, 260);
+    }
+
+    $$(".nav-toggle").forEach(function (b) { b.addEventListener("click", abrir); });
+    painel.querySelector(".menu-fechar").addEventListener("click", fechar);
+    fundo.addEventListener("click", fechar);
+    // A classe do painel só é aplicada no quadro seguinte, por causa da
+    // animação. O estado no <body> é definido de imediato, por isso é esse
+    // que serve para saber se o menu está aberto.
+    document.addEventListener("keydown", function (ev) {
+      if (ev.key === "Escape" && document.body.classList.contains("menu-aberto")) fechar();
+    });
+    $$(".menu-item", painel).forEach(function (a) { a.addEventListener("click", fechar); });
+  }
+
+  // Traz para o menu os valores que já estão no painel.
+  function espelhaValoresNoMenu() {
+    var kp = document.getElementById("t-kp") || document.getElementById("kp-value");
+    var en = document.getElementById("t-energy") || document.getElementById("idx-value");
+    var mk = document.getElementById("menu-kp"), me = document.getElementById("menu-energia");
+    if (mk) {
+      mk.textContent = kp && kp.textContent.trim() !== "…" ? kp.textContent.trim() : "…";
+      if (kp) mk.className = kp.className;
+    }
+    if (me) {
+      me.textContent = en && en.textContent.trim() !== "…" ? en.textContent.trim() : "…";
+      if (en) me.className = en.className;
+    }
+  }
+
+  function wireNav() {
+    renderMenu();
   }
 
   function wireNewsletter() {

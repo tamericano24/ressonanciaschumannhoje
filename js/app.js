@@ -1854,7 +1854,7 @@
           ? "<b>Meta atingida.</b> Obrigado. O que vier a mais fica para o mês seguinte."
           : "Faltam <b>" + APOIO.moeda + num(APOIO.meta - APOIO.angariado, 0) +
             "</b> para cobrir domínio e alojamento deste mês.")
-      : "Cobre domínio, alojamento e o tempo de verificar os dados todos os dias.";
+      : "Todos os meses o objetivo é o mesmo: manter o painel gratuito, sem anúncios, e com os dados verificados um a um.";
 
     var botoes = TIERS.map(function (t) {
       var url = APOIO.stripe[String(t.v)];

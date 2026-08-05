@@ -52,7 +52,8 @@ Acrescentar uma página ao site: criar o HTML e juntar uma linha ao `MENU`.
 
 ## Preferências do utilizador, já manifestadas
 
-- **Nada de travessões (`—`).** Foi pedido explicitamente e limpou-se o site todo.
+- **Nada de travessões** (o traço longo, U+2014). Foi pedido explicitamente e
+  limpou-se o site todo. Traços curtos em intervalos (0–40 Hz) são aceitáveis.
 - **Nada de caixas de aviso médico.** Foram todas removidas por decisão dele.
 - **Não falar de custos** na página de apoio. Falar do que o apoio permite.
 - Respostas diretas, sem repetir explicações já dadas.

@@ -1802,10 +1802,10 @@
 
     // Endereços de pagamento. Deixe vazio o que ainda não tiver.
     stripe: {
-      "5":  "",              // https://buy.stripe.com/xxxxxxxx
-      "15": "",
-      "50": "",
-      "livre": ""            // Payment Link com valor à escolha
+      "5":  "https://buy.stripe.com/eVqaEZ3vagF362k8tx6sw00",
+      "15": "https://buy.stripe.com/fZueVf8Pu74tbmE6lp6sw01",
+      "50": "https://buy.stripe.com/4gM6oJ7LqewV0I0fVZ6sw02",
+      "livre": "https://buy.stripe.com/28E4gBfdS60p9ewaBF6sw03"
     },
     paypal: ""               // https://paypal.me/oseunome
   };

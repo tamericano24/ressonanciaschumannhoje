@@ -1817,6 +1817,16 @@
   ];
 
   function renderApoio() {
+    // Botão da barra do topo: vai direto ao pagamento de valor à escolha.
+    // Sem endereço configurado, mantém-se a apontar para a página de apoio.
+    if (APOIO.stripe.livre) {
+      $$("[data-apoio-direto]").forEach(function (a) {
+        a.href = APOIO.stripe.livre;
+        a.target = "_blank";
+        a.rel = "noopener";
+      });
+    }
+
     var hosts = $$("[data-apoio]");
     if (!hosts.length) return;
 

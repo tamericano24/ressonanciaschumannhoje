@@ -17,3 +17,5 @@ README.md
 node_modules
 *.py
 *.bat
+
+CLAUDE.md

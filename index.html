@@ -19,7 +19,7 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <!-- O sufixo ?v= força os navegadores a irem buscar a versão nova depois de cada
      atualização. Incremente-o sempre que mudar o CSS ou o JavaScript. -->
-<link rel="stylesheet" href="css/style.css?v=16">
+<link rel="stylesheet" href="css/style.css?v=17">
 
 <script type="application/ld+json">
 {
@@ -467,35 +467,11 @@
   <section id="terra">
     <div class="wrap">
       <div class="section-head">
-        <h2>Terra e Lua</h2>
-        <p>Atividade sísmica global e fase lunar</p>
-      </div>
-      <div class="grid g-3">
-        <div class="card">
-          <h3>Sismos M4,5+ nas últimas 24 h</h3>
-          <p class="sub">Dados do United States Geological Survey</p>
-          <div style="display:flex;gap:24px;margin-bottom:12px">
-            <div><b style="font-size:34px;font-weight:800" id="quake-count"><span class="skeleton" style="width:44px"></span></b><div class="muted">total</div></div>
-            <div><b style="font-size:34px;font-weight:800" id="quake-max"><span class="skeleton" style="width:44px"></span></b><div class="muted">maior magnitude</div></div>
-          </div>
-          <ul class="list" id="quake-list"><li class="muted">A carregar…</li></ul>
-        </div>
-
-        <div class="card">
-          <h3>Fase da Lua</h3>
-          <p class="sub">Calculada para o momento atual</p>
-          <div style="font-size:72px;line-height:1;text-align:center;margin:8px 0" id="moon-icon">🌑</div>
-          <div class="center"><b id="moon-name" style="font-size:18px">…</b><div class="muted" id="moon-illum">…</div></div>
-        </div>
-
-        <div class="card">
-          <h3>Alertas NOAA (72 h)</h3>
-          <p class="sub">Avisos oficiais de clima espacial</p>
-          <ul class="list" id="alert-list"><li class="muted">A carregar…</li></ul>
-        </div>
+        <h2>Sismos, vulcões e Lua</h2>
+        <p>Atividade da Terra nas últimas 48 horas</p>
       </div>
 
-      <div class="card" style="margin-top:16px">
+      <div class="card">
         <div class="section-head" style="margin-bottom:12px">
           <h3 style="margin:0">Mapa sísmico e vulcânico mundial</h3>
           <p>Sismos das últimas 48 horas e vulcões atualmente em erupção</p>
@@ -506,10 +482,11 @@
 
         <div class="metric-row" style="margin-top:14px">
           <div class="metric"><b id="q48-count"><span class="skeleton"></span></b><span>Sismos M2,5+ · 48 h</span></div>
+          <div class="metric"><b id="quake-count"><span class="skeleton"></span></b><span>M4,5+ · 24 h</span></div>
           <div class="metric"><b id="volcano-count"><span class="skeleton"></span></b><span>Vulcões em erupção</span></div>
-          <div class="metric"><b id="q30-count"><span class="skeleton"></span></b><span>M4,5+ · 30 dias</span></div>
           <div class="metric"><b id="seismic-level" style="font-size:15px">…</b><span>Nível de atividade</span></div>
         </div>
+        <p class="src">Maior magnitude nas últimas 24 h: <b id="quake-max">…</b>. Nos últimos 30 dias houve <b id="q30-count">…</b> sismos de magnitude 4,5 ou superior.</p>
         <p class="src" id="seismic-detail">A comparar o dia de hoje com a média dos últimos 30 dias…</p>
 
         <div class="legend" style="margin-top:6px">
@@ -531,6 +508,22 @@
             <ul class="list" id="volcano-list" style="max-height:300px;overflow-y:auto"><li class="muted">A carregar…</li></ul>
             <p class="src">Sismos: USGS. Vulcões: NASA EONET. Contornos: Natural Earth (domínio público). O mapa é desenhado no seu navegador a partir dos dados, sem imagens de terceiros.</p>
           </div>
+        </div>
+      </div>
+
+      <div class="grid g-2" style="margin-top:16px">
+        <div class="card">
+          <h3>Alertas oficiais da NOAA</h3>
+          <p class="sub">Avisos de clima espacial emitidos nas últimas 72 horas</p>
+          <ul class="list" id="alert-list"><li class="muted">A carregar…</li></ul>
+        </div>
+
+        <div class="card">
+          <h3>Fase da Lua</h3>
+          <p class="sub">Calculada para o momento atual</p>
+          <div style="font-size:64px;line-height:1;text-align:center;margin:10px 0" id="moon-icon">🌑</div>
+          <div class="center"><b id="moon-name" style="font-size:18px">…</b><div class="muted" id="moon-illum">…</div></div>
+          <p class="src" style="text-align:center">A Lua não influencia o campo geomagnético. Aparece aqui porque a sua luz é o que mais estraga uma noite de observação de auroras.</p>
         </div>
       </div>
 
@@ -726,10 +719,11 @@
   </div>
 </footer>
 
-<script src="js/world-path.js?v=16"></script>
-<script src="js/app.js?v=16"></script>
+<script src="js/world-path.js?v=17"></script>
+<script src="js/app.js?v=17"></script>
 </body>
 </html>
+
 
 
 

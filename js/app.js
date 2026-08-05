@@ -566,6 +566,56 @@
     });
   }
 
+  // ----------------------------------------------------------
+  // Leitura das mensagens de alerta da NOAA
+  //
+  // O corpo da mensagem começa com campos de cabeçalho
+  // ("Space Weather Message Code: WARK04", "Serial Number", ...). A frase
+  // que interessa está numa linha que começa por ALERT, WARNING, WATCH ou
+  // SUMMARY. Antes lia-se a primeira linha, o que fazia aparecer o código
+  // interno em vez do aviso.
+  // ----------------------------------------------------------
+
+  var TRADUZ_ALERTA = [
+    [/^Geomagnetic K-index of (\d+) or greater expected/i, "Índice K geomagnético de $1 ou superior esperado"],
+    [/^Geomagnetic K-index of (\d+) expected/i, "Índice K geomagnético de $1 esperado"],
+    [/^Geomagnetic K-index of (\d+)$/i, "Índice K geomagnético de $1"],
+    [/^Geomagnetic Storm Category (G\d) (?:Predicted|Observed)/i, "Tempestade geomagnética $1"],
+    [/^Radio Blackout( Type)? (R\d)/i, "Apagão de rádio $2"],
+    [/^X-?ray Flux exceeded (M\d|X\d)/i, "Fluxo de raios-X acima de $1"],
+    [/^Proton Event .*?Threshold/i, "Evento de protões acima do limiar"],
+    [/^Electron .*?Flux .*?exceeded/i, "Fluxo de eletrões acima do limiar"],
+    [/^Solar Radiation Storm Category (S\d)/i, "Tempestade de radiação solar $1"],
+    [/^Type (II|IV) Radio Emission/i, "Emissão de rádio tipo $1"],
+    [/^Continued .*/i, "Continuação do aviso anterior"]
+  ];
+
+  function resumoAlerta(mensagem) {
+    var linhas = String(mensagem || "").split("\n").map(function (l) { return l.trim(); });
+
+    // procura a linha do aviso propriamente dito
+    var frase = "";
+    for (var i = 0; i < linhas.length; i++) {
+      var m = linhas[i].match(/^(ALERT|WARNING|WATCH|SUMMARY|EXTENDED WARNING|CANCEL WARNING)\s*:\s*(.+)$/i);
+      if (m) { frase = m[2].trim(); break; }
+    }
+
+    // sem essa linha, usa a primeira que não seja um campo de cabeçalho
+    if (!frase) {
+      for (var k = 0; k < linhas.length; k++) {
+        if (linhas[k] && !/^[A-Za-z ]{3,30}:/.test(linhas[k])) { frase = linhas[k]; break; }
+      }
+    }
+    if (!frase) return "Aviso de clima espacial da NOAA";
+
+    for (var t = 0; t < TRADUZ_ALERTA.length; t++) {
+      if (TRADUZ_ALERTA[t][0].test(frase)) {
+        return frase.replace(TRADUZ_ALERTA[t][0], TRADUZ_ALERTA[t][1]);
+      }
+    }
+    return frase;
+  }
+
   function loadAlerts() {
     return getJSON(SRC.alerts).then(function (rows) {
       var host = document.getElementById("alert-list");
@@ -582,9 +632,8 @@
       }
       host.innerHTML = recent.map(function (r) {
         var d = parseUTC(r.issue_datetime);
-        var first = String(r.message || "").split("\n").filter(function (l) { return l.trim(); })[0] || "Alerta NOAA";
         return '<li><span class="k">' + (d ? pad(d.getUTCDate()) + "/" + pad(d.getUTCMonth() + 1) : "…") +
-               '</span><span>' + escapeHTML(first.replace(/^(Space Weather Message Code|ALERT|WARNING|WATCH)[:\s]*/i, "")) + "</span></li>";
+               '</span><span>' + escapeHTML(resumoAlerta(r.message)) + "</span></li>";
       }).join("");
     }).catch(function (e) {
       var host = document.getElementById("alert-list");

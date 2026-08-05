@@ -146,7 +146,21 @@ a:hover { text-decoration: underline; }
   padding: 6px 15px; border-radius: 8px; font-size: 13px; white-space: nowrap;
 }
 .support-bar .btn-mini:hover { filter: brightness(1.08); text-decoration: none; }
-@media (max-width: 620px) { .support-bar { display: none; } }
+
+/* Duas versões do texto: a longa no computador, a curta no telemóvel.
+   O botão aparece SEMPRE, em qualquer largura de ecrã. */
+.support-bar .curto { display: none; }
+@media (max-width: 760px) {
+  .support-bar .longo { display: none; }
+  .support-bar .curto { display: inline; }
+  .support-bar .wrap { gap: 10px; padding-top: 9px; padding-bottom: 9px; }
+  .support-bar p { font-size: 12.5px; line-height: 1.4; }
+  .support-bar .btn-mini { padding: 7px 13px; font-size: 12.5px; }
+}
+@media (max-width: 400px) {
+  .support-bar .wrap { flex-wrap: wrap; }
+  .support-bar .btn-mini { margin-left: 0; width: 100%; text-align: center; }
+}
 
 /* ---------------- Herói ---------------- */
 

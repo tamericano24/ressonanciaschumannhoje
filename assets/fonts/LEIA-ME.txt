@@ -1,0 +1,11 @@
+Orbitron (variável, subconjunto latino)
+Autor: Matt McInerney
+Licença: SIL Open Font License 1.1 — https://scripts.sil.org/OFL
+
+Uso livre, incluindo comercial, desde que:
+ - a fonte não seja vendida isoladamente;
+ - o nome reservado "Orbitron" não seja usado num derivado modificado;
+ - esta nota de licença acompanhe o ficheiro.
+
+Ficheiro obtido a partir do serviço Google Fonts e servido localmente,
+para o site não depender de terceiros nem enviar pedidos ao carregar.

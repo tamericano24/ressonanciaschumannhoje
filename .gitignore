@@ -1,0 +1,21 @@
+# Configuração local do editor, não pertence ao repositório
+.claude/
+
+# Sistema operativo
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Ficheiros temporários
+*.tmp
+*.bak
+*~
+
+# Python (o gerador de leituras não cria nada disto, mas fica salvaguardado)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node (este projeto não usa, mas evita enganos futuros)
+node_modules/

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ressonância de Schumann Hoje: dados ao vivo 7,83 Hz | Clima Espacial</title>
+<meta name="description" content="Acompanhe ao vivo a Ressonância de Schumann (7,83 Hz), o índice Kp, a atividade solar e as tempestades geomagnéticas. Espectrograma atualizado ao minuto, em português.">
+<link rel="canonical" href="https://ressonanciaschumannhoje.com/">
+<meta name="theme-color" content="#06070f">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_PT">
+<meta property="og:title" content="Ressonância de Schumann Hoje: dados ao vivo">
+<meta property="og:description" content="Espectrograma ao vivo, índice Kp, atividade solar e alertas de tempestade geomagnética, em português.">
+<meta property="og:url" content="https://ressonanciaschumannhoje.com/">
+<meta property="og:image" content="https://ressonanciaschumannhoje.com/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<!-- O sufixo ?v= força os navegadores a irem buscar a versão nova depois de cada
+     atualização. Incremente-o sempre que mudar o CSS ou o JavaScript. -->
+<link rel="stylesheet" href="css/style.css?v=9">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Ressonância de Schumann Hoje",
+  "url": "https://ressonanciaschumannhoje.com/",
+  "inLanguage": "pt",
+  "description": "Painel ao vivo da Ressonância de Schumann, índice Kp e clima espacial, em português."
+}
+</script>
+
+<!-- ================================================================
+     MONETIZAÇÃO / Google AdSense
+     Depois de aprovado, cole aqui o script do AdSense (uma só vez):
+     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXX" crossorigin="anonymous"></script>
+     Ver README.md, secção "Monetização", para o passo a passo.
+     ================================================================ -->
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">〰️</span>
+      <span class="brand-text">Ressonância de Schumann<small>Dados ao vivo · 7,83 Hz</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    <nav class="nav">
+      <a href="index.html">Painel</a>
+      <a href="sintomas.html">Sintomas</a>
+      <a href="blog/index.html">Artigos</a>
+      <a href="metodologia.html">Metodologia</a>
+      <a href="faq.html">Perguntas</a>
+      <a href="apoiar.html" class="cta">Apoiar</a>
+    </nav>
+  </div>
+</header>
+
+<div class="support-bar">
+  <div class="wrap">
+    <p>💜 O <b>Ressonância de Schumann Hoje</b> é gratuito, sem redes de publicidade invasiva, e vai continuar assim. Se os dados ao vivo lhe são úteis, ajude a mantê-los no ar.</p>
+    <a class="btn-mini" href="apoiar.html">Apoiar →</a>
+  </div>
+</div>
+
+<main>
+
+  <!-- ============ HERÓI + ESTADO ATUAL ============ -->
+  <div class="wrap">
+    <div class="hero">
+      <h1>
+        <span class="l1">Ressonância de Schumann Hoje</span>
+        <span class="l2">Monitor ao vivo da frequência da Terra</span>
+      </h1>
+      <p class="tagline">Acompanhe a ressonância eletromagnética do planeta e a atividade que a rodeia, minuto a minuto.</p>
+      <p class="lede">
+        <b>7,83&nbsp;Hz</b> é a frequência natural da cavidade entre a Terra e a ionosfera. Seguimo-la ao vivo, ao lado das tempestades solares e da atividade geomagnética. Valores mais altos de “Energia” significam campo mais perturbado, tipicamente durante erupções solares. Primeira vez aqui? <a href="blog/o-que-e-a-ressonancia-de-schumann.html">O que é a Ressonância de Schumann?</a>
+      </p>
+    </div>
+  </div>
+
+  <section id="painel" style="padding-top:0">
+    <div class="wrap">
+
+      <div class="gauge-solo">
+        <div id="gauge-svg"></div>
+        <div class="gauge-label">
+          <div class="gauge-value" id="idx-value"><span class="skeleton" style="width:70px"></span></div>
+          <div class="gauge-unit" id="idx-word">a carregar</div>
+        </div>
+      </div>
+
+      <div class="strip-head" style="margin-top:28px">
+        <i class="live-dot"></i> Agora mesmo · ao vivo
+        <button class="refresh" id="btn-refresh" type="button"><span class="spin">↻</span> Atualizar</button>
+        <span class="srcs" style="margin-left:14px">NOAA SWPC · USGS · Tomsk</span>
+      </div>
+
+      <div class="tiles">
+        <a class="tile tile--primary" href="metodologia.html">
+          <div class="tile-label">⚡ Energia da Terra</div>
+          <div class="tile-value"><span id="t-energy">…</span><small>/ 100</small></div>
+          <div class="tile-sub" id="t-energy-word">…</div>
+          <div class="tile-foot">Composto · Kp + raios-X + sismos</div>
+        </a>
+        <a class="tile" href="#kp">
+          <div class="tile-label">Índice Kp</div>
+          <div class="tile-value" id="t-kp">…</div>
+          <div class="tile-foot" id="t-kp-sub">…</div>
+        </a>
+        <a class="tile" href="#sol">
+          <div class="tile-label">Fluxo de raios-X</div>
+          <div class="tile-value" id="t-xray">…</div>
+          <div class="tile-foot">GOES primário</div>
+        </a>
+        <a class="tile" href="#sol">
+          <div class="tile-label">Última erupção</div>
+          <div class="tile-value" id="t-flare">…</div>
+          <div class="tile-foot" id="t-flare-sub">…</div>
+        </a>
+        <a class="tile" href="#terra">
+          <div class="tile-label">Sismos M4,5+ 24 h</div>
+          <div class="tile-value" id="t-quakes">…</div>
+          <div class="tile-foot" id="t-quakes-sub">…</div>
+        </a>
+        <a class="tile" href="#terra">
+          <div class="tile-label">Lua</div>
+          <div class="tile-value" id="t-moon">…</div>
+          <div class="tile-foot" id="t-moon-sub">…</div>
+        </a>
+      </div>
+
+      <p class="forecast-line" id="forecast-line">A obter a previsão geomagnética a 3 dias…</p>
+      <p class="forecast-links">
+        <a href="#terra">Alertas e estado das tempestades →</a>
+        <a href="metodologia.html">Como este número é calculado →</a>
+      </p>
+
+      <div class="now-summary" id="now-summary" style="margin-top:22px">
+        <b>Agora mesmo na Terra:</b> a recolher o resumo das condições…
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ESPECTROGRAMA EM DESTAQUE ============ -->
+  <section id="espectrograma" class="live-section">
+    <div class="wrap">
+      <div class="live-head">
+        <span class="live-rule"></span>
+        <h2>Ressonância de Schumann ao vivo</h2>
+        <span class="live-tag"><i class="live-dot"></i> Em direto</span>
+      </div>
+
+      <div class="notice" id="spectro-delay" hidden>
+        <span>⚠️</span><span id="spectro-delay-text"></span>
+      </div>
+
+      <div class="spectro-hero" id="spectro-zoom" role="button" tabindex="0" aria-label="Ampliar o espectrograma">
+        <img data-src="https://sos70.ru/provider.php?file=shm.jpg" data-health="spectro"
+             alt="Espectrograma da Ressonância de Schumann dos últimos três dias, medido na estação de Tomsk"
+             loading="eager" fetchpriority="high">
+        <span class="zoom-hint">🔍 Clique para ampliar</span>
+      </div>
+
+      <p class="spectro-caption" id="spectro-caption">
+        A frequência fundamental da Ressonância de Schumann situa-se em torno de <b>7,83&nbsp;Hz</b>. A obter o estado geomagnético atual…
+      </p>
+      <p class="spectro-credit">
+        <a href="https://sos70.ru/" rel="noopener nofollow" target="_blank">Space Observing System (SOS-70)</a>, Universidade Estatal de Tomsk ·
+        <span id="spectro-updated">a verificar a idade dos dados…</span>
+      </p>
+
+      <div class="legend legend-center">
+        <span><i style="background:#1e3a8a"></i>Baixa amplitude</span>
+        <span><i style="background:#22c55e"></i>Amplitude normal</span>
+        <span><i style="background:#facc15"></i>Amplitude elevada</span>
+        <span><i style="background:#ef4444"></i>Pico intenso</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PULSO, TOP 10 ============ -->
+  <section id="pulso" class="live-section">
+    <div class="wrap">
+      <div class="live-head">
+        <span class="live-rule pink"></span>
+        <h2>Pulso: Top 10 de hoje</h2>
+      </div>
+
+      <div class="pulse-card">
+        <p class="pulse-lede">Escolha o que está a sentir neste momento, pode escolher mais do que um. Leva cinco segundos, é anónimo e entra já no gráfico.</p>
+
+        <div class="chips" id="sintoma-chips"></div>
+
+        <div class="pulse-actions">
+          <button class="btn" id="pulso-guardar" type="button">Registar o meu dia</button>
+          <button class="btn ghost" id="pulso-limpar" type="button" hidden>Apagar tudo</button>
+          <span class="pulse-msg" id="pulso-msg"></span>
+        </div>
+      </div>
+
+      <div class="rank-card" id="pulso-resultados">
+        <div class="rank-head">
+          <h3>✨ Top 10, o que mais se sente</h3>
+          <a class="rank-link" href="sintomas.html">Ver todos os sintomas →</a>
+        </div>
+        <ol class="rank" id="pulso-rank"></ol>
+        <p class="rank-foot">
+          <b id="pulso-total">0</b> <span id="pulso-total-txt">registos</span>
+          <span id="pulso-origem"></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ O QUE É + CARTÕES ============ -->
+  <section id="explicacao">
+    <div class="wrap">
+      <div class="info-card">
+        <h2>O que é a Ressonância de Schumann?</h2>
+        <p>É o conjunto de frequências eletromagnéticas naturais que ressoam na cavidade entre a superfície da Terra e a ionosfera, com um tom fundamental próximo de <b>7,83&nbsp;Hz</b>. É alimentada continuamente pelos cerca de cinquenta relâmpagos que atingem o planeta a cada segundo, daí a expressão “batimento da Terra”, que é uma metáfora e não uma descrição literal.</p>
+        <p>Esta página mostra o espectrograma ao vivo da estação de Tomsk a par do índice Kp atual, do fluxo de raios-X solares e da previsão geomagnética a três dias. <a href="blog/o-que-e-a-ressonancia-de-schumann.html">Guia completo: história, física e a frequência de 7,83 Hz →</a></p>
+      </div>
+
+      <div class="link-cards">
+        <a class="link-card" href="sintomas.html">
+          <div class="kicker">Relatos</div>
+          <h3>O que as pessoas dizem sentir</h3>
+          <p>Os sintomas mais associados a estes picos e o que a investigação consegue, e não consegue, demonstrar.</p>
+          <span class="go">Ver a análise →</span>
+        </a>
+        <a class="link-card" href="metodologia.html">
+          <div class="kicker">Dados e fontes</div>
+          <h3>Como estes números são produzidos</h3>
+          <p>NOAA, USGS e Tomsk. Fórmula do índice composto, limitações conhecidas e política de correções.</p>
+          <span class="go">Ler a metodologia →</span>
+        </a>
+        <a class="link-card" href="blog/tempestades-geomagneticas-e-o-corpo.html">
+          <div class="kicker">Prática</div>
+          <h3>Testar em si próprio, com método</h3>
+          <p>Como registar o seu dia a dia sem enviesar o resultado, e o que fazer com o que encontrar.</p>
+          <span class="go">Ver como →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ESTADO DAS FONTES ============ -->
+  <section id="fontes">
+    <div class="wrap">
+      <div class="card">
+        <h3>Estado das fontes em tempo real</h3>
+        <p class="sub">Cada linha mostra quando esta página recebeu resposta da fonte. Verde = dados frescos.</p>
+        <ul class="list" id="health-list"></ul>
+        <p class="src">Os pedidos partem do seu navegador diretamente para cada instituição, a cada 5 minutos (imagens, a cada 60 segundos). Não há cópia intermédia nem cache nossa.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMO LER O GRÁFICO ============ -->
+  <section id="como-ler">
+    <div class="wrap">
+      <div class="grid g-2">
+        <div class="card">
+          <h3>Como ler o gráfico</h3>
+          <p class="sub">O eixo vertical é a frequência (0–40 Hz); o horizontal, o tempo, ao longo de três dias</p>
+          <ul class="list">
+            <li><span>🟩</span><span><b>Faixas horizontais estáveis</b>: os modos normais da cavidade Terra-ionosfera: 7,83, 14,3, 20,8, 27,3 e 33,8 Hz.</span></li>
+            <li><span>🟨</span><span><b>Manchas verticais brilhantes</b>: normalmente descargas elétricas fortes ou interferência local no equipamento, não um "salto" global.</span></li>
+            <li><span>⬛</span><span><b>Zonas pretas ou cortadas</b>: falhas de aquisição da estação. Não significam que a ressonância parou.</span></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Antes de tirar conclusões</h3>
+          <p class="sub">O que o gráfico não diz</p>
+          <p class="status-text">A estação de Tomsk é um instrumento de investigação, não um serviço público com disponibilidade garantida. Cortes, ruído e manutenção são frequentes e <b>não indicam eventos planetários</b>. Uma única estação também não mede o planeta inteiro: mede a cavidade Terra-ionosfera tal como é vista da Sibéria.</p>
+          <p class="src"><a href="metodologia.html">Como verificamos os dados →</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ KP ============ -->
+  <section id="kp">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Índice geomagnético Kp</h2>
+        <p>Mede a perturbação do campo magnético da Terra numa escala de 0 a 9</p>
+      </div>
+      <div class="grid g-2">
+        <div class="card">
+          <h3>Valor atual</h3>
+          <p class="sub" id="kp-time">…</p>
+          <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+            <span id="kp-value" style="font-size:56px;font-weight:800;letter-spacing:-.04em"><span class="skeleton" style="width:90px"></span></span>
+            <div>
+              <div id="kp-label" style="font-size:19px;font-weight:700">…</div>
+              <div class="muted" id="kp-storm">…</div>
+            </div>
+          </div>
+          <p class="status-text" id="kp-desc" style="margin-top:12px">…</p>
+          <div class="chart-box" id="kp-chart" style="margin-top:8px"></div>
+          <p class="src">Últimas 72 horas, em intervalos de 3 horas. Fonte: NOAA SWPC.</p>
+        </div>
+
+        <div class="card">
+          <h3>Previsão geomagnética a 3 dias</h3>
+          <p class="sub">Kp máximo esperado por dia, NOAA SWPC</p>
+          <div class="fc-days" id="fc-days">
+            <div class="fc-day"><div class="d">…</div><div class="v"><span class="skeleton" style="width:40px"></span></div><div class="s">…</div></div>
+            <div class="fc-day"><div class="d">…</div><div class="v"><span class="skeleton" style="width:40px"></span></div><div class="s">…</div></div>
+            <div class="fc-day"><div class="d">…</div><div class="v"><span class="skeleton" style="width:40px"></span></div><div class="s">…</div></div>
+          </div>
+
+          <h3 style="margin-top:22px">Escalas NOAA neste momento</h3>
+          <p class="sub">R = apagões de rádio · S = tempestade de radiação · G = tempestade geomagnética</p>
+          <div class="scales" id="noaa-scales">
+            <div class="scale-box"><div class="letter">R · rádio</div><div class="lvl">…</div><div class="txt">…</div></div>
+            <div class="scale-box"><div class="letter">S · radiação</div><div class="lvl">…</div><div class="txt">…</div></div>
+            <div class="scale-box"><div class="letter">G · geomagnética</div><div class="lvl">…</div><div class="txt">…</div></div>
+          </div>
+
+          <details style="margin-top:18px">
+            <summary class="muted" style="cursor:pointer">Ver o boletim oficial da NOAA em bruto</summary>
+            <pre class="raw" id="forecast-raw" style="margin-top:10px">A carregar previsão…</pre>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SOL ============ -->
+  <section id="sol">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Atividade solar</h2>
+        <p>Fluxo de raios-X, erupções e imagens do disco solar</p>
+      </div>
+      <div class="grid g-2">
+        <div class="card">
+          <h3>Fluxo de raios-X</h3>
+          <p class="sub" id="xray-time">…</p>
+          <div style="font-size:44px;font-weight:800;letter-spacing:-.04em" id="xray-value"><span class="skeleton" style="width:80px"></span></div>
+          <div class="chart-box" id="xray-chart" style="margin-top:10px"></div>
+          <p class="src">Classes: A e B (calmo) · C (moderado) · M (forte) · X (extremo). Últimas 24 h, satélite GOES.</p>
+        </div>
+        <div class="card">
+          <h3>Erupções solares recentes</h3>
+          <p class="sub">Últimos 7 dias</p>
+          <ul class="list" id="flare-list"><li class="muted">A carregar…</li></ul>
+        </div>
+      </div>
+
+      <div class="grid g-2" style="margin-top:16px">
+        <div class="card">
+          <h3>Fluxo de protões (≥10 MeV)</h3>
+          <p class="sub" id="proton-time">…</p>
+          <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+            <span id="proton-value" style="font-size:40px;font-weight:800;letter-spacing:-.03em"><span class="skeleton" style="width:80px"></span></span>
+            <div><div id="proton-scale" style="font-size:17px;font-weight:700">…</div><div class="muted">escala S de radiação</div></div>
+          </div>
+          <div class="chart-box" id="proton-chart" style="margin-top:10px"></div>
+          <p class="src">Partículas energéticas vindas do Sol. Acima de 10 pfu entra-se em S1; valores altos afetam satélites e voos polares.</p>
+        </div>
+
+        <div class="card">
+          <h3>Fluxo solar F10.7</h3>
+          <p class="sub" id="f107-time">…</p>
+          <div style="font-size:40px;font-weight:800;letter-spacing:-.03em" id="f107-value"><span class="skeleton" style="width:90px"></span></div>
+          <p class="status-text" style="margin-top:10px">Medida da emissão rádio do Sol a 10,7 cm. É o indicador clássico do nível geral de atividade solar: quanto mais alto, mais ativa está a estrela, e mais densa fica a ionosfera.</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="section-head" style="margin-bottom:12px">
+          <h3 style="margin:0">Vento solar em tempo real</h3>
+          <p id="vs-time">A ligar ao satélite…</p>
+        </div>
+        <div class="metric-row">
+          <div class="metric"><b id="vs-vel"><span class="skeleton"></span></b><span>Velocidade</span></div>
+          <div class="metric"><b id="vs-dens"><span class="skeleton"></span></b><span>Densidade de protões</span></div>
+          <div class="metric"><b id="vs-bt"><span class="skeleton"></span></b><span>Campo total Bt</span></div>
+          <div class="metric"><b id="vs-bz"><span class="skeleton"></span></b><span>Bz · <span id="vs-bz-lab">…</span></span></div>
+        </div>
+        <p class="status-text" id="vs-leitura" style="margin-top:14px">A avaliar a orientação do campo magnético interplanetário…</p>
+        <div class="chart-box" id="vs-chart" style="margin-top:8px"></div>
+        <p class="src">Componente Bz do campo magnético interplanetário nas últimas 12 horas, medida a cerca de 1,5 milhões de km da Terra. Quando aponta para sul, liga-se ao campo terrestre e deixa entrar energia: é o melhor aviso prévio de tempestade que existe, com 15 a 60 minutos de antecedência. Fonte: satélites ACE e DSCOVR, NOAA.</p>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="section-head" style="margin-bottom:12px">
+          <h3 style="margin:0">Observação solar ao vivo</h3>
+          <p>Escolha o comprimento de onda, cada um revela uma camada diferente</p>
+        </div>
+
+        <div class="tabs" id="solar-tabs" role="tablist"></div>
+        <div class="tab-panel">
+          <div class="frame"><img id="solar-img" alt="Imagem solar ao vivo" loading="lazy"></div>
+          <div>
+            <h4 id="solar-title">…</h4>
+            <p id="solar-desc">…</p>
+            <p class="src" id="solar-src">…</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="src">Imagens: NOAA GOES SUVI e SOHO/LASCO, domínio público.</p>
+    </div>
+  </section>
+
+  <!-- ============ AURORAS E IONOSFERA ============ -->
+  <section id="auroras">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Auroras e ionosfera</h2>
+        <p>Previsão OVATION da NOAA para os próximos 30–90 minutos</p>
+      </div>
+      <div class="grid g-3">
+        <div class="card">
+          <h3>Hemisfério Norte</h3>
+          <p class="sub">Probabilidade de aurora visível</p>
+          <div class="spectro-frame"><img data-src="https://services.swpc.noaa.gov/images/animations/ovation/north/latest.jpg" alt="Mapa de previsão de auroras no hemisfério norte" loading="lazy"></div>
+        </div>
+        <div class="card">
+          <h3>Hemisfério Sul</h3>
+          <p class="sub">Probabilidade de aurora visível</p>
+          <div class="spectro-frame"><img data-src="https://services.swpc.noaa.gov/images/animations/ovation/south/latest.jpg" alt="Mapa de previsão de auroras no hemisfério sul" loading="lazy"></div>
+        </div>
+        <div class="card">
+          <h3>Absorção na ionosfera (D-RAP)</h3>
+          <p class="sub">Impacto em comunicações rádio HF</p>
+          <div class="spectro-frame"><img data-src="https://services.swpc.noaa.gov/images/animations/d-rap/global/latest.png" alt="Mapa global de absorção da região D da ionosfera" loading="lazy"></div>
+        </div>
+      </div>
+
+      <div class="section-head" style="margin-top:26px">
+        <h2 style="font-size:19px">Estado da ionosfera</h2>
+        <p>A camada que forma o "teto" da cavidade onde a Ressonância de Schumann existe</p>
+      </div>
+      <div class="grid g-2">
+        <div class="card">
+          <h3>Conteúdo total de eletrões (TEC)</h3>
+          <p class="sub">Densidade de eletrões acima de cada ponto do globo</p>
+          <div class="spectro-frame"><img data-src="https://services.swpc.noaa.gov/images/animations/ctipe/tec/latest.png" alt="Mapa global de conteúdo total de eletrões na ionosfera" loading="lazy"></div>
+          <p class="src">Valores altos degradam a precisão do GPS. Como a altura efetiva da ionosfera define a frequência da cavidade, é este mapa que ajuda a explicar as pequenas oscilações em torno dos 7,83 Hz.</p>
+        </div>
+        <div class="card">
+          <h3>Segunda estação, Cumiana, Itália</h3>
+          <p class="sub">Observatório vlf.it, leitura independente da mesma banda ELF</p>
+          <div class="spectro-frame"><img data-src="https://images.weserv.nl/?url=www.vlf.it%2Fcumiana%2Flast-geophone-multistrip-slow.jpg&n=-1" alt="Registo ELF da estação de Cumiana, Itália" loading="lazy"></div>
+          <p class="src">Ter duas estações em continentes diferentes é a única forma honesta de distinguir um evento global de interferência local. Se um pico aparece só em Tomsk e não em Cumiana, é quase de certeza ruído. Fonte: <a href="http://www.vlf.it/cumiana/livedata.html" rel="noopener nofollow" target="_blank">vlf.it</a>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TERRA ============ -->
+  <section id="terra">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Terra e Lua</h2>
+        <p>Atividade sísmica global e fase lunar</p>
+      </div>
+      <div class="grid g-3">
+        <div class="card">
+          <h3>Sismos M4,5+ nas últimas 24 h</h3>
+          <p class="sub">Dados do United States Geological Survey</p>
+          <div style="display:flex;gap:24px;margin-bottom:12px">
+            <div><b style="font-size:34px;font-weight:800" id="quake-count"><span class="skeleton" style="width:44px"></span></b><div class="muted">total</div></div>
+            <div><b style="font-size:34px;font-weight:800" id="quake-max"><span class="skeleton" style="width:44px"></span></b><div class="muted">maior magnitude</div></div>
+          </div>
+          <ul class="list" id="quake-list"><li class="muted">A carregar…</li></ul>
+        </div>
+
+        <div class="card">
+          <h3>Fase da Lua</h3>
+          <p class="sub">Calculada para o momento atual</p>
+          <div style="font-size:72px;line-height:1;text-align:center;margin:8px 0" id="moon-icon">🌑</div>
+          <div class="center"><b id="moon-name" style="font-size:18px">…</b><div class="muted" id="moon-illum">…</div></div>
+        </div>
+
+        <div class="card">
+          <h3>Alertas NOAA (72 h)</h3>
+          <p class="sub">Avisos oficiais de clima espacial</p>
+          <ul class="list" id="alert-list"><li class="muted">A carregar…</li></ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="section-head" style="margin-bottom:12px">
+          <h3 style="margin:0">Mapa sísmico e vulcânico mundial</h3>
+          <p>Sismos das últimas 48 horas e vulcões atualmente em erupção</p>
+        </div>
+
+        <div class="tabs" id="map-tabs" role="tablist"></div>
+        <div class="quake-map" id="quake-map"></div>
+
+        <div class="metric-row" style="margin-top:14px">
+          <div class="metric"><b id="q48-count"><span class="skeleton"></span></b><span>Sismos M2,5+ · 48 h</span></div>
+          <div class="metric"><b id="volcano-count"><span class="skeleton"></span></b><span>Vulcões em erupção</span></div>
+          <div class="metric"><b id="q30-count"><span class="skeleton"></span></b><span>M4,5+ · 30 dias</span></div>
+          <div class="metric"><b id="seismic-level" style="font-size:15px">…</b><span>Nível de atividade</span></div>
+        </div>
+        <p class="src" id="seismic-detail">A comparar o dia de hoje com a média dos últimos 30 dias…</p>
+
+        <div class="legend" style="margin-top:6px">
+          <span><i style="background:#38bdf8"></i>M2,5–4,4</span>
+          <span><i style="background:#fbbf24"></i>M4,5–5,4</span>
+          <span><i style="background:#fb923c"></i>M5,5–6,4</span>
+          <span><i style="background:#f43f5e"></i>M6,5+</span>
+          <span><i style="background:#f43f5e;clip-path:polygon(50% 0,100% 100%,0 100%)"></i>vulcão ativo</span>
+        </div>
+
+        <div class="grid g-2" style="margin-top:18px">
+          <div>
+            <h4 style="margin:0 0 8px;font-size:15px">Todos os sismos das últimas 48 horas</h4>
+            <ul class="quake-feed" id="quake-feed"><li class="muted">A carregar…</li></ul>
+            <p class="src">Passe o rato por uma linha para a localizar no mapa. Clique para a fixar.</p>
+          </div>
+          <div>
+            <h4 style="margin:0 0 8px;font-size:15px">Vulcões em erupção agora</h4>
+            <ul class="list" id="volcano-list" style="max-height:300px;overflow-y:auto"><li class="muted">A carregar…</li></ul>
+            <p class="src">Sismos: USGS. Vulcões: NASA EONET. Contornos: Natural Earth (domínio público). O mapa é desenhado no seu navegador a partir dos dados, sem imagens de terceiros.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3>Horas no mundo</h3>
+        <p class="sub">Referências úteis para comparar leituras</p>
+        <div class="clock-grid" id="clocks"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LEITURA DO DIA ============ -->
+  <section id="leitura">
+    <div class="wrap">
+      <div class="insight">
+        <div class="insight-top">
+          <span>Leitura de hoje</span><span>·</span><span data-today>…</span>
+          <span class="state" id="insight-state">…</span>
+        </div>
+        <h3 id="insight-title">A preparar a leitura do dia…</h3>
+        <p id="daily-text">A combinar os valores atuais de Kp, raios-X e atividade sísmica.</p>
+        <div class="insight-foot">
+          <div class="insight-kp">Kp atual<b id="insight-kp">…</b></div>
+          <div class="insight-kp">Raios-X<b id="insight-xray">…</b></div>
+          <div class="insight-kp">Energia<b id="insight-energy">…</b></div>
+        </div>
+        <p class="src">Resumo gerado automaticamente a partir dos números acima. Não é uma previsão de eventos.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FERRAMENTAS ============ -->
+  <section id="ferramentas">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Ferramentas</h2>
+        <p>Ir direto ao que procura</p>
+      </div>
+      <div class="tools">
+        <a class="tool" href="#espectrograma">
+          <span class="tag">Ao vivo</span>
+          <h4>Espectrograma</h4>
+          <p>Os 7,83 Hz da Terra, relidos a cada minuto.</p>
+        </a>
+        <a class="tool" href="#kp">
+          <span class="tag">NOAA</span>
+          <h4>Clima espacial</h4>
+          <p>Índice Kp, raios-X, protões e previsão a 3 dias.</p>
+        </a>
+        <a class="tool" href="#terra">
+          <span class="tag">Agora</span>
+          <h4>Relógios mundiais</h4>
+          <p>Comparar leituras entre fusos horários.</p>
+        </a>
+        <a class="tool" href="#terra">
+          <span class="tag">Lunar</span>
+          <h4>Fase da Lua</h4>
+          <p>Fase, iluminação e posição no ciclo.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PERGUNTAS FREQUENTES ============ -->
+  <section id="perguntas">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Perguntas frequentes</h2>
+        <p><a href="faq.html">Ver todas as respostas →</a></p>
+      </div>
+      <div class="acc">
+        <details>
+          <summary>O que é a Ressonância de Schumann?</summary>
+          <div class="body"><p>É o conjunto de frequências eletromagnéticas muito baixas que ressoam na cavidade entre a superfície da Terra e a ionosfera. A fundamental fica perto de 7,83 Hz e é alimentada pelos cerca de cinquenta relâmpagos que caem no planeta a cada segundo.</p></div>
+        </details>
+        <details>
+          <summary>Porquê exatamente 7,83 Hz?</summary>
+          <div class="body"><p>Porque corresponde, grosso modo, ao tempo que uma onda eletromagnética demora a dar uma volta ao planeta: 40 000 km de perímetro a 300 000 km/s dá cerca de 7,5 voltas por segundo. As correções da física real levam o número aos 7,83 Hz.</p></div>
+        </details>
+        <details>
+          <summary>A frequência está a subir para 40 Hz?</summary>
+          <div class="body"><p>Não. A fundamental continua onde sempre esteve. O eixo vertical do espectrograma vai até perto de 40 Hz porque mostra também os modos superiores, 14,3, 20,8, 27,3 e 33,8 Hz. Ver atividade no topo da imagem é outra faixa do mesmo gráfico, não a fundamental a mudar.</p></div>
+        </details>
+        <details>
+          <summary>Isto afeta a saúde?</summary>
+          <div class="body"><p>Não está demonstrado. Os campos envolvidos são muito mais fracos do que os que existem em qualquer divisão com eletricidade, e não há mecanismo biológico estabelecido. <a href="sintomas.html">A análise completa está aqui</a>.</p></div>
+        </details>
+        <details>
+          <summary>Porque é que o gráfico às vezes está preto?</summary>
+          <div class="body"><p>Porque a estação está offline. É um instrumento de investigação universitária, sem garantia de disponibilidade. Quando isso acontece, aparece um aviso por cima do gráfico com a idade real do último registo.</p></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ APOIO E SUBSCRIÇÃO ============ -->
+  <section id="apoio">
+    <div class="wrap">
+      <div data-apoio style="margin-bottom:16px"></div>
+
+      <div class="grid g-2">
+        <div class="card">
+          <h3>Boletim diário por e-mail</h3>
+          <p class="sub">Um resumo curto do clima espacial, todas as manhãs.</p>
+          <p class="status-text" style="font-size:14px">Recebe o mesmo que está no painel, resumido em três linhas: o índice Kp, o estado do Sol e se vale a pena procurar auroras nessa noite.</p>
+          <!-- MONETIZAÇÃO: coloque no atributo action o endpoint do seu serviço
+               (MailerLite, Buttondown, Beehiiv, Substack...). Sem action, o formulário não envia. -->
+          <form class="newsletter-form" id="newsletter" method="post">
+            <input type="email" name="email" placeholder="o.seu@email.com" required aria-label="O seu e-mail">
+            <button class="btn" type="submit">Subscrever</button>
+          </form>
+          <p class="muted" id="newsletter-msg" style="margin-top:8px">Sem spam. Cancelamento a qualquer momento.</p>
+        </div>
+
+        <div class="card">
+          <h3>Outras formas de ajudar</h3>
+          <p class="sub">Nem tudo custa dinheiro</p>
+          <ul class="list">
+            <li><span>🔗</span><span><b>Partilhe o painel</b> com quem acompanha estes temas. É o que mais faz crescer o site.</span></li>
+            <li><span>🧩</span><span><b>Ponha o widget no seu site.</b> <a href="incorporar.html">Uma linha de HTML</a>, gratuito.</span></li>
+            <li><span>✍️</span><span><b>Corrija-nos.</b> Se encontrar um erro nos dados ou no texto, diga. Corrigimos e registamos a correção.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ARTIGOS ============ -->
+  <section id="artigos">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Para entender melhor</h2>
+        <p>Artigos escritos em português, sem exageros</p>
+      </div>
+      <div class="post-grid">
+        <a class="card post-card" href="blog/o-que-e-a-ressonancia-de-schumann.html">
+          <div class="kicker">Fundamentos</div>
+          <h3>O que é a Ressonância de Schumann?</h3>
+          <p>A física por trás dos 7,83 Hz, explicada de forma simples e sem mistificação.</p>
+        </a>
+        <a class="card post-card" href="blog/7-83-hz-frequencia-da-terra.html">
+          <div class="kicker">Frequências</div>
+          <h3>Porque se fala em 7,83 Hz como "o batimento da Terra"</h3>
+          <p>De onde vem o número, o que ele mede de facto e o que a expressão significa.</p>
+        </a>
+        <a class="card post-card" href="blog/tempestades-geomagneticas-e-o-corpo.html">
+          <div class="kicker">Investigação</div>
+          <h3>Tempestades geomagnéticas e o corpo humano</h3>
+          <p>O que os estudos mostram, o que não mostram, e como ler estas notícias com cuidado.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="lightbox" id="lightbox" hidden>
+  <button class="close" id="lightbox-close" type="button">✕ Fechar</button>
+  <img id="lightbox-img" alt="">
+  <p class="cap" id="lightbox-cap"></p>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-cols">
+      <div>
+        <h4>Ressonância de Schumann Hoje</h4>
+        <p style="margin-top:0">Painel independente de clima espacial em português. Dados de fontes públicas: NOAA SWPC, USGS e Universidade Estatal de Tomsk.</p>
+      </div>
+      <div>
+        <h4>Site</h4>
+        <a href="index.html">Painel ao vivo</a>
+        <a href="sintomas.html">Sintomas relatados</a>
+        <a href="blog/index.html">Artigos</a>
+        <a href="faq.html">Perguntas frequentes</a>
+      </div>
+      <div>
+        <h4>Transparência</h4>
+        <a href="metodologia.html">Metodologia</a>
+        <a href="sobre.html">Sobre</a>
+        <a href="apoiar.html">Apoiar</a>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <a href="privacidade.html">Privacidade</a>
+        <a href="termos.html">Termos de utilização</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year></span> Ressonância de Schumann Hoje</span>
+      <span>Não é aconselhamento médico · Dados fornecidos "tal como estão"</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/world-path.js?v=9"></script>
+<script src="js/app.js?v=9"></script>
+</body>
+</html>

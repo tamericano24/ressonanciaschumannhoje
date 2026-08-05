@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aurora esta noite: previsão ao vivo e onde é visível</title>
+<meta name="description" content="Previsão de auroras boreais e austrais ao vivo, mapas OVATION da NOAA, índice Kp atual e a que latitudes a aurora é visível esta noite.">
+<link rel="canonical" href="https://ressonanciaschumannhoje.com/aurora-esta-noite.html">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css?v=9">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","name":"Aurora esta noite","inLanguage":"pt","description":"Previsão de auroras ao vivo, mapas OVATION e índice Kp."}
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">〰️</span>
+      <span class="brand-text">Ressonância de Schumann<small>Dados ao vivo · 7,83 Hz</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    <nav class="nav">
+      <a href="index.html">Painel</a>
+      <a href="indice-kp-agora.html">Índice Kp</a>
+      <a href="aurora-esta-noite.html">Auroras</a>
+      <a href="sintomas.html">Sintomas</a>
+      <a href="blog/index.html">Artigos</a>
+      <a href="faq.html">Perguntas</a>
+      <a href="apoiar.html" class="cta">Apoiar</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="hero" style="padding-bottom:10px">
+    <h1><span class="l1">Aurora esta noite</span></h1>
+    <p class="tagline">Probabilidade de aurora nos próximos 30 a 90 minutos, pelo modelo OVATION da NOAA.</p>
+  </div>
+
+  <section style="padding-top:0">
+    <div class="card">
+      <div class="metric-row">
+        <div class="metric"><b id="t-kp"><span class="skeleton"></span></b><span>Índice Kp atual</span></div>
+        <div class="metric"><b id="aurora-veredito" style="font-size:15px">…</b><span>Hipótese em Portugal</span></div>
+        <div class="metric"><b id="idx-value" style="font-size:21px"><span class="skeleton"></span></b><span>Energia da Terra</span></div>
+        <div class="metric"><b id="t-moon"><span class="skeleton"></span></b><span>Lua (atrapalha se cheia)</span></div>
+      </div>
+      <p class="status-text" id="aurora-texto" style="margin-top:14px">A avaliar as condições desta noite…</p>
+      <div id="gauge-svg" hidden></div>
+      <p class="forecast-line" id="forecast-line" style="text-align:left">A obter a previsão…</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="grid g-2">
+      <div class="card">
+        <h3>Hemisfério Norte</h3>
+        <p class="sub">Aurora boreal. Quanto mais para sul o oval descer, mais longe é visível.</p>
+        <div class="spectro-frame"><img data-src="https://services.swpc.noaa.gov/images/animations/ovation/north/latest.jpg" alt="Mapa de previsão de auroras no hemisfério norte" loading="eager"></div>
+      </div>
+      <div class="card">
+        <h3>Hemisfério Sul</h3>
+        <p class="sub">Aurora austral. Visível sobretudo na Antártida, sul da Nova Zelândia e Tasmânia.</p>
+        <div class="spectro-frame"><img data-src="https://services.swpc.noaa.gov/images/animations/ovation/south/latest.jpg" alt="Mapa de previsão de auroras no hemisfério sul" loading="eager"></div>
+      </div>
+    </div>
+    <p class="src">Modelo OVATION, NOAA SWPC. Domínio público. Atualiza a cada 5 minutos.</p>
+  </section>
+
+  <section>
+    <div class="card">
+      <h3>Previsão a 3 dias</h3>
+      <p class="sub">Kp máximo esperado por dia. A partir de Kp 5 vale a pena começar a olhar para norte.</p>
+      <div class="fc-days" id="fc-days">
+        <div class="fc-day"><div class="d">…</div><div class="v"><span class="skeleton" style="width:40px"></span></div><div class="s">…</div></div>
+        <div class="fc-day"><div class="d">…</div><div class="v"><span class="skeleton" style="width:40px"></span></div><div class="s">…</div></div>
+        <div class="fc-day"><div class="d">…</div><div class="v"><span class="skeleton" style="width:40px"></span></div><div class="s">…</div></div>
+      </div>
+      <div class="chart-box" id="kp-chart" style="margin-top:18px"></div>
+      <p class="src">Índice Kp das últimas 72 horas. <a href="indice-kp-agora.html">Página dedicada ao Kp →</a></p>
+    </div>
+  </section>
+
+  <article class="article" style="max-width:800px">
+    <h2>A que Kp é visível de onde</h2>
+    <p>A regra prática: a aurora forma um anel em torno do polo magnético, e esse anel alarga-se para sul à medida que o Kp sobe. Cada ponto na escala vale aproximadamente 3 a 4 graus de latitude.</p>
+
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>Kp</th><th>Visível a partir de</th><th>Frequência</th></tr></thead>
+      <tbody>
+        <tr><td>3</td><td>Norte da Escandinávia, Islândia, norte do Canadá</td><td>Quase todas as noites limpas</td></tr>
+        <tr><td>4</td><td>Sul da Noruega, Escócia, sul do Alasca</td><td>Várias vezes por mês</td></tr>
+        <tr><td>5 (G1)</td><td>Dinamarca, norte da Inglaterra</td><td>Algumas vezes por mês</td></tr>
+        <tr><td>6 (G2)</td><td>Norte da Alemanha, Irlanda, Países Baixos</td><td>Algumas vezes por ano</td></tr>
+        <tr><td>7 (G3)</td><td>Sul da Alemanha, Polónia, norte de França</td><td>Poucas vezes por ano</td></tr>
+        <tr><td>8 (G4)</td><td>Centro de França, norte de Espanha</td><td>Raro</td></tr>
+        <tr><td>9 (G5)</td><td>Norte de Portugal e Espanha</td><td>Muito raro, uma ou duas vezes por ciclo solar</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>Ver auroras em Portugal: as contas honestas</h2>
+    <p>É possível, e é raro. Portugal continental fica entre os 37 e os 42 graus de latitude, o que exige um Kp de 8 ou 9 para que o oval desça o suficiente. Isso acontece tipicamente uma ou duas vezes em cada ciclo solar de onze anos.</p>
+    <p>Quando acontece, o que se vê não é a cortina verde das fotografias da Noruega. É um clarão avermelhado baixo no horizonte norte, muitas vezes só percetível numa fotografia de longa exposição. Não espere ver a olho nu o que vê nas imagens.</p>
+    <p>Nos Açores, a latitude é semelhante. Na Madeira, ainda mais a sul, é praticamente inviável.</p>
+
+    <h2>Como aumentar as hipóteses</h2>
+    <ul>
+      <li><b>Vá para norte e para o escuro.</b> Poluição luminosa mata auroras fracas. Precisa de um horizonte norte desimpedido, sem cidades nessa direção.</li>
+      <li><b>Escolha a fase da Lua.</b> Lua cheia é quase tão má como uma cidade. Veja o valor no painel acima.</li>
+      <li><b>Espere pela madrugada.</b> A atividade tende a ser mais forte por volta da meia-noite magnética local, tipicamente entre as 22h e as 2h.</li>
+      <li><b>Leve uma máquina fotográfica.</b> Uma exposição de 10 a 20 segundos capta cor que o olho não distingue. Muitas auroras "invisíveis" aparecem na fotografia.</li>
+      <li><b>Confirme o céu.</b> De nada serve um Kp de 8 com nuvens.</li>
+    </ul>
+
+    <h2>Porque é que a aurora acontece</h2>
+    <p>O vento solar traz partículas carregadas que o campo magnético da Terra desvia para os polos. Quando essas partículas colidem com átomos da alta atmosfera, transferem energia; ao voltarem ao estado normal, os átomos libertam essa energia como luz.</p>
+    <p>A cor diz-lhe a altitude e o gás: o verde vem do oxigénio por volta dos 100 a 250 km, o vermelho do oxigénio acima dos 250 km, e o azul ou violeta do azoto, mais abaixo. O clarão vermelho é precisamente o que se vê de latitudes baixas, porque é a parte mais alta do oval, a única que assoma acima do horizonte.</p>
+
+    <div class="acc" style="margin-top:24px">
+      <details>
+        <summary>Com quanta antecedência se sabe?</summary>
+        <div class="body"><p>Entre 1 e 3 dias, se a causa for uma ejeção de massa coronal. O aviso fiável, porém, chega só 15 a 60 minutos antes: é o tempo que a nuvem demora a percorrer a distância entre o satélite que a mede e a Terra.</p></div>
+      </details>
+      <details>
+        <summary>A aurora faz barulho?</summary>
+        <div class="body"><p>Há relatos persistentes de estalidos durante auroras muito intensas, e alguma investigação finlandesa registou sons associados. Não é um fenómeno bem estabelecido, e a maioria das pessoas nunca ouve nada.</p></div>
+      </details>
+      <details>
+        <summary>Existe risco para a saúde?</summary>
+        <div class="body"><p>Nenhum. A aurora acontece a 100 km de altitude e a atmosfera absorve tudo o que importa. É luz, vista de muito longe.</p></div>
+      </details>
+    </div>
+
+    <p style="margin-top:26px"><a href="index.html">← Painel completo</a> · <a href="indice-kp-agora.html">Índice Kp agora →</a></p>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-bottom">
+      <span>© <span data-year></span> Ressonância de Schumann Hoje</span>
+      <span><a href="privacidade.html">Privacidade</a> · <a href="termos.html">Termos</a> · <a href="metodologia.html">Metodologia</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js?v=9"></script>
+<script>
+// Veredito de visibilidade em Portugal, a partir do Kp atual.
+(function(){
+  function avaliar(){
+    var el = document.getElementById("t-kp");
+    if (!el) return;
+    var kp = parseFloat(String(el.textContent).replace(",", "."));
+    if (!isFinite(kp)) return setTimeout(avaliar, 1500);
+
+    var v = document.getElementById("aurora-veredito");
+    var t = document.getElementById("aurora-texto");
+    var estado, cls, texto;
+
+    if (kp >= 8) {
+      estado = "Possível"; cls = "is-severe";
+      texto = "Kp " + kp.toFixed(1).replace(".", ",") + ". Condições excecionais: há hipótese real de ver um clarão avermelhado no horizonte norte a partir do norte de Portugal. Procure um local escuro, com o horizonte norte desimpedido, e leve uma máquina fotográfica capaz de exposições longas.";
+    } else if (kp >= 6) {
+      estado = "Só norte da Europa"; cls = "is-storm";
+      texto = "Kp " + kp.toFixed(1).replace(".", ",") + ". Tempestade em curso, mas o oval não desce até à Península Ibérica. Visível a partir do norte da Alemanha, Irlanda e Países Baixos.";
+    } else if (kp >= 4) {
+      estado = "Escandinávia"; cls = "is-active";
+      texto = "Kp " + kp.toFixed(1).replace(".", ",") + ". Campo agitado. Boa noite para quem está na Escandinávia, Escócia ou Islândia. Nada para as latitudes ibéricas.";
+    } else {
+      estado = "Não"; cls = "is-calm";
+      texto = "Kp " + kp.toFixed(1).replace(".", ",") + ". Campo calmo: aurora restrita às regiões polares. Para haver hipótese em Portugal seria preciso um Kp de 8 ou 9, o que acontece uma ou duas vezes por ciclo solar.";
+    }
+
+    if (v) { v.textContent = estado; v.className = cls; }
+    if (t) t.textContent = texto;
+  }
+  setTimeout(avaliar, 1200);
+})();
+</script>
+</body>
+</html>
+

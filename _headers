@@ -1,0 +1,33 @@
+# Cabeçalhos HTTP para o Cloudflare Pages.
+# Regras mais específicas ganham às mais gerais.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+  Content-Security-Policy: frame-ancestors 'self'
+
+# O widget TEM de poder ser embebido noutros sites: é essa a sua função.
+# Por isso esta regra anula a de cima só para este ficheiro.
+/embed.html
+  Content-Security-Policy: frame-ancestors *
+  X-Content-Type-Options: nosniff
+
+# CSS, JavaScript e fontes têm versão no endereço (?v=9), por isso podem
+# ficar em cache durante muito tempo. Ao mudar o ?v, o navegador vai buscar
+# a versão nova. Lembre-se de incrementar esse número a cada alteração.
+/css/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/js/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# O HTML nunca fica em cache longa: é o que traz as correções aos visitantes.
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/
+  Cache-Control: public, max-age=0, must-revalidate

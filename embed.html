@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ressonância de Schumann ao vivo</title>
+<meta name="robots" content="noindex,follow">
+<style>
+/* Widget autónomo. Estilos embutidos de propósito: carrega numa só ligação,
+   sem depender da folha de estilo do site nem de fontes externas. */
+:root{
+  --bg:#080b16; --panel:#111730; --border:rgba(255,255,255,.1);
+  --text:#e8ecf8; --dim:#98a1bd; --faint:#6b7391; --accent:#8b5cf6;
+}
+html[data-theme="light"]{
+  --bg:#f6f7fb; --panel:#fff; --border:rgba(0,0,0,.1);
+  --text:#111827; --dim:#4b5563; --faint:#6b7280; --accent:#6d3ff0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:var(--bg); color:var(--text);
+  font:14px/1.5 "Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+  display:flex; flex-direction:column; padding:10px; gap:9px;
+}
+.top{display:flex;align-items:center;gap:8px;flex:none}
+.top b{font-size:14px;letter-spacing:-.01em}
+.dot{width:7px;height:7px;border-radius:50%;background:#34d399;flex:none}
+.top .hz{margin-left:auto;font-size:12px;color:var(--faint);font-variant-numeric:tabular-nums}
+.shot{
+  flex:1 1 auto; min-height:0; background:#000; border:1px solid var(--border);
+  border-radius:9px; overflow:hidden; display:flex;
+}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:center right;display:block}
+.strip{display:flex;gap:7px;flex:none}
+.cell{
+  flex:1; background:var(--panel); border:1px solid var(--border);
+  border-radius:8px; padding:6px 9px; min-width:0;
+}
+.cell span{display:block;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.cell b{font-size:17px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.cell i{font-style:normal;font-size:11px;color:var(--dim);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.is-calm{color:#34d399}.is-mild{color:#38bdf8}.is-active{color:#fbbf24}
+.is-storm{color:#fb923c}.is-severe{color:#f43f5e}
+.by{flex:none;font-size:10.5px;color:var(--faint);text-align:center}
+.by a{color:var(--accent);text-decoration:none}
+.by a:hover{text-decoration:underline}
+.err{color:#f43f5e;font-size:12px;padding:14px;text-align:center;margin:auto}
+</style>
+</head>
+<body>
+
+<div class="top" id="bar">
+  <i class="dot"></i><b>Ressonância de Schumann</b>
+  <span class="hz">7,83 Hz</span>
+</div>
+
+<div class="shot">
+  <img id="spec" alt="Espectrograma da Ressonância de Schumann, estação de Tomsk">
+</div>
+
+<div class="strip" id="strip">
+  <div class="cell"><span>Índice Kp</span><b id="kp">…</b><i id="kp-lab">a carregar</i></div>
+  <div class="cell"><span>Raios-X</span><b id="xr">…</b><i id="xr-lab">GOES</i></div>
+</div>
+
+<div class="by">
+  dados ao vivo por <a href="https://ressonanciaschumannhoje.com/" target="_blank" rel="noopener">ressonanciaschumannhoje.com</a>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var q = new URLSearchParams(location.search);
+
+  // Opções: theme=dark|light · kp=1|0 · title=1|0
+  if (q.get("theme") === "light") document.documentElement.setAttribute("data-theme","light");
+  if (q.get("kp")    === "0") document.getElementById("strip").style.display = "none";
+  if (q.get("title") === "0") document.getElementById("bar").style.display = "none";
+
+  var SPEC = "https://sos70.ru/provider.php?file=shm.jpg";
+  var KP   = "https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json";
+  var XRAY = "https://services.swpc.noaa.gov/json/goes/primary/xrays-1-day.json";
+
+  function num(v,c){ return Number(v).toFixed(c===undefined?1:c).replace(".",","); }
+
+  function kpInfo(k){
+    if(k<2) return{l:"Muito calmo",c:"is-calm"};
+    if(k<3) return{l:"Calmo",c:"is-calm"};
+    if(k<4) return{l:"Instável",c:"is-mild"};
+    if(k<5) return{l:"Ativo",c:"is-active"};
+    if(k<6) return{l:"Tempestade G1",c:"is-active"};
+    if(k<7) return{l:"Tempestade G2",c:"is-storm"};
+    if(k<8) return{l:"Tempestade G3",c:"is-storm"};
+    return{l:"Tempestade G4+",c:"is-severe"};
+  }
+
+  function xrayTxt(f){
+    if(!(f>0)) return{t:"…",c:""};
+    var b=[[1e-4,"X","is-severe"],[1e-5,"M","is-storm"],[1e-6,"C","is-active"],[1e-7,"B","is-mild"],[0,"A","is-calm"]];
+    for(var i=0;i<b.length;i++) if(f>=b[i][0]){
+      var d=b[i][0]>0?f/b[i][0]:f/1e-8;
+      return{t:b[i][1]+num(d),c:b[i][2]};
+    }
+    return{t:"…",c:""};
+  }
+
+  function recarregaImagem(){
+    var im=document.getElementById("spec");
+    im.src = SPEC + "&t=" + Date.now();
+  }
+
+  function carrega(){
+    fetch(KP,{cache:"no-store"}).then(function(r){return r.json();}).then(function(rows){
+      var last=rows[rows.length-1];
+      var v=Number(last.Kp !== undefined ? last.Kp : last[1]);
+      var i=kpInfo(v);
+      var el=document.getElementById("kp");
+      el.textContent=num(v); el.className=i.c;
+      document.getElementById("kp-lab").textContent=i.l;
+    }).catch(function(){ document.getElementById("kp-lab").textContent="indisponível"; });
+
+    fetch(XRAY,{cache:"no-store"}).then(function(r){return r.json();}).then(function(rows){
+      var lg=rows.filter(function(r){return r.energy==="0.1-0.8nm";});
+      var i=xrayTxt(lg[lg.length-1].flux);
+      var el=document.getElementById("xr");
+      el.textContent=i.t; el.className=i.c;
+    }).catch(function(){ document.getElementById("xr").textContent="—"; });
+  }
+
+  document.getElementById("spec").addEventListener("error",function(){
+    var s=document.querySelector(".shot");
+    if(s && !s.querySelector(".err")) s.innerHTML='<p class="err">Estação temporariamente indisponível.</p>';
+  });
+
+  recarregaImagem();
+  carrega();
+  setInterval(recarregaImagem, 60000);
+  setInterval(carrega, 300000);
+})();
+</script>
+</body>
+</html>

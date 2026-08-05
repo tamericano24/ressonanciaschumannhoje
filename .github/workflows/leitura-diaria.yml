@@ -1,0 +1,38 @@
+name: Leitura diária
+
+# Gera a leitura do dia e publica-a no repositório.
+# O Netlify (ou a Cloudflare Pages) faz o resto: deteta o commit e publica.
+
+on:
+  schedule:
+    # 06:20 UTC. Depois do boletim das 06:00 da NOAA, para apanhar dados frescos.
+    - cron: "20 6 * * *"
+  workflow_dispatch:        # permite correr à mão a partir do separador Actions
+
+permissions:
+  contents: write
+
+jobs:
+  gerar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Gerar a leitura de hoje
+        run: python gerar-leitura.py
+
+      - name: Publicar se houver alterações
+        run: |
+          git config user.name  "leitura-automatica"
+          git config user.email "actions@users.noreply.github.com"
+          git add leitura sitemap.xml
+          if git diff --staged --quiet; then
+            echo "Nada mudou, nada a publicar."
+          else
+            git commit -m "Leitura de $(date -u +%Y-%m-%d)"
+            git push
+          fi

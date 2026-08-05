@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Índice Kp agora: valor atual e previsão a 3 dias</title>
+<meta name="description" content="Índice Kp atual em tempo real, escala de tempestade G1 a G5, gráfico das últimas 72 horas e previsão a 3 dias da NOAA. Explicado em português.">
+<link rel="canonical" href="https://ressonanciaschumannhoje.com/indice-kp-agora.html">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css?v=9">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","name":"Índice Kp agora","inLanguage":"pt","description":"Valor atual do índice Kp, escala de tempestades geomagnéticas e previsão a 3 dias."}
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">〰️</span>
+      <span class="brand-text">Ressonância de Schumann<small>Dados ao vivo · 7,83 Hz</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    <nav class="nav">
+      <a href="index.html">Painel</a>
+      <a href="indice-kp-agora.html">Índice Kp</a>
+      <a href="aurora-esta-noite.html">Auroras</a>
+      <a href="sintomas.html">Sintomas</a>
+      <a href="blog/index.html">Artigos</a>
+      <a href="faq.html">Perguntas</a>
+      <a href="apoiar.html" class="cta">Apoiar</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="hero" style="padding-bottom:10px">
+    <h1><span class="l1">Índice Kp agora</span></h1>
+    <p class="tagline">O valor mais recente medido pela rede global de observatórios magnéticos, atualizado de 5 em 5 minutos.</p>
+  </div>
+
+  <section style="padding-top:0">
+    <div class="card">
+      <div class="status-hero">
+        <div class="gauge">
+          <div id="gauge-svg"></div>
+          <div class="gauge-label">
+            <div class="gauge-value" id="idx-value"><span class="skeleton" style="width:70px"></span></div>
+            <div class="gauge-unit" id="idx-word">a carregar</div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+            <span id="kp-value" style="font-size:60px;font-weight:800;letter-spacing:-.04em;font-family:var(--display)"><span class="skeleton" style="width:90px"></span></span>
+            <div>
+              <div id="kp-label" style="font-size:20px;font-weight:700">…</div>
+              <div class="muted" id="kp-storm">…</div>
+            </div>
+          </div>
+          <p class="status-text" id="kp-desc" style="margin-top:12px">…</p>
+          <p class="muted" id="kp-time">…</p>
+        </div>
+      </div>
+
+      <div class="chart-box" id="kp-chart" style="margin-top:16px"></div>
+      <p class="src">Últimas 72 horas, em intervalos de 3 horas. Passe o rato por cima de qualquer barra para ver a hora exata. Fonte: NOAA SWPC.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="grid g-2">
+      <div class="card">
+        <h3>Previsão para os próximos 3 dias</h3>
+        <p class="sub">Kp máximo esperado por dia</p>
+        <div class="fc-days" id="fc-days">
+          <div class="fc-day"><div class="d">…</div><div class="v"><span class="skeleton" style="width:40px"></span></div><div class="s">…</div></div>
+          <div class="fc-day"><div class="d">…</div><div class="v"><span class="skeleton" style="width:40px"></span></div><div class="s">…</div></div>
+          <div class="fc-day"><div class="d">…</div><div class="v"><span class="skeleton" style="width:40px"></span></div><div class="s">…</div></div>
+        </div>
+        <p class="forecast-line" id="forecast-line" style="text-align:left;margin-top:16px">A obter a previsão…</p>
+      </div>
+
+      <div class="card">
+        <h3>Escalas NOAA neste momento</h3>
+        <p class="sub">R = rádio · S = radiação · G = geomagnética</p>
+        <div class="scales" id="noaa-scales">
+          <div class="scale-box"><div class="letter">R · rádio</div><div class="lvl">…</div><div class="txt">…</div></div>
+          <div class="scale-box"><div class="letter">S · radiação</div><div class="lvl">…</div><div class="txt">…</div></div>
+          <div class="scale-box"><div class="letter">G · geomagnética</div><div class="lvl">…</div><div class="txt">…</div></div>
+        </div>
+        <h3 style="margin-top:20px">Alertas emitidos (72 h)</h3>
+        <ul class="list" id="alert-list"><li class="muted">A carregar…</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <article class="article" style="max-width:800px">
+    <h2>O que é o índice Kp</h2>
+    <p>O Kp é uma medida de quanto o campo magnético da Terra está a ser sacudido pelo vento solar. Sai de uma rede de observatórios magnéticos espalhados pelo mundo: cada um mede a variação do campo local em janelas de três horas, e o Kp é a média ponderada de todos eles, numa escala de 0 a 9.</p>
+    <p>Zero significa um campo praticamente imperturbado. Nove significa uma tempestade geomagnética extrema, do tipo que acontece poucas vezes por ciclo solar.</p>
+    <p>Uma coisa que confunde muita gente: o Kp é publicado <b>de três em três horas</b>. Não existe um valor de Kp "deste minuto". O que vê acima é o último período fechado, mais a estimativa em curso.</p>
+
+    <h2>A escala, traduzida</h2>
+    <div class="table-scroll">
+    <table>
+      <thead><tr><th>Kp</th><th>Escala</th><th>O que significa</th><th>Auroras visíveis a partir de</th></tr></thead>
+      <tbody>
+        <tr><td>0 a 2</td><td>—</td><td>Campo calmo. Nada a assinalar.</td><td>Só no círculo polar</td></tr>
+        <tr><td>3</td><td>—</td><td>Instável. Pequenas oscilações.</td><td>Norte da Escandinávia, Islândia</td></tr>
+        <tr><td>4</td><td>—</td><td>Ativo. Ainda abaixo do limiar de tempestade.</td><td>Escandinávia, Escócia</td></tr>
+        <tr><td>5</td><td>G1</td><td>Tempestade menor. Pequenas flutuações na rede elétrica.</td><td>Escócia, sul da Noruega</td></tr>
+        <tr><td>6</td><td>G2</td><td>Moderada. Rádio HF perturbado em latitudes altas.</td><td>Norte da Alemanha, Irlanda</td></tr>
+        <tr><td>7</td><td>G3</td><td>Forte. Erros de GPS, correções em satélites.</td><td>Alemanha, Polónia, sul do Canadá</td></tr>
+        <tr><td>8</td><td>G4</td><td>Severa. Problemas em redes elétricas.</td><td>França, norte de Espanha</td></tr>
+        <tr><td>9</td><td>G5</td><td>Extrema. Evento raro, de grande escala.</td><td>Possivelmente Portugal continental</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="muted">As latitudes são indicativas. A visibilidade real depende também da hora, da nebulosidade e da poluição luminosa.</p>
+
+    <h2>Kp e Ressonância de Schumann: qual é a relação?</h2>
+    <p>São fenómenos diferentes, com origens diferentes. A Ressonância de Schumann é alimentada pelos relâmpagos do planeta e vive na cavidade entre o solo e a ionosfera. O Kp mede a perturbação do campo magnético causada pelo Sol.</p>
+    <p>Ligam-se num ponto: uma tempestade geomagnética forte altera as propriedades da ionosfera, e a ionosfera é o "teto" da cavidade onde a ressonância acontece. Por isso um Kp alto <i>pode</i> deslocar ligeiramente as frequências dos modos. É um efeito pequeno e nem sempre visível no espectrograma.</p>
+    <p>Se quer acompanhar apenas um número, acompanhe o Kp: é o mais bem medido, o mais bem documentado e o único dos dois com previsão oficial.</p>
+
+    <h2>Perguntas rápidas</h2>
+    <div class="acc">
+      <details>
+        <summary>De quanto em quanto tempo muda o Kp?</summary>
+        <div class="body"><p>De três em três horas. Os períodos são fixos e alinhados com o tempo universal: 00–03, 03–06, 06–09, e assim por diante, em UTC.</p></div>
+      </details>
+      <details>
+        <summary>Qual é a diferença entre Kp e G?</summary>
+        <div class="body"><p>É a mesma coisa vista de outra forma. O Kp vai de 0 a 9 e mede a perturbação; a escala G, de G1 a G5, existe só a partir de Kp 5 e serve para comunicar o impacto prático a operadores de redes elétricas, aviação e satélites.</p></div>
+      </details>
+      <details>
+        <summary>Um Kp alto é perigoso para as pessoas?</summary>
+        <div class="body"><p>Não. Os efeitos comprovados são tecnológicos: GPS, rádio, satélites, redes elétricas. Para quem está à superfície não há risco de exposição. A ligação a sintomas humanos <a href="sintomas.html">não está demonstrada</a>.</p></div>
+      </details>
+      <details>
+        <summary>Com que antecedência se sabe?</summary>
+        <div class="body"><p>Depende da causa. Se vem de um buraco coronal, o padrão repete-se a cada 27 dias e prevê-se bem. Se vem de uma ejeção de massa coronal, há tipicamente entre 1 e 3 dias de aviso, contados desde que a nuvem sai do Sol.</p></div>
+      </details>
+    </div>
+
+    <p style="margin-top:26px"><a href="index.html">← Ver o painel completo</a> · <a href="aurora-esta-noite.html">Auroras esta noite →</a></p>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-bottom">
+      <span>© <span data-year></span> Ressonância de Schumann Hoje</span>
+      <span><a href="privacidade.html">Privacidade</a> · <a href="termos.html">Termos</a> · <a href="metodologia.html">Metodologia</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js?v=9"></script>
+</body>
+</html>
+

@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Widget gratuito da Ressonância de Schumann para o seu site</title>
+<meta name="description" content="Ponha o espectrograma ao vivo da Ressonância de Schumann e o índice Kp no seu site com uma linha de HTML. Gratuito, sem chave de API, atualiza sozinho.">
+<link rel="canonical" href="https://ressonanciaschumannhoje.com/incorporar.html">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css?v=9">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">〰️</span>
+      <span class="brand-text">Ressonância de Schumann<small>Dados ao vivo · 7,83 Hz</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    <nav class="nav">
+      <a href="index.html">Painel</a>
+      <a href="indice-kp-agora.html">Índice Kp</a>
+      <a href="aurora-esta-noite.html">Auroras</a>
+      <a href="sintomas.html">Sintomas</a>
+      <a href="blog/index.html">Artigos</a>
+      <a href="faq.html">Perguntas</a>
+      <a href="apoiar.html" class="cta">Apoiar</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+<article class="article" style="max-width:900px">
+  <p class="meta"><a href="index.html">Painel</a> / Widget para incorporar</p>
+  <h1>Ponha a Ressonância de Schumann no seu site</h1>
+
+  <p>O espectrograma ao vivo dos 7,83 Hz mais o índice Kp atual, numa linha de HTML. Gratuito, sem registo, sem chave de API, sem rastreadores. Atualiza-se sozinho de minuto a minuto.</p>
+
+  <p>Feito para blogues de meditação, páginas de bem-estar, sites de meteorologia, rádio amador, escolas, ou qualquer pessoa que escreva sobre a frequência da Terra.</p>
+
+  <h2>Pré-visualização</h2>
+  <p>É exatamente isto que vai aparecer no seu site, com dados reais neste momento:</p>
+
+  <div class="embed-demo">
+    <iframe id="preview" src="embed.html" title="Ressonância de Schumann ao vivo"
+            style="width:100%;max-width:520px;height:380px;border:0;border-radius:12px"
+            loading="lazy"></iframe>
+  </div>
+
+  <h2>Escolha as opções</h2>
+  <p>Marque o que quer mostrar. O código por baixo muda sozinho.</p>
+
+  <div class="card" style="margin:18px 0">
+    <div class="opt-row">
+      <label class="opt"><input type="checkbox" id="o-title" checked> Barra de título</label>
+      <label class="opt"><input type="checkbox" id="o-kp" checked> Faixa com Kp e raios-X</label>
+      <label class="opt"><input type="checkbox" id="o-light"> Tema claro</label>
+    </div>
+
+    <p class="sub" style="margin:16px 0 8px">Copie e cole no seu site:</p>
+    <pre class="raw" id="snippet" style="max-height:none"></pre>
+    <div class="btn-row">
+      <button class="btn" type="button" id="copiar">Copiar código</button>
+      <span class="pulse-msg" id="copiado"></span>
+    </div>
+  </div>
+
+  <h2>Parâmetros</h2>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Parâmetro</th><th>Valores</th><th>O que faz</th></tr></thead>
+    <tbody>
+      <tr><td><code>theme</code></td><td><code>dark</code> · <code>light</code></td><td>Paleta de cores. Por omissão, escuro.</td></tr>
+      <tr><td><code>kp</code></td><td><code>1</code> · <code>0</code></td><td>Mostra ou esconde a faixa com o índice Kp e os raios-X. Por omissão, mostra.</td></tr>
+      <tr><td><code>title</code></td><td><code>1</code> · <code>0</code></td><td>Mostra ou esconde a barra de título. Por omissão, mostra.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Tamanhos que funcionam bem</h2>
+  <ul>
+    <li><b>Barra lateral estreita:</b> 300 × 320 px, com <code>title=0</code></li>
+    <li><b>Dentro de um artigo:</b> 520 × 380 px, tudo ligado (a predefinição)</li>
+    <li><b>Faixa larga:</b> 100% × 300 px</li>
+    <li><b>Só o gráfico:</b> 400 × 240 px, com <code>kp=0&amp;title=0</code></li>
+  </ul>
+
+  <h2>Condições, em quatro linhas</h2>
+  <ul>
+    <li>Livre para uso pessoal e comercial. Sem chave, sem registo, sem custo.</li>
+    <li>Os dados vêm da estação SOS-70 da Universidade Estatal de Tomsk (espectrograma) e da NOAA SWPC (Kp e raios-X). Nós não os alteramos.</li>
+    <li>Deixe a atribuição no rodapé do widget. É a única coisa que pedimos em troca.</li>
+    <li>O widget lê os dados uma vez por minuto. Não force um ritmo mais rápido: a estação de origem é um instrumento universitário, não um serviço comercial.</li>
+  </ul>
+
+  <p>Se melhorarmos o widget, o seu código continua a funcionar. Não mudamos o endereço nem removemos parâmetros.</p>
+
+  <div class="card support" style="margin-top:26px">
+    <h3>Usou no seu site?</h3>
+    <p class="sub" style="color:var(--text-dim)">Diga-nos o endereço e ficamos a saber que existe. Sites que incorporam o widget entram na lista de apoiantes e têm prioridade quando pedimos opinião sobre versões novas.</p>
+    <div class="btn-row"><a class="btn" href="mailto:SEU-EMAIL@exemplo.com?subject=Incorporei%20o%20widget">Enviar o meu endereço</a></div>
+  </div>
+
+  <p style="margin-top:26px"><a href="index.html">← Voltar ao painel</a></p>
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-bottom">
+      <span>© <span data-year></span> Ressonância de Schumann Hoje</span>
+      <span><a href="privacidade.html">Privacidade</a> · <a href="termos.html">Termos</a> · <a href="metodologia.html">Metodologia</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js?v=9"></script>
+<script>
+(function(){
+  var BASE = "https://ressonanciaschumannhoje.com/embed.html";
+  var pre = document.getElementById("snippet");
+  var frame = document.getElementById("preview");
+
+  function opcoes(){
+    var p = [];
+    if (document.getElementById("o-light").checked) p.push("theme=light");
+    if (!document.getElementById("o-kp").checked)   p.push("kp=0");
+    if (!document.getElementById("o-title").checked) p.push("title=0");
+    return p.length ? "?" + p.join("&") : "";
+  }
+
+  function altura(){
+    var h = 380;
+    if (!document.getElementById("o-kp").checked)    h -= 58;
+    if (!document.getElementById("o-title").checked) h -= 30;
+    return h;
+  }
+
+  function atualiza(){
+    var q = opcoes(), h = altura();
+    pre.textContent =
+      '<iframe\n' +
+      '  src="' + BASE + q + '"\n' +
+      '  width="100%"\n' +
+      '  height="' + h + '"\n' +
+      '  style="border:0; border-radius:12px; max-width:520px;"\n' +
+      '  title="Ressonância de Schumann ao vivo"\n' +
+      '  loading="lazy"></iframe>';
+    frame.src = "embed.html" + q;
+    frame.style.height = h + "px";
+  }
+
+  ["o-title","o-kp","o-light"].forEach(function(id){
+    document.getElementById(id).addEventListener("change", atualiza);
+  });
+
+  document.getElementById("copiar").addEventListener("click", function(){
+    var aviso = document.getElementById("copiado");
+    function ok(){ aviso.textContent = "Copiado."; setTimeout(function(){ aviso.textContent=""; }, 2500); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(pre.textContent).then(ok, falha);
+    } else { falha(); }
+    function falha(){
+      var r = document.createRange(); r.selectNodeContents(pre);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      aviso.textContent = "Selecionado. Prima Ctrl+C.";
+    }
+  });
+
+  atualiza();
+})();
+</script>
+</body>
+</html>
+

@@ -1,0 +1,3 @@
+# Depois de ser aprovado no Google AdSense, substitua pela linha que o AdSense lhe dá,
+# no formato:
+# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0

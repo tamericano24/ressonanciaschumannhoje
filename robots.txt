@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /privacidade.html
+Disallow: /termos.html
+
+Sitemap: https://ressonanciaschumannhoje.com/sitemap.xml

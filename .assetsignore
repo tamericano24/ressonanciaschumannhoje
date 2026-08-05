@@ -1,0 +1,19 @@
+# Ficheiros que ficam no GitHub mas não devem ser servidos como parte do site.
+# Sintaxe igual à do .gitignore.
+
+.git
+.github
+.gitignore
+.assetsignore
+wrangler.jsonc
+
+# Ferramentas de desenvolvimento, não pertencem ao site publicado
+gerar-leitura.py
+iniciar-site.bat
+README.md
+
+# Segurança e arrumação
+.claude
+node_modules
+*.py
+*.bat

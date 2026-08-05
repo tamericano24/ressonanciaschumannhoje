@@ -1,0 +1,18 @@
+{
+  // Configuração para publicar no Cloudflare Workers com ficheiros estáticos.
+  // Não há código de servidor: o Worker apenas serve os ficheiros do projeto.
+  "name": "ressonanciaschumannhoje",
+  "compatibility_date": "2026-08-05",
+
+  "assets": {
+    // A raiz do repositório é a raiz do site.
+    "directory": "./",
+
+    // Quando um endereço não existe, mostra a nossa página 404.html
+    // em vez do erro genérico da Cloudflare.
+    "not_found_handling": "404-page",
+
+    // Permite que /faq funcione além de /faq.html.
+    "html_handling": "auto-trailing-slash"
+  }
+}

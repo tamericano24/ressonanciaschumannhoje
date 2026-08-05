@@ -623,6 +623,7 @@ def escrever_sitemap(itens):
         ("/blog/o-que-e-a-ressonancia-de-schumann.html", "monthly", "0.9"),
         ("/blog/7-83-hz-frequencia-da-terra.html", "monthly", "0.9"),
         ("/blog/tempestades-geomagneticas-e-o-corpo.html", "monthly", "0.9"),
+        ("/blog/erupcoes-solares-classes-c-m-x.html", "monthly", "0.9"),
     ]
     linhas = ['<?xml version="1.0" encoding="UTF-8"?>',
               '<!-- Gerado por gerar-leitura.py. Nao editar a mao. -->',

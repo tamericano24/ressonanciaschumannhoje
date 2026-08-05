@@ -100,22 +100,12 @@ a:hover { text-decoration: underline; }
 }
 .brand-text small { display: block; font-size: 11px; font-weight: 500; color: var(--text-faint); letter-spacing: 0.06em; text-transform: uppercase; }
 
-.nav { margin-left: auto; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-.nav a {
-  color: var(--text-dim); font-size: 14px; padding: 8px 11px;
-  border-radius: 8px; white-space: nowrap;
-}
-.nav a:hover { background: var(--panel-2); color: var(--text); text-decoration: none; }
-.nav a.cta {
-  background: linear-gradient(135deg, var(--accent), #6d3ff0);
-  color: #fff; font-weight: 600;
-}
-.nav a.cta:hover { filter: brightness(1.12); }
-
-/* Botão do menu completo. Visível em qualquer largura, ao contrário do
-   habitual "só no telemóvel": num site com 16 páginas, ter o mapa todo
-   à distância de um clique também ajuda em ecrã grande. */
+/* O cabeçalho não tem links soltos: o menu completo é a única entrada para a
+   navegação, em qualquer largura. Com 16 páginas, meia dúzia de links no topo
+   escondia sempre as outras dez, e obrigava a manter duas listas em sincronia.
+   O mapa inteiro fica a um clique, e o topo fica limpo. */
 .nav-toggle {
+  margin-left: auto;
   display: inline-flex; align-items: center; gap: 8px; flex: none;
   background: var(--panel-2); border: 1px solid var(--border);
   color: var(--text); border-radius: 10px;
@@ -125,10 +115,6 @@ a:hover { text-decoration: underline; }
 .nav-toggle:hover { border-color: var(--border-strong); background: var(--panel); }
 .nav-toggle .barras { display: inline-flex; flex-direction: column; gap: 3px; }
 .nav-toggle .barras i { width: 15px; height: 2px; background: currentColor; border-radius: 2px; }
-@media (max-width: 900px) {
-  .nav { display: none; }
-  .nav-toggle { margin-left: auto; }
-}
 
 /* ---------------- Painel de navegação ---------------- */
 

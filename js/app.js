@@ -30,6 +30,10 @@
     // Atenção: o antigo endereço sosrff.tsu.ru/new/shm.jpg deixou de ser atualizado
     // em setembro de 2025. O feed ao vivo está agora em sos70.ru.
     tomsk: "https://sos70.ru/provider.php?file=shm.jpg",
+    // Valor numérico extraído desse espectrograma pelo ler-schumann.py, que
+    // corre de 30 em 30 minutos e publica na branch "dados". Fica fora do
+    // projeto de propósito, para o histórico não encher de commits do robô.
+    schumann: "https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/schumann.json",
     auroraN: "https://services.swpc.noaa.gov/images/animations/ovation/north/latest.jpg",
     auroraS: "https://services.swpc.noaa.gov/images/animations/ovation/south/latest.jpg",
     drap: "https://services.swpc.noaa.gov/images/animations/d-rap/global/latest.png",
@@ -248,9 +252,8 @@
     resumo.cls = band.cls;
     resumo.titulo = band.titulo;
 
-    drawGauge(score, band.cls);
-    set("idx-value", String(score), "gauge-value " + band.cls);
-    set("idx-word", band.word, "gauge-unit " + band.cls);
+    // O medidor grande mostra a Ressonancia de Schumann, nao este composto.
+    // Ver renderSchumann(). O composto fica no mosaico, identificado como tal.
     set("t-energy", String(score), band.cls);
     set("t-energy-word", band.word, "tile-sub " + band.cls);
     var dt = $("#daily-text");
@@ -291,6 +294,95 @@
           'stroke-linecap="round" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + off.toFixed(1) + '" ' +
           'transform="rotate(-90 100 100)" style="transition:stroke-dashoffset .9s ease;filter:drop-shadow(0 0 8px ' + color + '88)"/>' +
       "</svg>";
+  }
+
+  /* ---------------- Ressonância de Schumann, medida ----------------
+     O valor vem de ler-schumann.py, que lê o espectrograma da estação de
+     Tomsk de 30 em 30 minutos e publica o resultado na branch "dados".
+
+     Quando o recetor está saturado, quando ainda não há dados da hora, ou
+     quando a leitura não é de confiança, NÃO se mostra número nenhum: mostra-se
+     o motivo. Um quarto das horas do dia é assim, e inventar um valor para
+     tapar o buraco seria mentir ao visitante. Ver metodologia.html            */
+
+  var SR_MOTIVOS = {
+    saturado:            "recetor saturado em Tomsk",
+    sem_dados:           "ainda sem dados desta hora",
+    pico_no_limite:      "leitura sem confiança",
+    sem_correspondencia: "leitura sem confiança",
+    formato_desconhecido: "a fonte mudou de formato",
+    fonte_indisponivel:  "fonte indisponível"
+  };
+
+  // Os mesmos motivos, na forma que encaixa em "a estação está ... desde então".
+  var SR_DESDE = {
+    saturado:            "com o recetor saturado",
+    sem_dados:           "sem dados novos",
+    pico_no_limite:      "sem leitura de confiança",
+    sem_correspondencia: "sem leitura de confiança"
+  };
+
+  function bandaSchumann(i) {
+    if (i < 25) return "is-calm";
+    if (i < 45) return "is-mild";
+    if (i < 65) return "is-active";
+    if (i < 85) return "is-storm";
+    return "is-severe";
+  }
+
+  function idade(horas) {
+    var m = Math.round(horas * 60);
+    if (m < 60) return "há " + m + " min";
+    var h = Math.floor(m / 60), r = m % 60;
+    return "há " + h + " h" + (r ? " " + r : "");
+  }
+
+  function renderSchumann(d) {
+    var f = d && d.fundamental;
+    var legenda = document.getElementById("sr-legenda");
+
+    // Só fica sem número se as 72 horas do espectrograma não tiverem uma
+    // única medição válida, o que é raro. Fora isso mostra-se sempre a
+    // última medição real, dizendo de quando é.
+    if (!d || !f || f.estado !== "ok") {
+      var motivo = (d && SR_MOTIVOS[d.estado]) || "fonte indisponível";
+      drawGauge(0, "is-calm");
+      set("idx-value", "", "gauge-value");
+      set("idx-word", "sem leitura, " + motivo, "gauge-unit");
+      if (legenda) {
+        legenda.textContent = "Ressonância de Schumann, estação de Tomsk. " +
+          "Quando não há medição de confiança, este painel não apresenta valor.";
+      }
+      return;
+    }
+
+    var cls = bandaSchumann(f.intensidade);
+    var velha = d.estado === "ultima_conhecida" && d.atraso_horas > 0.5;
+
+    drawGauge(f.intensidade, cls);
+    set("idx-value", f.pico_hz.toFixed(2).replace(".", ","), "gauge-value " + cls);
+    set("idx-word", "Hz · intensidade " + Math.round(f.intensidade) +
+                    (velha ? " · " + idade(d.atraso_horas) : " em 100"),
+        "gauge-unit " + cls);
+
+    if (legenda) {
+      var extra = (d.harmonicas || [])
+        .filter(function (m) { return m.estado === "ok"; })
+        .map(function (m) { return m.pico_hz.toFixed(1).replace(".", ",") + " Hz"; });
+      legenda.textContent =
+        (velha
+          ? "Última medição de confiança, " + idade(d.atraso_horas) + ". A estação de Tomsk está " +
+            (SR_DESDE[d.motivo_do_atraso] || "sem dados novos") + " desde então. "
+          : "Medição atual da estação de Tomsk. ") +
+        (extra.length ? "Harmónicas em " + extra.join(" e ") + ". " : "") +
+        "Intensidade na escala do espectrograma, não em picotesla.";
+    }
+  }
+
+  function carregarSchumann() {
+    return getJSON(SRC.schumann).then(renderSchumann).catch(function () {
+      renderSchumann(null);
+    });
   }
 
   // ----------------------------------------------------------
@@ -2232,6 +2324,7 @@
     // pesadas em páginas que não os apresentam.
     loadKp(); loadAlerts(); loadScales();
     loadKpForecastLine(); loadForecastDays();
+    if (document.getElementById("gauge-svg")) carregarSchumann();
 
     if (document.getElementById("xray-chart") || document.getElementById("t-xray")) loadXray();
     if (document.getElementById("flare-list") || document.getElementById("t-flare")) loadFlares();

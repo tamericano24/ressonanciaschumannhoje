@@ -1,0 +1,57 @@
+name: Leitura da Schumann
+
+# Le o espectrograma de Tomsk, extrai a intensidade da Ressonancia de Schumann
+# e publica o resultado na branch "dados".
+#
+# Porque numa branch a parte: o painel precisa de um valor novo de meia em meia
+# hora, e guardar isso dentro do projeto encheria o historico de commits
+# automaticos. A branch "dados" e reescrita de cada vez, portanto tem sempre um
+# unico commit e nao cresce. O historico do projeto fica limpo.
+#
+# O painel le o ficheiro em:
+#   https://raw.githubusercontent.com/<repo>/dados/schumann.json
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"     # de 30 em 30 minutos
+  workflow_dispatch:           # permite correr a mao no separador Actions
+
+permissions:
+  contents: write
+
+concurrency:                   # nunca duas execucoes ao mesmo tempo
+  group: leitura-schumann
+  cancel-in-progress: false
+
+jobs:
+  ler:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: pip install --quiet pillow numpy
+
+      - name: Ler o espectrograma
+        run: python ler-schumann.py
+
+      - name: Publicar na branch dados
+        run: |
+          estado=$(python -c "import json;print(json.load(open('schumann.json'))['estado'])")
+          echo "estado da leitura: $estado"
+
+          # Branch orfa, reescrita de cada vez: fica sempre com um so commit.
+          tmp=$(mktemp -d)
+          cp schumann.json "$tmp/"
+          cd "$tmp"
+          git init --quiet -b dados
+          git config user.name  "leitura-automatica"
+          git config user.email "actions@users.noreply.github.com"
+          git add schumann.json
+          git commit --quiet -m "Leitura de $(date -u +%Y-%m-%dT%H:%MZ) ($estado)"
+          git push --quiet --force \
+            "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" dados

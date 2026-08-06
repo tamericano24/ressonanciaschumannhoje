@@ -116,6 +116,12 @@ a:hover { text-decoration: underline; }
 .nav-toggle .barras { display: inline-flex; flex-direction: column; gap: 3px; }
 .nav-toggle .barras i { width: 15px; height: 2px; background: currentColor; border-radius: 2px; }
 
+/* Legenda por baixo do medidor: diz o que ali está medido, e em que escala. */
+.gauge-legenda {
+  max-width: 52ch; margin: 14px auto 0; text-align: center;
+  color: var(--text-faint); font-size: 13px; line-height: 1.6;
+}
+
 /* ---------------- Painel de navegação ---------------- */
 
 .menu-fundo {

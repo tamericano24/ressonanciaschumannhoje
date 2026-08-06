@@ -11,6 +11,9 @@ desktop.ini
 *.bak
 *~
 
+# Resultado do ler-schumann.py. Vive na branch "dados", nunca aqui.
+schumann.json
+
 # Python (o gerador de leituras não cria nada disto, mas fica salvaguardado)
 __pycache__/
 *.pyc

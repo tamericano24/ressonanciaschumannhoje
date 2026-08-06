@@ -293,7 +293,7 @@ CABECA = """<!DOCTYPE html>
 <meta name="description" content="{descricao}">
 <link rel="canonical" href="{dominio}/leitura/{iso}.html">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../css/style.css?v=19">
+<link rel="stylesheet" href="../css/style.css?v=20">
 <script type="application/ld+json">
 {jsonld}
 </script>
@@ -358,7 +358,7 @@ CABECA = """<!DOCTYPE html>
   </div>
 </footer>
 
-<script src="../js/app.js?v=19"></script>
+<script src="../js/app.js?v=20"></script>
 </body>
 </html>
 """
@@ -550,7 +550,7 @@ def escrever_indice(itens):
 <meta name="description" content="Arquivo das leituras diárias: o estado do campo geomagnético, do Sol e do vento solar, dia a dia, em português.">
 <link rel="canonical" href="{DOMINIO}/leitura/">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../css/style.css?v=19">
+<link rel="stylesheet" href="../css/style.css?v=20">
 </head>
 <body>
 
@@ -583,7 +583,7 @@ def escrever_indice(itens):
   </div>
 </footer>
 
-<script src="../js/app.js?v=19"></script>
+<script src="../js/app.js?v=20"></script>
 </body>
 </html>
 """

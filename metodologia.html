@@ -7,7 +7,7 @@
 <meta name="description" content="Fontes de dados, fórmulas e limitações do painel: NOAA SWPC, USGS e estação de Tomsk. Como é calculado o Índice de Energia da Terra.">
 <link rel="canonical" href="https://ressonanciaschumannhoje.com/metodologia.html">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="css/style.css?v=19">
+<link rel="stylesheet" href="css/style.css?v=20">
 </head>
 <body>
 
@@ -80,16 +80,48 @@
     <li><b>80–100, Extremo:</b> condições raras, com alertas ativos da NOAA.</li>
   </ul>
 
-  <h2>Porque não publicamos um número de "amplitude" da Ressonância</h2>
-  <p>É a pergunta que mais recebemos. Vários sites apresentam um valor numérico diário de "amplitude da Ressonância de Schumann". Esse número não vem de nenhuma fonte oficial: normalmente é estimado por leitura automática das cores do espectrograma de Tomsk, um método que confunde facilmente picos reais com ruído do instrumento, manutenção da estação ou trovoadas locais.</p>
-  <p>Preferimos mostrar a imagem original e explicar como a ler. Se um dia existir uma leitura calibrada e publicada pela própria estação, passaremos a mostrá-la.</p>
+  <h2>Como medimos a Ressonância de Schumann</h2>
+
+  <p>O medidor grande do painel mostra a Ressonância de Schumann medida, não um índice composto. Mostra duas coisas: <b>a frequência onde está o pico</b> da fundamental naquele momento, e <b>a intensidade</b> desse pico.</p>
+
+  <p>Não existe nenhuma fonte pública que publique estes valores em número. Verificámos: a estação de Tomsk publica o espectrograma como imagem e mais nada, e todos os outros endereços de dados que testámos naquele servidor devolvem ficheiros vazios. Por isso o valor é extraído da própria imagem publicada.</p>
+
+  <h3>O método, passo a passo</h3>
+  <ol>
+    <li>Descarrega-se o espectrograma de Tomsk, que cobre as últimas 72 horas.</li>
+    <li>Localiza-se a coluna de tempo mais recente que tem dados.</li>
+    <li>Dentro da banda da fundamental, entre 6,6 e 9,2 Hz, procura-se a linha mais intensa. É essa a frequência do pico.</li>
+    <li>A cor dessa linha é convertida em número usando a barra de cores da própria imagem como escala, de 0 a 100.</li>
+    <li>Repete-se para a segunda e a terceira harmónicas, perto de 14,3 e 20,8 Hz.</li>
+  </ol>
+
+  <h3>Quando recusamos dar um número</h3>
+  <p>Esta é a parte que distingue uma leitura de um palpite. A leitura é descartada, e não apresentada, em qualquer destes casos:</p>
+  <ul>
+    <li><b>Recetor saturado.</b> Quando a banda está totalmente branca, o instrumento está acima da escala, tipicamente por interferência local. Não há valor a ler. No espectrograma que analisámos, isto aconteceu em <b>19 das 72 horas</b>.</li>
+    <li><b>Pico encostado ao limite da banda.</b> Quase sempre é o rebordo de uma zona saturada ao lado, e não a ressonância.</li>
+    <li><b>Cores que não correspondem à escala.</b> Legendas, marcas de água ou artefactos de compressão.</li>
+    <li><b>A imagem mudou de formato.</b> Se as dimensões ou a barra de cores deixarem de bater certo com o esperado, a leitura para em vez de devolver números errados.</li>
+  </ul>
+
+  <h3>Porque o valor às vezes tem idade</h3>
+  <p>Quando a hora atual não dá leitura de confiança, recuamos na própria imagem até à última medição válida e mostramo-la, dizendo <b>de quando é</b>. O número apresentado é sempre uma medição real que aconteceu mesmo. Nunca é interpolado, estimado nem preenchido.</p>
+
+  <h3>O que este número não é</h3>
+  <ul>
+    <li><b>Não está calibrado em picotesla.</b> A intensidade vem na escala de cor do espectrograma, de 0 a 100. Tomsk não publica a calibração que permitiria converter para unidades físicas.</li>
+    <li><b>Não é um valor planetário.</b> É a cavidade Terra-ionosfera vista da Sibéria. Outra estação daria outro valor.</li>
+    <li><b>Não é uma grandeza padronizada.</b> Não deve ser citado como medição oficial, ao contrário do índice Kp, que é produzido pelo GFZ Potsdam.</li>
+  </ul>
+
+  <p>A objeção clássica a este método, que nós próprios levantávamos aqui antes, é que a leitura automática de cores confunde picos reais com ruído do instrumento. É verdade, e é exatamente por isso que existem as quatro regras de recusa acima. Preferimos mostrar uma medição de há três horas, identificada como tal, a mostrar um número inventado para a hora atual.</p>
 
   <h2>Limitações conhecidas</h2>
   <ul>
     <li>A estação de Tomsk é um instrumento de investigação. Interrupções, ruído e manutenção são normais e não indicam eventos planetários.</li>
     <li>Uma única estação não mede o planeta inteiro: mede a cavidade Terra-ionosfera tal como é vista da Sibéria.</li>
     <li>O índice Kp é global e médio, condições locais podem diferir bastante.</li>
-    <li>Quando uma fonte está offline, o painel indica-o em vez de mostrar o último valor conhecido como se fosse atual.</li>
+    <li>Quando uma fonte está offline, o painel indica-o em vez de mostrar o último valor conhecido como se fosse atual. No caso da Ressonância de Schumann, a última medição válida continua visível, mas sempre acompanhada da hora a que foi feita.</li>
   </ul>
 
   <h2>Correções</h2>
@@ -108,7 +140,7 @@
   </div>
 </footer>
 
-<script src="js/app.js?v=19"></script>
+<script src="js/app.js?v=20"></script>
 </body>
 </html>
 

@@ -348,6 +348,9 @@
       set("idx-value", "?", "gauge-value");
       set("idx-word", "sem leitura", "gauge-unit");
       if (legenda) legenda.textContent = "Pico da fundamental · " + motivo;
+      set("t-sr", "?");
+      set("t-sr-sub", "sem leitura", "tile-sub");
+      set("t-sr-foot", motivo, "tile-foot");
       return;
     }
 
@@ -371,6 +374,12 @@
           (SR_DESDE[d.motivo_do_atraso] || "sem dados novos") + " desde então"
         : "Pico da fundamental · medição atual da estação de Tomsk";
     }
+
+    // O mesmo valor no mosaico, para o painel não dizer duas coisas diferentes.
+    set("t-sr", String(Math.round(f.intensidade)));
+    set("t-sr-sub", f.pico_hz.toFixed(2).replace(".", ",") + " Hz", "tile-sub");
+    set("t-sr-foot", velha ? "Última medição " + idade(d.atraso_horas) + " · Tomsk"
+                           : "Pico da fundamental · Tomsk", "tile-foot");
   }
 
   function carregarSchumann() {
@@ -479,7 +488,7 @@
       set("kp-desc", info.desc);
       set("kp-time", "Atualizado " + ago(last.t) + " · " + hhmm(last.t) + " UTC");
       set("kp-storm", info.g === "…" ? "sem tempestade" : "escala " + info.g);
-      set("t-kp", num(last.v), info.cls);
+      set("t-kp", num(last.v), "tile-value " + info.cls);
       set("t-kp-sub", info.g === "…" ? info.label : info.label + " · " + info.g);
 
       var recent = data.slice(-24);
@@ -513,7 +522,7 @@
 
       set("xray-value", info.txt, info.cls);
       set("xray-time", "Satélite GOES · " + ago(parseUTC(last.time_tag)));
-      set("t-xray", info.txt, info.cls);
+      set("t-xray", info.txt, "tile-value " + info.cls);
       resumo.xray = info.txt;
       renderNowSummary();
 
@@ -541,7 +550,7 @@
       var tu = parseUTC(ultima.max_time || ultima.begin_time);
       var clsU = /^X/.test(ultima.max_class) ? "is-severe" : /^M/.test(ultima.max_class) ? "is-storm"
                : /^C/.test(ultima.max_class) ? "is-active" : "is-mild";
-      set("t-flare", ultima.max_class ? decPT(ultima.max_class) : "…", clsU);
+      set("t-flare", ultima.max_class ? decPT(ultima.max_class) : "…", "tile-value " + clsU);
       set("t-flare-sub", tu ? ago(tu) : "…");
       resumo.flare = ultima.max_class ? decPT(ultima.max_class) : null;
       resumo.flareQuando = tu ? ago(tu) : "";
@@ -574,7 +583,7 @@
 
       set("quake-count", String(feats.length));
       set("quake-max", max ? num(max) : "…");
-      set("t-quakes", String(feats.length), feats.length ? "is-mild" : "is-calm");
+      set("t-quakes", String(feats.length), "tile-value " + (feats.length ? "is-mild" : "is-calm"));
       set("t-quakes-sub", max ? "máx. M" + num(max) : "nenhum registado");
 
       resumo.sismos = feats.length;

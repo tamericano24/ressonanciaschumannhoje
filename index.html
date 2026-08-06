@@ -19,7 +19,7 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <!-- O sufixo ?v= força os navegadores a irem buscar a versão nova depois de cada
      atualização. Incremente-o sempre que mudar o CSS ou o JavaScript. -->
-<link rel="stylesheet" href="css/style.css?v=21">
+<link rel="stylesheet" href="css/style.css?v=22">
 
 <script type="application/ld+json">
 {
@@ -98,8 +98,14 @@
       </div>
 
       <div class="tiles">
-        <a class="tile tile--primary" href="metodologia.html">
-          <div class="tile-label">⚡ Energia da Terra</div>
+        <a class="tile tile--sr" href="metodologia.html">
+          <div class="tile-label">〰️ Ressonância de Schumann</div>
+          <div class="tile-value"><span id="t-sr">…</span><small>/ 100</small></div>
+          <div class="tile-sub" id="t-sr-sub">…</div>
+          <div class="tile-foot" id="t-sr-foot">Pico da fundamental · Tomsk</div>
+        </a>
+        <a class="tile" href="metodologia.html">
+          <div class="tile-label">⚡ Energia</div>
           <div class="tile-value"><span id="t-energy">…</span><small>/ 100</small></div>
           <div class="tile-sub" id="t-energy-word">…</div>
           <div class="tile-foot">Composto · Kp + raios-X + sismos</div>
@@ -110,17 +116,17 @@
           <div class="tile-foot" id="t-kp-sub">…</div>
         </a>
         <a class="tile" href="#sol">
-          <div class="tile-label">Fluxo de raios-X</div>
+          <div class="tile-label">Raios-X</div>
           <div class="tile-value" id="t-xray">…</div>
           <div class="tile-foot">GOES primário</div>
         </a>
         <a class="tile" href="#sol">
-          <div class="tile-label">Última erupção</div>
+          <div class="tile-label">Erupção</div>
           <div class="tile-value" id="t-flare">…</div>
           <div class="tile-foot" id="t-flare-sub">…</div>
         </a>
         <a class="tile" href="#terra">
-          <div class="tile-label">Sismos M4,5+ 24 h</div>
+          <div class="tile-label">Sismos M4,5+</div>
           <div class="tile-value" id="t-quakes">…</div>
           <div class="tile-foot" id="t-quakes-sub">…</div>
         </a>
@@ -712,8 +718,8 @@
   </div>
 </footer>
 
-<script src="js/world-path.js?v=21"></script>
-<script src="js/app.js?v=21"></script>
+<script src="js/world-path.js?v=22"></script>
+<script src="js/app.js?v=22"></script>
 </body>
 </html>
 

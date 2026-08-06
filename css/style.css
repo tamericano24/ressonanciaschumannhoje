@@ -118,8 +118,8 @@ a:hover { text-decoration: underline; }
 
 /* Legenda por baixo do medidor: diz o que ali está medido, e em que escala. */
 .gauge-legenda {
-  max-width: 52ch; margin: 14px auto 0; text-align: center;
-  color: var(--text-faint); font-size: 13px; line-height: 1.6;
+  margin: 12px auto 0; text-align: center;
+  color: var(--text-faint); font-size: 12px; letter-spacing: 0.02em;
 }
 
 /* ---------------- Painel de navegação ---------------- */
@@ -268,6 +268,12 @@ body.menu-aberto { overflow: hidden; }
 .gauge-solo svg { width: 100%; height: auto; display: block; }
 .gauge-solo .gauge-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .gauge-solo .gauge-value { font-size: 50px; font-weight: 800; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+/* O rótulo vive por cima do anel, portanto tem de caber lá dentro. Estes
+   limites impedem que um texto mais longo derrame por cima do medidor: o que
+   não couber fica cortado, em vez de estragar o painel. Detalhes compridos
+   pertencem à .gauge-legenda, por baixo. */
+.gauge-solo .gauge-value,
+.gauge-solo .gauge-unit { max-width: 150px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gauge-solo .gauge-unit { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.2em; margin-top: 8px; }
 .gauge-solo .gauge-unit.is-calm   { color: var(--green); }
 .gauge-solo .gauge-unit.is-mild   { color: var(--cyan); }

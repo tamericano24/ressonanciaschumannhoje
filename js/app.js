@@ -288,11 +288,11 @@
 
     host.innerHTML =
       '<svg viewBox="0 0 200 200" role="img" aria-label="Índice de Energia da Terra: ' + score + ' em 100">' +
-        '<circle cx="100" cy="100" r="' + R + '" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="9"/>' +
+        '<circle cx="100" cy="100" r="' + R + '" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="5"/>' +
         ticks +
-        '<circle cx="100" cy="100" r="' + R + '" fill="none" stroke="' + color + '" stroke-width="9" ' +
+        '<circle cx="100" cy="100" r="' + R + '" fill="none" stroke="' + color + '" stroke-width="5" ' +
           'stroke-linecap="round" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + off.toFixed(1) + '" ' +
-          'transform="rotate(-90 100 100)" style="transition:stroke-dashoffset .9s ease;filter:drop-shadow(0 0 8px ' + color + '88)"/>' +
+          'transform="rotate(-90 100 100)" style="transition:stroke-dashoffset .9s ease;filter:drop-shadow(0 0 6px ' + color + '55)"/>' +
       "</svg>";
   }
 
@@ -322,13 +322,11 @@
     sem_correspondencia: "sem leitura de confiança"
   };
 
-  function bandaSchumann(i) {
-    if (i < 25) return "is-calm";
-    if (i < 45) return "is-mild";
-    if (i < 65) return "is-active";
-    if (i < 85) return "is-storm";
-    return "is-severe";
-  }
+  // O anel é sempre ciano. A intensidade do espectrograma não é uma escala de
+  // gravidade: 78 é um valor corrente, não um alarme. Pintá-la de laranja ou
+  // vermelho, como se faz no índice composto, daria ao visitante uma ideia de
+  // perigo que a medição não sustenta.
+  var COR_SCHUMANN = "is-mild";
 
   function idade(horas) {
     var m = Math.round(horas * 60);
@@ -347,35 +345,31 @@
     if (!d || !f || f.estado !== "ok") {
       var motivo = (d && SR_MOTIVOS[d.estado]) || "fonte indisponível";
       drawGauge(0, "is-calm");
-      set("idx-value", "", "gauge-value");
-      set("idx-word", "sem leitura, " + motivo, "gauge-unit");
-      if (legenda) {
-        legenda.textContent = "Ressonância de Schumann, estação de Tomsk. " +
-          "Quando não há medição de confiança, este painel não apresenta valor.";
-      }
+      set("idx-value", "?", "gauge-value");
+      set("idx-word", "sem leitura", "gauge-unit");
+      if (legenda) legenda.textContent = "Pico da fundamental · " + motivo;
       return;
     }
 
-    var cls = bandaSchumann(f.intensidade);
+    var cls = COR_SCHUMANN;
     var velha = d.estado === "ultima_conhecida" && d.atraso_horas > 0.5;
 
+    // Dentro do anel só cabe o essencial: a intensidade em número grande e a
+    // frequência do pico por baixo. Tudo o resto (idade, motivo, harmónicas)
+    // vai para a legenda, fora do medidor. O .gauge-unit é maiúsculas com
+    // espaçamento largo: uma frase ali dentro transborda por cima do anel.
     drawGauge(f.intensidade, cls);
-    set("idx-value", f.pico_hz.toFixed(2).replace(".", ","), "gauge-value " + cls);
-    set("idx-word", "Hz · intensidade " + Math.round(f.intensidade) +
-                    (velha ? " · " + idade(d.atraso_horas) : " em 100"),
-        "gauge-unit " + cls);
+    set("idx-value", String(Math.round(f.intensidade)), "gauge-value " + cls);
+    set("idx-word", f.pico_hz.toFixed(2).replace(".", ",") + " Hz", "gauge-unit " + cls);
 
+    // Uma linha curta, discreta. O detalhe todo (harmónicas, escala, regras de
+    // recusa) vive na metodologia: debaixo do medidor só cabe o essencial, sob
+    // pena de sujar a parte mais vista do painel.
     if (legenda) {
-      var extra = (d.harmonicas || [])
-        .filter(function (m) { return m.estado === "ok"; })
-        .map(function (m) { return m.pico_hz.toFixed(1).replace(".", ",") + " Hz"; });
-      legenda.textContent =
-        (velha
-          ? "Última medição de confiança, " + idade(d.atraso_horas) + ". A estação de Tomsk está " +
-            (SR_DESDE[d.motivo_do_atraso] || "sem dados novos") + " desde então. "
-          : "Medição atual da estação de Tomsk. ") +
-        (extra.length ? "Harmónicas em " + extra.join(" e ") + ". " : "") +
-        "Intensidade na escala do espectrograma, não em picotesla.";
+      legenda.textContent = velha
+        ? "Pico da fundamental · última medição " + idade(d.atraso_horas) + ", Tomsk " +
+          (SR_DESDE[d.motivo_do_atraso] || "sem dados novos") + " desde então"
+        : "Pico da fundamental · medição atual da estação de Tomsk";
     }
   }
 

@@ -26,7 +26,14 @@ git add . ; git commit -m "descricao" ; git push
 - A publicação demora 1 a 3 minutos. Verificar sempre antes de dizer que está feito.
 
 **Ao mudar CSS ou JS, incrementar `?v=N` em todos os ficheiros**, senão os
-visitantes ficam com a versão antiga em cache:
+visitantes ficam com a versão antiga em cache.
+
+O número vive num sítio só: o `index.html`. O [gerar-leitura.py](gerar-leitura.py)
+lê-o de lá (`versao_ativa()`) em vez de o ter escrito à mão, e no fim de cada
+execução alinha todas as leituras já escritas (`normalizar_versoes()`). Isto
+resolve a corrida que existia antes: o robô gerava a leitura das 06:20 com a
+versão da altura, e se o CSS mudasse depois essa página ficava a servir a folha
+de estilo antiga. Agora corrige-se sozinha no dia seguinte.
 
 ```powershell
 Get-ChildItem -Recurse -Include *.html,*.py -File | Where-Object { $_.FullName -notmatch '\\\.git\\' } | ForEach-Object {

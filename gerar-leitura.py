@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Gerador da leitura diaria.
 
@@ -78,6 +78,55 @@ def ler_utc(s):
 def nvl(v, casas=1):
     """Numero com virgula decimal, como se escreve em portugues."""
     return f"{v:.{casas}f}".replace(".", ",")
+
+
+# ----------------------------------------------------------------------
+# Versao de cache (?v=N)
+#
+# O numero vive num sitio so: o index.html. Antes estava tambem escrito a mao
+# aqui dentro, e isso criava duas verdades: quando o CSS mudava depois de o
+# robo ja ter gerado a leitura do dia, essa leitura ficava a apontar para a
+# folha de estilo antiga e servia um aspeto diferente do resto do site.
+# ----------------------------------------------------------------------
+
+RE_VERSAO = re.compile(r"(css/style\.css|js/app\.js|js/world-path\.js)\?v=\d+")
+
+
+def versao_ativa():
+    """Le o ?v=N do index.html, que e a referencia para o site inteiro."""
+    try:
+        txt = (RAIZ / "index.html").read_text(encoding="utf-8-sig")
+        m = re.search(r"css/style\.css\?v=(\d+)", txt)
+        if m:
+            return m.group(1)
+    except OSError:
+        pass
+    return "1"
+
+
+VERSAO = versao_ativa()
+
+
+def normalizar_versoes():
+    """
+    Alinha as leituras ja escritas com a versao ativa.
+
+    Corre a cada execucao, portanto qualquer desalinhamento fica resolvido no
+    dia seguinte sem ninguem se lembrar de o fazer a mao.
+    """
+    alterados = []
+    for p in sorted(PASTA.glob("*.html")):
+        bruto = p.read_bytes()
+        # Preservar o BOM se existir: reescrever sem ele mudava todos os
+        # ficheiros a cada execucao, enchendo o historico de ruido invisivel.
+        bom = bruto.startswith(b"\xef\xbb\xbf")
+        txt = bruto.decode("utf-8-sig")
+        novo = RE_VERSAO.sub(rf"\1?v={VERSAO}", txt)
+        if novo != txt:
+            saida = novo.encode("utf-8")
+            p.write_bytes(b"\xef\xbb\xbf" + saida if bom else saida)
+            alterados.append(p.name)
+    return alterados
 
 
 # ----------------------------------------------------------------------
@@ -293,7 +342,7 @@ CABECA = """<!DOCTYPE html>
 <meta name="description" content="{descricao}">
 <link rel="canonical" href="{dominio}/leitura/{iso}.html">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../css/style.css?v=24">
+<link rel="stylesheet" href="../css/style.css?v={versao}">
 <script type="application/ld+json">
 {jsonld}
 </script>
@@ -358,7 +407,7 @@ CABECA = """<!DOCTYPE html>
   </div>
 </footer>
 
-<script src="../js/app.js?v=24"></script>
+<script src="../js/app.js?v={versao}"></script>
 </body>
 </html>
 """
@@ -390,7 +439,7 @@ def gerar_html(d, anterior, seguinte):
     }, ensure_ascii=False, indent=1)
 
     return CABECA.format(
-        titulo=d["titulo"], iso=iso, dominio=DOMINIO,
+        titulo=d["titulo"], iso=iso, dominio=DOMINIO, versao=VERSAO,
         data_curta=data_curta, data_longa=data_longa, dia_semana=dia_semana,
         descricao=resumo.replace('"', "'"), jsonld=jsonld,
         cls=d["cls"], banda=d["banda"], resumo=resumo,
@@ -550,7 +599,7 @@ def escrever_indice(itens):
 <meta name="description" content="Arquivo das leituras diárias: o estado do campo geomagnético, do Sol e do vento solar, dia a dia, em português.">
 <link rel="canonical" href="{DOMINIO}/leitura/">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../css/style.css?v=24">
+<link rel="stylesheet" href="../css/style.css?v={VERSAO}">
 </head>
 <body>
 
@@ -583,7 +632,7 @@ def escrever_indice(itens):
   </div>
 </footer>
 
-<script src="../js/app.js?v=24"></script>
+<script src="../js/app.js?v={VERSAO}"></script>
 </body>
 </html>
 """
@@ -664,6 +713,13 @@ def main():
 
     escrever_indice(itens)
     escrever_sitemap(itens)
+
+    # Rede de seguranca: se alguma leitura antiga tiver ficado com uma versao
+    # de cache desalinhada, corrige-se aqui, sem depender de ninguem se lembrar.
+    corrigidas = normalizar_versoes()
+    if corrigidas:
+        print(f"Versao  : {len(corrigidas)} leitura(s) alinhadas em v={VERSAO} "
+              f"({', '.join(corrigidas[:4])}{'...' if len(corrigidas) > 4 else ''})")
 
     print(f"\nEscrito : leitura/{iso}.html")
     print(f"Arquivo : leitura/index.html ({len(itens)} leituras)")

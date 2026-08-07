@@ -351,10 +351,7 @@ CABECA = """<!DOCTYPE html>
 
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="brand" href="../index.html">
-      <span class="brand-mark">〰️</span>
-      <span class="brand-text">Ressonância de Schumann<small>Dados ao vivo · 7,83 Hz</small></span>
-    </a>
+    <a class="brand" href="../index.html"><svg class="brand-icone" viewBox="0 0 28 24" aria-hidden="true"><path d="M1 12h5l2.6-8.5L13 20l3.4-11 2.2 3H27" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="brand-nome">Ressonância Schumann Hoje</span></a>
       <button class="nav-toggle" type="button" aria-label="Abrir menu do site"><span class="barras"><i></i><i></i><i></i></span>Menu</button>
   </div>
 </header>
@@ -605,10 +602,7 @@ def escrever_indice(itens):
 
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="brand" href="../index.html">
-      <span class="brand-mark">〰️</span>
-      <span class="brand-text">Ressonância de Schumann<small>Dados ao vivo · 7,83 Hz</small></span>
-    </a>
+    <a class="brand" href="../index.html"><svg class="brand-icone" viewBox="0 0 28 24" aria-hidden="true"><path d="M1 12h5l2.6-8.5L13 20l3.4-11 2.2 3H27" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="brand-nome">Ressonância Schumann Hoje</span></a>
   </div>
 </header>
 

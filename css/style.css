@@ -89,16 +89,25 @@ a:hover { text-decoration: underline; }
   display: flex; align-items: center; gap: 18px;
   min-height: 64px;
 }
-.brand { display: flex; align-items: center; gap: 10px; color: var(--text); font-weight: 700; letter-spacing: -0.02em; }
+/* Marca: ícone de pulso e o nome do site em gradiente. O gradiente é o mesmo
+   do título grande da página inicial, para a identidade ser uma só. */
+.brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
 .brand:hover { text-decoration: none; }
-.brand-mark {
-  width: 34px; height: 34px; flex: none;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--accent), var(--cyan));
-  display: grid; place-items: center;
-  font-size: 15px;
+.brand-icone {
+  width: 30px; height: 26px; flex: none; color: var(--cyan);
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.45));
 }
-.brand-text small { display: block; font-size: 11px; font-weight: 500; color: var(--text-faint); letter-spacing: 0.06em; text-transform: uppercase; }
+.brand-nome {
+  font-family: var(--display); font-weight: 800;
+  font-size: clamp(15px, 2.4vw, 21px); letter-spacing: -0.005em; line-height: 1.15;
+  background: linear-gradient(95deg, #38bdf8 0%, #8b5cf6 38%, #e879f9 66%, #fbbf24 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  white-space: nowrap;
+}
+@media (max-width: 430px) {
+  .brand-icone { width: 24px; height: 21px; }
+  .brand-nome { font-size: 13.5px; }
+}
 
 /* O cabeçalho não tem links soltos: o menu completo é a única entrada para a
    navegação, em qualquer largura. Com 16 páginas, meia dúzia de links no topo

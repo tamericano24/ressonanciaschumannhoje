@@ -1939,7 +1939,7 @@
 
   var APOIO = {
     moeda: "€",
-    meta: 200,               // meta mensal, em euros
+    meta: 50,                // meta mensal, em euros
     angariado: null,         // valor recebido este mês. null = ainda por ligar.
                              // Atualize à mão, ou ligue ao Stripe mais tarde.
     apoiantes: [],           // ex.: ["Ana R.", "Miguel S."]. Só quem autorizar.

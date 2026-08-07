@@ -1566,22 +1566,40 @@
     var el = document.getElementById("now-summary");
     if (!el || state.kp === null) return;
     var info = kpInfo(state.kp);
-    var partes = [];
 
-    partes.push("campo geomagnético em estado <b>" + info.label.toLowerCase() + "</b> (Kp " + num(state.kp) + ")");
-    if (resumo.xray) partes.push("fluxo de raios-X <b>" + resumo.xray + "</b>");
-    if (resumo.protao) partes.push("protões em <b>" + resumo.protao + "</b>");
-    if (resumo.vento) partes.push("vento solar a <b>" + resumo.vento + "</b>");
-    if (resumo.energia !== undefined) partes.push("índice de energia <b>" + resumo.energia + " em 100</b> (" + resumo.palavra.toLowerCase() + ")");
-    if (resumo.flare) partes.push("última erupção solar <b>" + resumo.flare + "</b>, " + resumo.flareQuando);
+    // Agrupado por tema em vez de uma frase única com oito factos separados
+    // por ponto e vírgula, que ninguém lê até ao fim. O conteúdo é o mesmo e
+    // continua a vir todo dos dados ao vivo: nenhuma linha aparece sem o dado.
+    var sol = [];
+    if (resumo.xray) sol.push("fluxo de raios-X <b>" + resumo.xray + "</b>");
+    if (resumo.flare) sol.push("última erupção <b>" + resumo.flare + "</b> " + resumo.flareQuando);
+    if (resumo.vento) sol.push("vento solar a <b>" + resumo.vento + "</b>");
+    if (resumo.protao) sol.push("protões em <b>" + resumo.protao + "</b>");
+
+    var terra = [];
+    terra.push("campo geomagnético <b>" + info.label.toLowerCase() + "</b> (Kp " + num(state.kp) + ")");
+    if (resumo.energia !== undefined) {
+      terra.push("índice de energia <b>" + resumo.energia + " em 100</b> (" + resumo.palavra.toLowerCase() + ")");
+    }
     if (resumo.sismos !== undefined) {
-      partes.push("<b>" + resumo.sismos + "</b> sismos de magnitude 4,5 ou superior nas últimas 24 h" +
+      terra.push("<b>" + resumo.sismos + "</b> sismos M4,5+ em 24 h" +
         (resumo.sismoMax ? " (máximo M" + num(resumo.sismoMax) + ")" : ""));
     }
-    if (resumo.espectro) partes.push("registo da estação de Tomsk até às <b>" + resumo.espectro + " UTC</b>");
 
-    el.innerHTML = "<b>Agora mesmo na Terra:</b> " + partes.join("; ") + "." +
-      '<span class="stamp">Atualizado às ' + hhmm(new Date()) + " UTC · " + fmtDatePT(new Date()) + "</span>";
+    var registo = [];
+    // resumo.espectro já traz "X h de 72 h preenchidas", não repetir a palavra
+    if (resumo.espectro) registo.push("estação de Tomsk, <b>" + resumo.espectro + "</b> em UTC");
+
+    var frases = [];
+    if (terra.length) frases.push("Na Terra, " + terra.join(", ") + ".");
+    if (sol.length) frases.push("No Sol, " + sol.join(", ") + ".");
+    if (registo.length) frases.push("O registo vem da " + registo.join("") + ".");
+
+    el.innerHTML =
+      "<h3>Como está o planeta agora</h3>" +
+      "<p>" + frases.join(" ") + "</p>" +
+      '<p class="agora-link"><a href="metodologia.html">Como cada um destes números é medido →</a></p>' +
+      '<p class="agora-pe">Atualizado às ' + hhmm(new Date()) + " UTC · " + fmtDatePT(new Date()) + "</p>";
   }
 
   function renderInsight() {

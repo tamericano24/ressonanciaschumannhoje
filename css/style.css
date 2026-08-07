@@ -85,6 +85,11 @@ a:hover { text-decoration: underline; }
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
 }
+/* As duas barras do topo usam mais largura do que o conteúdo das páginas, para
+   a marca ficar encostada à margem em vez de encolhida no meio do ecrã. Têm de
+   partilhar o mesmo limite, senão ficam com margens diferentes uma da outra. */
+.site-header .wrap,
+.support-bar .wrap { max-width: 1400px; }
 .header-inner {
   display: flex; align-items: center; gap: 18px;
   min-height: 64px;

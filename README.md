@@ -1,4 +1,4 @@
-﻿# Ressonância de Schumann Hoje
+# Ressonância de Schumann Hoje
 
 Site estático, em português, com painel ao vivo da Ressonância de Schumann e do clima espacial.
 Equivalente ao `schumannresonance.today`, mas com conteúdo original e dados verificáveis.
@@ -31,12 +31,20 @@ sobre.html          Quem faz e política editorial
 apoiar.html         Donativos
 privacidade.html    Modelo RGPD (a preencher)
 termos.html         Modelo de termos (a preencher)
-blog/               Três artigos longos, prontos a indexar
+blog/               Quatro artigos longos, prontos a indexar
+leitura/            Arquivo das leituras diárias, uma página por dia
 css/style.css       Todo o estilo
 js/app.js           Toda a lógica: APIs, gráficos SVG, fase da Lua, relógios
 assets/favicon.svg
-robots.txt · sitemap.xml · ads.txt · netlify.toml
+robots.txt · sitemap.xml · ads.txt · wrangler.jsonc
+
+gerar-leitura.py    Escreve a leitura do dia (secção 8)
+ler-schumann.py     Extrai a medição da Schumann do espectrograma (secção 9)
+.github/workflows/  Os dois robôs que correm sozinhos
 ```
+
+Os `.py` ficam no repositório mas **não são servidos** como parte do site: o
+[.assetsignore](.assetsignore) trata disso.
 
 ---
 
@@ -82,7 +90,7 @@ Verificação manual de qualquer fonte, a partir do PowerShell:
    `ressonanciadeschumann.com.br`, `schumannhoje.com`. Custa 10–15 €/ano.
 2. Vá a **app.netlify.com/drop** e arraste a pasta inteira. Fica online em segundos, com HTTPS.
    (Alternativas equivalentes: Cloudflare Pages, Vercel, GitHub Pages.)
-3. Ligue o seu domínio nas definições do Netlify.
+3. Ligue o seu domínio nas definições da Cloudflare.
 4. Substitua `ressonanciaschumannhoje.com` em todos os ficheiros. No PowerShell, a partir da pasta do site:
 
 ```powershell
@@ -217,7 +225,7 @@ Ao fim de um ano são 365 páginas indexadas, cada uma a apanhar pesquisas do g�
 
 **Corre sozinho** com a GitHub Action em
 [.github/workflows/leitura-diaria.yml](.github/workflows/leitura-diaria.yml), todos os dias às
-06:20 UTC. Faz commit e o Netlify publica. Não custa nada.
+06:20 UTC. Faz commit e a Cloudflare publica. Não custa nada.
 
 ### Duas decisões que valem a pena manter
 
@@ -230,7 +238,47 @@ arquivo: seria fabricar registos, e é o tipo de coisa que destrói a credibilid
 fragmented sleep"*. As nossas descrevem condições e consequências verificáveis: GPS, rádio,
 auroras. Igualmente útil, e sem o risco de ser penalizado por conteúdo de saúde sem base.
 
-## 9. O "Como se sente hoje?", tornar comunitário
+## 9. A medição da Ressonância de Schumann
+
+O medidor grande do painel mostra a Ressonância de Schumann medida: a frequência onde está o
+pico da fundamental e a sua intensidade. Não é o índice composto de energia, que continua no
+mosaico ao lado, identificado como composto.
+
+**Não existe fonte pública com estes valores em número.** Foi verificado ficheiro a ficheiro:
+a estação de Tomsk devolve conteúdo em `shm.jpg` e zero bytes em tudo o resto. Quem publica
+"F1 = 7,70 Hz" ao vivo está a ler da imagem ou a inventar. Por isso o valor é extraído da
+própria imagem publicada, com [ler-schumann.py](ler-schumann.py):
+
+```bash
+pip install pillow numpy
+python ler-schumann.py
+```
+
+Cada execução localiza a coluna de tempo mais recente com dados, procura a linha mais intensa
+dentro da banda de cada modo (fundamental entre 6,6 e 9,2 Hz) e converte a cor em número usando
+a barra de cores da própria imagem como escala.
+
+**Corre sozinho** com a GitHub Action em
+[.github/workflows/schumann.yml](.github/workflows/schumann.yml), de 30 em 30 minutos, e publica
+o resultado na branch `dados`. Essa branch é reescrita a cada execução, portanto tem sempre um
+único commit e não enche o histórico do projeto. O painel lê o JSON diretamente do GitHub.
+
+### As regras que fazem isto valer alguma coisa
+
+A leitura é **recusada**, e não apresentada, quando o recetor está saturado, quando o pico
+encosta ao limite da banda de procura, quando as cores não correspondem à escala, ou quando a
+imagem muda de formato. No espectrograma analisado, a saturação ocupava 19 das 72 horas.
+
+Quando a hora atual não dá leitura de confiança, recua-se na própria imagem, que cobre 72 horas,
+até à última medição válida, e mostra-se essa **com a idade à vista**. O número apresentado é
+sempre uma medição real que aconteceu. Nunca é interpolado nem estimado.
+
+**O que este número não é:** não está calibrado em picotesla, porque Tomsk não publica a
+calibração; não é um valor planetário, é a cavidade vista da Sibéria; e não é uma grandeza
+padronizada, ao contrário do índice Kp. Está tudo escrito em
+[metodologia.html](metodologia.html).
+
+## 10. O "Como se sente hoje?", tornar comunitário
 
 O bloco de sintomas por baixo do espectrograma já funciona: o visitante escolhe o que sente, e o
 ranking que aparece é a contagem **real** dos registos dele nos últimos 30 dias, guardados em
@@ -243,7 +291,7 @@ credibilidade que a página de metodologia constrói.
 Para o tornar verdadeiramente comunitário precisa de um backend. O mais simples e gratuito:
 
 1. Crie um projeto em **Supabase** (plano gratuito) com uma tabela `pulso(dia date, sintoma text)`.
-2. Crie uma Netlify Function ou uma Supabase Edge Function que:
+2. Crie um Cloudflare Worker ou uma Supabase Edge Function que:
    - em `POST {dia, sintomas:[...]}` insira uma linha por sintoma;
    - em `GET` devolva `{ total: n, contagens: { id: n } }` das últimas 24 horas.
 3. Em [js/app.js](js/app.js), ponha o URL na constante `PULSO_API` (está no topo do bloco "Pulso").
@@ -259,7 +307,7 @@ partilhados por todos os visitantes". Terá ainda de:
 apresentá-lo como prova de que a Ressonância de Schumann causa sintomas. Não é, mede quem visita
 o site e o que essa pessoa espera sentir. O aviso já incluído no bloco explica isso; mantenha-o.
 
-## 10. Personalizar
+## 11. Personalizar
 
 - **Cores:** as variáveis estão no topo de `css/style.css` (`:root`).
 - **Fórmula do índice:** função `computeIndex()` em `js/app.js`, se a alterar, atualize também

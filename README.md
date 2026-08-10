@@ -1,4 +1,4 @@
-# Ressonância de Schumann Hoje
+﻿# Ressonância de Schumann Hoje
 
 Site estático, em português, com painel ao vivo da Ressonância de Schumann e do clima espacial.
 Equivalente ao `schumannresonance.today`, mas com conteúdo original e dados verificáveis.
@@ -40,6 +40,7 @@ robots.txt · sitemap.xml · ads.txt · wrangler.jsonc
 
 gerar-leitura.py    Escreve a leitura do dia (secção 8)
 ler-schumann.py     Extrai a medição da Schumann do espectrograma (secção 9)
+prerender.py        Escreve essa medição dentro do index.html (secção 12)
 .github/workflows/  Os dois robôs que correm sozinhos
 ```
 
@@ -315,3 +316,48 @@ o site e o que essa pessoa espera sentir. O aviso já incluído no bloco explica
 - **Fontes de dados:** objeto `SRC` no topo de `js/app.js`.
 - **Fusos horários dos relógios:** array `ZONES` em `js/app.js`.
 
+
+---
+
+## 12. Subir em "ressonância schumann"
+
+A 10 de agosto de 2026, com o site com seis dias de vida, aparecíamos entre o
+6.º e o 8.º lugar. Chegar aos três primeiros tem três frentes, e só duas
+dependem de escrever código.
+
+### O que já está feito
+
+| O quê | Porquê |
+|---|---|
+| [prerender.py](prerender.py) | o Google indexava a página com "a carregar" no medidor. Agora encontra os números e uma data. Ver a secção da pré-renderização no CLAUDE.md |
+| `FAQPage` na página inicial | a pesquisa mostra uma caixa "As pessoas também perguntam". As seis perguntas marcadas são as que lá aparecem, e são as mesmas que estão visíveis no acordeão |
+| `Dataset` nos dados estruturados | declara a medição como conjunto de dados original, com fonte, escala e limitações. É a marcação que distingue quem mede de quem copia |
+| `dateModified`, reescrito a cada publicação | é daqui que sai a data ao lado do resultado. Os concorrentes mostram "há 2 dias" |
+| `assets/og.png` | apontávamos para uma imagem que dava 404: nenhuma partilha tinha pré-visualização |
+| Canónicos e sitemap sem `.html` | apontavam para endereços que a Cloudflare redireciona |
+| `max-image-preview:large` | sem isto o Google encolhe a miniatura e corta o excerto |
+
+### O que falta, por ordem de retorno
+
+**1. Ligações de outros sites.** É o que decide o topo, e é onde estamos a
+zero. Não há truque: o [incorporar.html](incorporar.html) é a peça mais fácil
+de usar, porque quem instala o widget publica com ele uma ligação. Vale a pena
+oferecê-lo a fóruns, grupos e sites de meteorologia e astronomia em português.
+A [metodologia.html](metodologia.html) é o segundo argumento: somos o único
+site em português que explica de onde tira o número, e é o tipo de página que
+alguém cita numa discussão sobre dados inventados.
+
+**2. Mais artigos.** Temos 4, o concorrente 89. Ver a secção 7 e a lista do
+CLAUDE.md. Cada artigo novo é uma porta de entrada e um voto interno na página
+inicial.
+
+**3. Google Search Console.** Submeter o `sitemap.xml` outra vez depois desta
+alteração e pedir a indexação da página inicial, para o Google reler o HTML
+novo em vez de esperar pela próxima passagem.
+
+### O que não fazer
+
+Comprar ligações, escrever texto em massa sem fontes (o concorrente tem 77
+páginas assim, e é por isso que só 12 das dele rendem alguma coisa), ou repetir
+"ressonância de schumann" mais vezes na página. Nada disso funciona e o
+primeiro é penalizado.

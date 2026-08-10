@@ -152,9 +152,10 @@ partir de scripts, enviar um User-Agent de navegador, senão devolve 403.
 
 **Cloudflare serve os endereços sem `.html`.** Um pedido a `/blog/x.html`
 devolve 307 para `/blog/x`. Usar `curl -L`, senão parece que a página não
-existe. Consequência por resolver: os `<link rel="canonical">` e o sitemap
-apontam para os endereços com `.html`, que redirecionam. O Google resolve, mas
-é sujidade que convém limpar um dia.
+existe. Os `<link rel="canonical">` e o sitemap já apontam para a forma sem
+`.html`, que é a que responde 200. **Os links internos ficam com `.html` de
+propósito:** o servidor local (`python -m http.server`) não serve endereços sem
+extensão, e mudá-los partia o desenvolvimento em troca de nada.
 
 **A propagação da Cloudflare é irregular.** Durante um a dois minutos, uns nós
 já servem a versão nova e outros a antiga. **Verificar com três pedidos por
@@ -189,8 +190,34 @@ Funciona sozinho, com **dois robôs**:
 
 | Robô | Quando | O que faz |
 |---|---|---|
-| [leitura-diaria.yml](.github/workflows/leitura-diaria.yml) | 06:20 UTC | escreve `leitura/AAAA-MM-DD.html` e atualiza sitemap e arquivo |
+| [leitura-diaria.yml](.github/workflows/leitura-diaria.yml) | 06:20 UTC | escreve `leitura/AAAA-MM-DD.html`, corre o `prerender.py`, atualiza sitemap e arquivo |
 | [schumann.yml](.github/workflows/schumann.yml) | de 30 em 30 min | lê o espectrograma e publica o JSON na branch `dados` |
+
+## A pré-renderização, e porque existe
+
+O painel todo é preenchido por JavaScript. Para quem visita não faz diferença.
+Para o Google faz: o que fica no índice é muitas vezes o HTML tal como sai do
+servidor, e nesse HTML o medidor dizia "a carregar" e os mosaicos diziam "…".
+O concorrente que aparece em primeiro lugar traz os números e uma data dentro
+do próprio HTML, e é por isso que o resultado dele mostra ambos.
+
+O [prerender.py](prerender.py) lê o mesmo `schumann.json` que o painel lê e
+escreve os valores dentro do `index.html`, entre marcadores. Corre no fim do
+robô diário. O JavaScript continua a mandar: mal os dados ao vivo chegam,
+substitui o que lá estiver.
+
+Duas regras, que são as mesmas do resto do projeto:
+
+- **Tudo o que o script escreve leva a data da medição colada.** O ficheiro
+  pode ficar 24 horas no ar, e se o JavaScript não correr é aquele texto que a
+  pessoa lê. Daí "Na medição de 10 de agosto às 20:09 UTC" em vez de "agora".
+- **Nada de idades escritas a duro** ("há 20 min"), que envelhecem no ficheiro.
+  A idade real é posta pelo JavaScript.
+
+A frase dos modos existe em duas cópias, `fraseModos()` em [js/app.js](js/app.js)
+e `frase_modos()` no [prerender.py](prerender.py). **Ao mexer numa, mexer na
+outra.** Se as marcações do `index.html` mudarem de forma, o script falha com
+erro visível em vez de deixar de fazer nada em silêncio.
 
 Ambos confirmados a funcionar em produção. As leituras dos dias 8, 9 e 10 de
 agosto de 2026 foram geradas sem intervenção, já com a marca nova, e o
@@ -213,10 +240,14 @@ página. **Não uniformizar os dois sem ele pedir.**
    fontes. **Copiar os temas dos 12, ignorar os 77.** Palavras-chave na secção 7
    do [README.md](README.md). Próximos sugeridos, por não colidirem com páginas
    que já temos: "Ressonância de Schumann e sono" e "é comprovada pela ciência?".
-2. **PayPal.** Falta o endereço `paypal.me` para `APOIO.paypal`. Enquanto
+2. **Ligações de fora.** É o que falta para passar do 6.º ao 3.º lugar em
+   "ressonância schumann". O trabalho técnico está feito; o domínio tem dias de
+   vida e ninguém aponta para ele. O [incorporar.html](incorporar.html) é a
+   melhor peça que temos para isso: quem põe o widget num site põe também uma
+   ligação. Ver a secção 12 do [README.md](README.md).
+3. **PayPal.** Falta o endereço `paypal.me` para `APOIO.paypal`. Enquanto
    estiver vazio, o botão nem aparece, de propósito.
-3. **Backend do pulso.** Ver secção 8 do README.
-4. **Canónicos com `.html`** que redirecionam. Ver armadilhas.
+4. **Backend do pulso.** Ver secção 8 do README.
 5. **Páginas que o concorrente tem e nós não:** `/comunidade`, `/leaderboard`,
    `/galeria`, `/aprender`.
 

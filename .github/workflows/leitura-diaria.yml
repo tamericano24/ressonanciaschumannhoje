@@ -25,11 +25,21 @@ jobs:
       - name: Gerar a leitura de hoje
         run: python gerar-leitura.py
 
+      # Escreve a última medição da Schumann dentro do index.html, com a data à
+      # vista. Sem isto o Google indexa a página com "a carregar" no medidor,
+      # porque os números só chegam depois de o JavaScript correr. Ver o
+      # cabeçalho do prerender.py.
+      #
+      # Corre uma vez por dia porque é aqui que já há um commit. Para a página
+      # mudar mais vezes, basta acrescentar horas ao cron lá em cima.
+      - name: Escrever a medição da Schumann no index.html
+        run: python prerender.py
+
       - name: Publicar se houver alterações
         run: |
           git config user.name  "leitura-automatica"
           git config user.email "actions@users.noreply.github.com"
-          git add leitura sitemap.xml
+          git add leitura sitemap.xml index.html
           if git diff --staged --quiet; then
             echo "Nada mudou, nada a publicar."
           else

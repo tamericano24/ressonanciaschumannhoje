@@ -340,7 +340,9 @@ CABECA = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{titulo} | Leitura de {data_curta}</title>
 <meta name="description" content="{descricao}">
-<link rel="canonical" href="{dominio}/leitura/{iso}.html">
+<!-- Sem .html de proposito: a Cloudflare responde a /leitura/{iso}.html com um
+     307 para /leitura/{iso}. Um canonico que redireciona gasta rastreio a toa. -->
+<link rel="canonical" href="{dominio}/leitura/{iso}">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../css/style.css?v={versao}">
 <script type="application/ld+json">
@@ -634,32 +636,41 @@ def escrever_indice(itens):
 
 
 def escrever_sitemap(itens):
+    # Enderecos sem .html: e o que a Cloudflare devolve com 200. Com .html
+    # devolve 307, e um sitemap cheio de redirecionamentos e um sitemap que o
+    # Google tem de percorrer duas vezes para chegar a cada pagina.
     estaticas = [
         ("/", "hourly", "1.0"),
-        ("/indice-kp-agora.html", "hourly", "0.9"),
-        ("/aurora-esta-noite.html", "hourly", "0.9"),
+        ("/indice-kp-agora", "hourly", "0.9"),
+        ("/aurora-esta-noite", "hourly", "0.9"),
         ("/leitura/", "daily", "0.8"),
-        ("/arquivo.html", "daily", "0.7"),
-        ("/incorporar.html", "monthly", "0.7"),
-        ("/sintomas.html", "monthly", "0.8"),
-        ("/faq.html", "monthly", "0.8"),
-        ("/metodologia.html", "monthly", "0.6"),
-        ("/sobre.html", "yearly", "0.4"),
-        ("/apoiar.html", "yearly", "0.4"),
+        ("/arquivo", "daily", "0.7"),
+        ("/incorporar", "monthly", "0.7"),
+        ("/sintomas", "monthly", "0.8"),
+        ("/faq", "monthly", "0.8"),
+        ("/metodologia", "monthly", "0.6"),
+        ("/sobre", "yearly", "0.4"),
+        ("/apoiar", "yearly", "0.4"),
         ("/blog/", "weekly", "0.7"),
-        ("/blog/o-que-e-a-ressonancia-de-schumann.html", "monthly", "0.9"),
-        ("/blog/7-83-hz-frequencia-da-terra.html", "monthly", "0.9"),
-        ("/blog/tempestades-geomagneticas-e-o-corpo.html", "monthly", "0.9"),
-        ("/blog/erupcoes-solares-classes-c-m-x.html", "monthly", "0.9"),
+        ("/blog/o-que-e-a-ressonancia-de-schumann", "monthly", "0.9"),
+        ("/blog/7-83-hz-frequencia-da-terra", "monthly", "0.9"),
+        ("/blog/tempestades-geomagneticas-e-o-corpo", "monthly", "0.9"),
+        ("/blog/erupcoes-solares-classes-c-m-x", "monthly", "0.9"),
     ]
     linhas = ['<?xml version="1.0" encoding="UTF-8"?>',
               '<!-- Gerado por gerar-leitura.py. Nao editar a mao. -->',
               '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    # O <lastmod> e o unico dos tres campos a que o Google diz dar atencao, e
+    # so quando e verdade. As paginas ao vivo mudam mesmo todos os dias: o
+    # prerender.py reescreve o index.html e as outras leem dados novos.
+    hoje = datetime.now(timezone.utc).date().isoformat()
+    vivas = {"/", "/indice-kp-agora", "/aurora-esta-noite", "/leitura/", "/arquivo"}
     for caminho, freq, pri in estaticas:
-        linhas.append(f"  <url><loc>{DOMINIO}{caminho}</loc>"
+        lastmod = f"<lastmod>{hoje}</lastmod>" if caminho in vivas else ""
+        linhas.append(f"  <url><loc>{DOMINIO}{caminho}</loc>{lastmod}"
                       f"<changefreq>{freq}</changefreq><priority>{pri}</priority></url>")
     for it in reversed(itens):
-        linhas.append(f'  <url><loc>{DOMINIO}/leitura/{it["iso"]}.html</loc>'
+        linhas.append(f'  <url><loc>{DOMINIO}/leitura/{it["iso"]}</loc>'
                       f"<lastmod>{it['iso']}</lastmod>"
                       f"<changefreq>monthly</changefreq><priority>0.6</priority></url>")
     linhas.append("</urlset>")

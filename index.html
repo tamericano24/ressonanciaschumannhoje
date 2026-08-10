@@ -3,32 +3,161 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ressonância de Schumann Hoje: dados ao vivo 7,83 Hz | Clima Espacial</title>
-<meta name="description" content="Acompanhe ao vivo a Ressonância de Schumann (7,83 Hz), o índice Kp, a atividade solar e as tempestades geomagnéticas. Espectrograma atualizado ao minuto, em português.">
+<title>Ressonância de Schumann Hoje: gráfico ao vivo e 7,83 Hz</title>
+<meta name="description" content="A Ressonância de Schumann medida agora: frequência do pico, intensidade e harmónicas, lidas do espectrograma de Tomsk. Com índice Kp, atividade solar e tempestades geomagnéticas, em português.">
 <link rel="canonical" href="https://ressonanciaschumannhoje.com/">
 <meta name="theme-color" content="#06070f">
 
+<!-- Sem isto o Google limita o excerto e mostra a imagem em miniatura pequena.
+     Com isto pode usar o excerto todo e a imagem grande, que rende mais cliques. -->
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_PT">
-<meta property="og:title" content="Ressonância de Schumann Hoje: dados ao vivo">
-<meta property="og:description" content="Espectrograma ao vivo, índice Kp, atividade solar e alertas de tempestade geomagnética, em português.">
+<meta property="og:site_name" content="Ressonância de Schumann Hoje">
+<meta property="og:title" content="Ressonância de Schumann Hoje: gráfico ao vivo e 7,83 Hz">
+<meta property="og:description" content="A frequência do pico e a intensidade medidas agora no espectrograma de Tomsk, com índice Kp, atividade solar e alertas geomagnéticos.">
 <meta property="og:url" content="https://ressonanciaschumannhoje.com/">
 <meta property="og:image" content="https://ressonanciaschumannhoje.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Ressonância de Schumann Hoje, painel ao vivo do clima espacial">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ressonância de Schumann Hoje: gráfico ao vivo e 7,83 Hz">
+<meta name="twitter:description" content="A frequência do pico e a intensidade medidas agora no espectrograma de Tomsk.">
+<meta name="twitter:image" content="https://ressonanciaschumannhoje.com/assets/og.png">
+
+<!-- As três fontes de dados são de outros domínios. Avisar o navegador cedo
+     poupa o handshake completo no momento em que o painel pede os números. -->
+<link rel="preconnect" href="https://services.swpc.noaa.gov" crossorigin>
+<link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
+<link rel="dns-prefetch" href="https://sos70.ru">
 
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <!-- O sufixo ?v= força os navegadores a irem buscar a versão nova depois de cada
      atualização. Incremente-o sempre que mudar o CSS ou o JavaScript. -->
-<link rel="stylesheet" href="css/style.css?v=26">
+<link rel="stylesheet" href="css/style.css?v=27">
 
+<!-- Dados estruturados. O "dateModified" e os valores do Dataset são reescritos
+     a cada publicação pelo prerender.py: é o que faz o Google mostrar uma data
+     ao lado do resultado, como já mostra aos concorrentes. As perguntas do
+     FAQPage têm de continuar a corresponder, palavra a palavra, ao acordeão
+     visível mais abaixo, senão é marcação enganosa e o Google despromove. -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Ressonância de Schumann Hoje",
-  "url": "https://ressonanciaschumannhoje.com/",
-  "inLanguage": "pt",
-  "description": "Painel ao vivo da Ressonância de Schumann, índice Kp e clima espacial, em português."
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://ressonanciaschumannhoje.com/#organizacao",
+      "name": "Ressonância de Schumann Hoje",
+      "url": "https://ressonanciaschumannhoje.com/",
+      "logo": "https://ressonanciaschumannhoje.com/assets/og.png",
+      "email": "geral@ressonanciaschumannhoje.com",
+      "description": "Painel independente de clima espacial em português, com a Ressonância de Schumann medida a partir do espectrograma público da estação de Tomsk."
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://ressonanciaschumannhoje.com/#site",
+      "name": "Ressonância de Schumann Hoje",
+      "alternateName": "Ressonância Schumann Hoje",
+      "url": "https://ressonanciaschumannhoje.com/",
+      "inLanguage": "pt",
+      "publisher": { "@id": "https://ressonanciaschumannhoje.com/#organizacao" }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://ressonanciaschumannhoje.com/#pagina",
+      "url": "https://ressonanciaschumannhoje.com/",
+      "name": "Ressonância de Schumann Hoje: gráfico ao vivo e 7,83 Hz",
+      "description": "A Ressonância de Schumann medida agora: frequência do pico, intensidade e harmónicas, lidas do espectrograma da estação de Tomsk.",
+      "inLanguage": "pt",
+      "isPartOf": { "@id": "https://ressonanciaschumannhoje.com/#site" },
+      "about": { "@id": "https://ressonanciaschumannhoje.com/#assunto" },
+      "primaryImageOfPage": "https://ressonanciaschumannhoje.com/assets/og.png",
+      "dateModified": "2026-08-10T20:09:03+00:00",
+      "breadcrumb": { "@id": "https://ressonanciaschumannhoje.com/#trilho" }
+    },
+    {
+      "@type": "Thing",
+      "@id": "https://ressonanciaschumannhoje.com/#assunto",
+      "name": "Ressonância de Schumann",
+      "alternateName": ["Ressonâncias de Schumann", "Frequência da Terra", "7,83 Hz"],
+      "description": "Conjunto de ressonâncias eletromagnéticas de frequência extremamente baixa na cavidade entre a superfície da Terra e a ionosfera, com fundamental próxima de 7,83 Hz.",
+      "sameAs": [
+        "https://pt.wikipedia.org/wiki/Resson%C3%A2ncia_Schumann",
+        "https://www.wikidata.org/wiki/Q898253"
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://ressonanciaschumannhoje.com/#trilho",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Ressonância de Schumann Hoje", "item": "https://ressonanciaschumannhoje.com/" }
+      ]
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://ressonanciaschumannhoje.com/#medicao",
+      "name": "Ressonância de Schumann medida na estação de Tomsk",
+      "description": "Frequência do pico e intensidade da fundamental e das harmónicas da Ressonância de Schumann, extraídas de meia em meia hora do espectrograma público do Space Observing System da Universidade Estatal de Tomsk. A intensidade vem na escala de cor do espectrograma, de 0 a 100, e não está calibrada em picotesla. As leituras sem confiança são recusadas em vez de estimadas.",
+      "url": "https://ressonanciaschumannhoje.com/",
+      "inLanguage": "pt",
+      "license": "https://ressonanciaschumannhoje.com/termos.html",
+      "isAccessibleForFree": true,
+      "keywords": ["ressonância de schumann", "7,83 Hz", "espectrograma", "clima espacial", "ELF", "ionosfera"],
+      "creator": { "@id": "https://ressonanciaschumannhoje.com/#organizacao" },
+      "temporalCoverage": "2026-08-04/..",
+      "variableMeasured": [
+        { "@type": "PropertyValue", "name": "Frequência do pico da fundamental", "unitCode": "HTZ", "minValue": 6.6, "maxValue": 9.2 },
+        { "@type": "PropertyValue", "name": "Intensidade do pico", "description": "Escala de cor do espectrograma, 0 a 100, não calibrada", "minValue": 0, "maxValue": 100 }
+      ],
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "application/json",
+        "contentUrl": "https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/schumann.json"
+      },
+      "isBasedOn": "https://sos70.ru/",
+      "dateModified": "2026-08-10T20:09:03+00:00"
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://ressonanciaschumannhoje.com/#perguntas",
+      "isPartOf": { "@id": "https://ressonanciaschumannhoje.com/#pagina" },
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "O que é a Ressonância de Schumann?",
+          "acceptedAnswer": { "@type": "Answer", "text": "É o conjunto de frequências eletromagnéticas muito baixas que ressoam na cavidade entre a superfície da Terra e a ionosfera. A fundamental fica perto de 7,83 Hz e é alimentada pelos cerca de cinquenta relâmpagos que caem no planeta a cada segundo." }
+        },
+        {
+          "@type": "Question",
+          "name": "Porquê exatamente 7,83 Hz?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Porque corresponde, grosso modo, ao tempo que uma onda eletromagnética demora a dar uma volta ao planeta: 40 000 km de perímetro a 300 000 km/s dá cerca de 7,5 voltas por segundo. As correções da física real levam o número aos 7,83 Hz." }
+        },
+        {
+          "@type": "Question",
+          "name": "Como é que a Ressonância de Schumann é monitorizada?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Por antenas de campo magnético a registar a banda dos 0 aos 40 Hz. O espectrograma público da estação de Tomsk mostra as últimas 72 horas, e este site lê a coluna mais recente da imagem para tirar de lá a frequência do pico e a sua intensidade. Quando o recetor está saturado, a leitura é recusada e mostra-se a última medição de confiança com a idade à vista, em vez de se inventar um número." }
+        },
+        {
+          "@type": "Question",
+          "name": "A frequência está a subir para 40 Hz?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Não. A fundamental continua onde sempre esteve. O eixo vertical do espectrograma vai até perto de 40 Hz porque mostra também os modos superiores, 14,3, 20,8, 27,3 e 33,8 Hz. Ver atividade no topo da imagem é outra faixa do mesmo gráfico, não a fundamental a mudar." }
+        },
+        {
+          "@type": "Question",
+          "name": "A Ressonância de Schumann afeta a saúde?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Não está demonstrado. Os campos envolvidos são muito mais fracos do que os que existem em qualquer divisão com eletricidade, e não há mecanismo biológico estabelecido. Há estudos sobre tempestades geomagnéticas e variáveis cardiovasculares, mas nenhum estabelece causa." }
+        },
+        {
+          "@type": "Question",
+          "name": "Porque é que o gráfico às vezes está preto?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Porque a estação está offline. É um instrumento de investigação universitária, sem garantia de disponibilidade. Quando isso acontece, aparece um aviso por cima do gráfico com a idade real do último registo." }
+        }
+      ]
+    }
+  ]
 }
 </script>
 
@@ -82,11 +211,11 @@
       <div class="gauge-solo">
         <div id="gauge-svg"></div>
         <div class="gauge-label">
-          <div class="gauge-value" id="idx-value"><span class="skeleton" style="width:70px"></span></div>
-          <div class="gauge-unit" id="idx-word">a carregar</div>
+          <div class="gauge-value" id="idx-value">40</div>
+          <div class="gauge-unit" id="idx-word">8,10 Hz</div>
         </div>
       </div>
-      <p class="gauge-legenda" id="sr-legenda">Ressonância de Schumann, medida na estação de Tomsk.</p>
+      <p class="gauge-legenda" id="sr-legenda">Pico da fundamental · medição de 10 de agosto às 20:09 UTC</p>
 
       <div class="strip-head" style="margin-top:28px">
         <i class="live-dot"></i> Agora mesmo · ao vivo
@@ -97,8 +226,8 @@
       <div class="tiles">
         <a class="tile tile--sr" href="metodologia.html">
           <div class="tile-label">〰️ Ressonância de Schumann</div>
-          <div class="tile-value"><span id="t-sr">…</span><small>/ 100</small></div>
-          <div class="tile-sub" id="t-sr-sub">…</div>
+          <div class="tile-value"><span id="t-sr">40</span><small>/ 100</small></div>
+          <div class="tile-sub" id="t-sr-sub">8,10 Hz</div>
           <div class="tile-foot" id="t-sr-foot">Pico da fundamental · Tomsk</div>
         </a>
         <a class="tile" href="metodologia.html">
@@ -169,6 +298,13 @@
       <p class="spectro-caption" id="spectro-caption">
         A frequência fundamental da Ressonância de Schumann situa-se em torno de <b>7,83&nbsp;Hz</b>. A obter o estado geomagnético atual…
       </p>
+
+      <!-- Os modos medidos, em texto corrido. O conteúdo entre os marcadores é
+           escrito no ficheiro pelo prerender.py e reescrito pelo JS assim que os
+           dados ao vivo chegam. Serve dois fins: o visitante vê a fundamental e
+           as harmónicas em número, e o Google encontra números reais no HTML em
+           vez das reticências que ficavam à espera do JavaScript. -->
+      <p class="spectro-caption" id="sr-modos"><!--PR:modos-->Na medição de 10 de agosto às 20:09 UTC, o pico da fundamental estava em <b>8,10 Hz</b>, com intensidade 40 em 100 na escala de cor do espectrograma. 3.ª harmónica em 19,98 Hz (25). Os modos nominais da cavidade Terra-ionosfera são 7,83, 14,3, 20,8, 27,3 e 33,8 Hz.<!--/PR:modos--></p>
       <p class="spectro-credit">
         <a href="https://sos70.ru/" rel="noopener nofollow" target="_blank">Space Observing System (SOS-70)</a>, Universidade Estatal de Tomsk ·
         <span id="spectro-updated">a verificar a idade dos dados…</span>
@@ -600,12 +736,16 @@
           <div class="body"><p>Porque corresponde, grosso modo, ao tempo que uma onda eletromagnética demora a dar uma volta ao planeta: 40 000 km de perímetro a 300 000 km/s dá cerca de 7,5 voltas por segundo. As correções da física real levam o número aos 7,83 Hz.</p></div>
         </details>
         <details>
+          <summary>Como é que a Ressonância de Schumann é monitorizada?</summary>
+          <div class="body"><p>Por antenas de campo magnético a registar a banda dos 0 aos 40 Hz. O espectrograma público da estação de Tomsk mostra as últimas 72 horas, e este site lê a coluna mais recente da imagem para tirar de lá a frequência do pico e a sua intensidade. Quando o recetor está saturado, a leitura é recusada e mostra-se a última medição de confiança com a idade à vista, em vez de se inventar um número. <a href="metodologia.html">Como se faz, ao pormenor</a>.</p></div>
+        </details>
+        <details>
           <summary>A frequência está a subir para 40 Hz?</summary>
           <div class="body"><p>Não. A fundamental continua onde sempre esteve. O eixo vertical do espectrograma vai até perto de 40 Hz porque mostra também os modos superiores, 14,3, 20,8, 27,3 e 33,8 Hz. Ver atividade no topo da imagem é outra faixa do mesmo gráfico, não a fundamental a mudar.</p></div>
         </details>
         <details>
-          <summary>Isto afeta a saúde?</summary>
-          <div class="body"><p>Não está demonstrado. Os campos envolvidos são muito mais fracos do que os que existem em qualquer divisão com eletricidade, e não há mecanismo biológico estabelecido. <a href="sintomas.html">A análise completa está aqui</a>.</p></div>
+          <summary>A Ressonância de Schumann afeta a saúde?</summary>
+          <div class="body"><p>Não está demonstrado. Os campos envolvidos são muito mais fracos do que os que existem em qualquer divisão com eletricidade, e não há mecanismo biológico estabelecido. Há estudos sobre tempestades geomagnéticas e variáveis cardiovasculares, mas nenhum estabelece causa. <a href="sintomas.html">A análise completa está aqui</a>.</p></div>
         </details>
         <details>
           <summary>Porque é que o gráfico às vezes está preto?</summary>
@@ -706,8 +846,8 @@
   </div>
 </footer>
 
-<script src="js/world-path.js?v=26"></script>
-<script src="js/app.js?v=26"></script>
+<script src="js/world-path.js?v=27"></script>
+<script src="js/app.js?v=27"></script>
 </body>
 </html>
 

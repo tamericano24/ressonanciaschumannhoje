@@ -335,9 +335,48 @@
     return "há " + h + " h" + (r ? " " + r : "");
   }
 
+  // Nomes dos modos por frequência nominal. O JSON traz "2a harmonica" sem
+  // acentos, porque é escrito por um script, e isso não se mostra a ninguém.
+  var SR_NOMES = { 14.3: "2.ª harmónica", 20.8: "3.ª harmónica",
+                   27.3: "4.ª harmónica", 33.8: "5.ª harmónica" };
+
+  // A frase dos modos medidos, por baixo do espectrograma.
+  //
+  // Existe uma segunda cópia desta lógica em prerender.py, que escreve a mesma
+  // frase dentro do index.html antes de publicar. É deliberado: o Python serve
+  // o Google, que às vezes indexa sem correr o JavaScript, e esta versão serve
+  // o visitante, que vê o valor do momento. Ao mexer numa, mexer na outra.
+  function fraseModos(d) {
+    var f = d && d.fundamental;
+    if (!d || !f || f.estado !== "ok") {
+      return "Sem leitura de confiança neste momento: " +
+             ((d && SR_MOTIVOS[d.estado]) || "fonte indisponível") +
+             ". Os modos nominais da cavidade Terra-ionosfera são 7,83, 14,3, 20,8, 27,3 e 33,8 Hz.";
+    }
+    var hz = function (v) { return v.toFixed(2).replace(".", ",") + "&nbsp;Hz"; };
+    // Sem "neste momento" aqui: a legenda logo acima já começa assim, e as duas
+    // frases aparecem coladas uma à outra por baixo do espectrograma.
+    var quando = d.estado === "ultima_conhecida" && d.atraso_horas > 0.5
+      ? "Na última medição de confiança, " + idade(d.atraso_horas) + ", o pico da fundamental estava em "
+      : "O pico da fundamental está em ";
+
+    var t = quando + "<b>" + hz(f.pico_hz) + "</b>, com intensidade " +
+            Math.round(f.intensidade) + " em 100 na escala de cor do espectrograma.";
+
+    var hs = (d.harmonicas || []).filter(function (h) { return h.estado === "ok"; });
+    if (hs.length) {
+      t += " " + hs.map(function (h) {
+        return (SR_NOMES[h.nominal_hz] || h.modo) + " em " + hz(h.pico_hz) +
+               " (" + Math.round(h.intensidade) + ")";
+      }).join(", ") + ".";
+    }
+    return t + " Os modos nominais da cavidade Terra-ionosfera são 7,83, 14,3, 20,8, 27,3 e 33,8 Hz.";
+  }
+
   function renderSchumann(d) {
     var f = d && d.fundamental;
     var legenda = document.getElementById("sr-legenda");
+    set("sr-modos", fraseModos(d));
 
     // Só fica sem número se as 72 horas do espectrograma não tiverem uma
     // única medição válida, o que é raro. Fora isso mostra-se sempre a

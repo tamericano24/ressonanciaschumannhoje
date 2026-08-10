@@ -227,10 +227,20 @@ Painel ao vivo, e-mail `geral@ressonanciaschumannhoje.com`, donativos Stripe
 ligados, meta mensal de 50 euros.
 
 **Sobre o nome no cabeçalho.** O logótipo diz "Ressonância Schumann Hoje", sem
-a preposição, por decisão dele. O `<h1>` da página inicial mantém
-"Ressonância **de** Schumann Hoje" de propósito: é essa a expressão que as
-pessoas escrevem no Google, e é o `h1` que o motor de busca lê como assunto da
-página. **Não uniformizar os dois sem ele pedir.**
+a preposição, por decisão dele. O `<h1>` da página inicial diz apenas
+**"Ressonância de Schumann"**: ele mandou tirar o "Hoje" a 10 de agosto de 2026,
+por aparecer duas vezes seguidas com o logótipo mesmo por cima. Não custou nada
+em pesquisa, porque a expressão que ficou é exatamente a que se pesquisa. O
+"Hoje" continua no `<title>`, que é o que aparece no Google. **Não voltar a
+pô-lo no `h1`.**
+
+**As duas barras do topo não têm largura máxima.** O cabeçalho e a barra de
+apoio usam `max-width: none`, para a marca ficar no canto superior esquerdo em
+qualquer monitor. Já tiveram 1180 px e depois 1400 px, e das duas vezes ele
+voltou a reclamar: num ecrã de 1920 px, um limite de 1400 deixa 260 px de
+margem de cada lado, que é o mesmo defeito outra vez. **Ao verificar isto, usar
+uma janela larga**, senão o problema não aparece. O conteúdo das páginas
+continua centrado nos 1180 px, e é assim que se quer.
 
 **Por fazer, por ordem de retorno:**
 

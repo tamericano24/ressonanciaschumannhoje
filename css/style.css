@@ -85,11 +85,13 @@ a:hover { text-decoration: underline; }
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
 }
-/* As duas barras do topo usam mais largura do que o conteúdo das páginas, para
-   a marca ficar encostada à margem em vez de encolhida no meio do ecrã. Têm de
-   partilhar o mesmo limite, senão ficam com margens diferentes uma da outra. */
+/* As duas barras do topo não têm largura máxima: a marca fica no canto, seja
+   qual for o ecrã. Já tiveram um limite de 1400 px, e num monitor de 1920 isso
+   deixava 260 px de margem de cada lado, ou seja, o mesmo problema outra vez.
+   Têm de andar juntas, senão a marca começa num sítio e o coração da barra
+   logo abaixo noutro. O conteúdo das páginas continua centrado nos 1180 px. */
 .site-header .wrap,
-.support-bar .wrap { max-width: 1400px; }
+.support-bar .wrap { max-width: none; }
 .header-inner {
   display: flex; align-items: center; gap: 18px;
   min-height: 64px;

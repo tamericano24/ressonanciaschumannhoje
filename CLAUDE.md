@@ -50,7 +50,7 @@ Tudo em [js/app.js](js/app.js), no topo das respetivas secções:
 | Bloco | Para quê |
 |---|---|
 | `SRC` | endereços de todas as APIs |
-| `APOIO` | links do Stripe e PayPal, meta mensal, apoiantes |
+| `APOIO` | links do Stripe, meta mensal, apoiantes |
 | `MENU` | painel de navegação, injetado em todas as páginas |
 | `PULSO_API` | vazio; preencher para o pulso de sintomas ficar comunitário |
 | `SINTOMAS` | lista de sintomas do bloco "Como se sente hoje" |
@@ -245,11 +245,20 @@ página. **Não uniformizar os dois sem ele pedir.**
    vida e ninguém aponta para ele. O [incorporar.html](incorporar.html) é a
    melhor peça que temos para isso: quem põe o widget num site põe também uma
    ligação. Ver a secção 12 do [README.md](README.md).
-3. **PayPal.** Falta o endereço `paypal.me` para `APOIO.paypal`. Enquanto
-   estiver vazio, o botão nem aparece, de propósito.
-4. **Backend do pulso.** Ver secção 8 do README.
-5. **Páginas que o concorrente tem e nós não:** `/comunidade`, `/leaderboard`,
+3. **Backend do pulso.** Ver secção 8 do README.
+4. **Páginas que o concorrente tem e nós não:** `/comunidade`, `/leaderboard`,
    `/galeria`, `/aprender`.
+
+**PayPal: fora, por decisão dele.** O botão, o campo `APOIO.paypal` e o
+separador "OU" foram removidos. Só Stripe. Não voltar a sugerir.
+
+**Nada de destaques a empurrar um valor.** O cartão dos 15 € tinha uma etiqueta
+verde "mais útil" e fundo verde. Foi retirada: lida como agressiva para quem
+chega. Os quatro cartões são iguais e a escolha é do leitor.
+
+**Os rótulos dos valores dizem o que o apoio sustenta**, com as peças do
+próprio site (espectrograma, leituras diárias, painel), não o que custa nem
+comparações de fora. "Um café" e "um mês de site" foram rejeitados.
 
 **Cuidado ao escrever artigos novos:** verificar primeiro se já existe uma
 página do site para essa pesquisa. O artigo sobre o índice Kp foi abandonado a

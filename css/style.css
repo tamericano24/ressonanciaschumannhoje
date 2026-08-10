@@ -740,7 +740,12 @@ section { padding: 26px 0; }
 .apoio-nota b { color: var(--text-dim); }
 
 /* Escolha de valor */
-.apoio-tiers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px; }
+/* grid-auto-rows: 1fr iguala as duas filas quando o bloco passa a 2x2 no
+   telemóvel. Sem isto, a fila com o rótulo mais comprido fica mais alta. */
+.apoio-tiers {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px;
+  grid-auto-rows: 1fr;
+}
 @media (max-width: 760px) { .apoio-tiers { grid-template-columns: repeat(2, 1fr); } }
 .apoio-tier {
   position: relative; display: block; text-align: center; color: inherit;
@@ -760,23 +765,13 @@ section { padding: 26px 0; }
   display: block; font-family: var(--display); font-weight: 800;
   font-size: 25px; letter-spacing: -0.01em; line-height: 1.15;
 }
-.apoio-tier span { display: block; font-size: 12px; color: var(--text-faint); margin-top: 3px; }
-.apoio-tier.destaque { border-color: rgba(52, 211, 153, 0.5); background: rgba(52, 211, 153, 0.07); }
-.apoio-tier .selo {
-  position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
-  font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700;
-  background: var(--green); color: #04231a; padding: 2px 9px; border-radius: 99px; white-space: nowrap;
+/* O rótulo passou a ter duas linhas ("mantém o espectrograma a ser lido"). A
+   grelha já iguala a altura dos quatro cartões; falta só o texto quebrar em
+   linhas parecidas em vez de deixar uma palavra sozinha em baixo. */
+.apoio-tier span {
+  display: block; font-size: 12px; color: var(--text-faint);
+  margin-top: 3px; line-height: 1.35; text-wrap: balance;
 }
-
-.apoio-ou {
-  display: flex; align-items: center; gap: 14px; margin: 20px 0 16px;
-  font-size: 11px; letter-spacing: 0.18em; color: var(--text-faint);
-}
-.apoio-ou::before, .apoio-ou::after {
-  content: ""; height: 1px; flex: 1; background: var(--border);
-}
-.apoio-paypal { text-align: center; }
-.apoio-paypal .btn { background: linear-gradient(135deg, #1b48a0, #0f2f74); }
 
 .apoio-obrigado {
   margin: 20px 0 0; font-size: 13px; color: var(--text-dim);

@@ -156,10 +156,9 @@ Uma lista de e-mail é o único ativo que não depende do algoritmo do Google.
 
 ### Donativos
 
-Em `apoiar.html`, substitua os `href="#"` por:
-- **Stripe Payment Links**: `stripe.com` → Payments → Payment Links (o mais profissional);
-- **Ko-fi** ou **Buy Me a Coffee**: mais rápidos de configurar;
-- **PayPal.me**: o mais simples de todos.
+Estão ligados por **Stripe Payment Links** (`stripe.com` → Payments → Payment
+Links), preenchidos no bloco `APOIO` no topo de `js/app.js`. O PayPal foi
+retirado por opção: o botão, o campo e o separador já não existem.
 
 ---
 

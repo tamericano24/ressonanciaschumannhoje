@@ -1986,12 +1986,14 @@
   // igual na página inicial e na página de apoio.
   //
   //   1. Crie os Payment Links em stripe.com  (Payments -> Payment Links)
-  //   2. Crie o seu PayPal.me em paypal.com/paypalme
-  //   3. Cole os endereços nos campos abaixo
+  //   2. Cole os endereços nos campos abaixo
   //
   // Enquanto os campos estiverem vazios, os botões ficam inertes e o site
   // mostra um aviso a dizer que ainda não estão ligados. É de propósito:
   // um botão de donativo que não faz nada é pior do que não ter botão.
+  //
+  // Só Stripe. O PayPal foi retirado por decisão do autor, não por falta de
+  // endereço: não voltar a pô-lo sem ele pedir.
   // ==========================================================
 
   var APOIO = {
@@ -2007,14 +2009,20 @@
       "15": "https://buy.stripe.com/fZueVf8Pu74tbmE6lp6sw01",
       "50": "https://buy.stripe.com/4gM6oJ7LqewV0I0fVZ6sw02",
       "livre": "https://buy.stripe.com/28E4gBfdS60p9ewaBF6sw03"
-    },
-    paypal: ""               // https://paypal.me/oseunome
+    }
   };
 
+  // O rótulo diz o que o apoio sustenta, não o que custa, e usa as peças do
+  // próprio site em vez de comparações de fora ("um café"). A ordem é de
+  // âmbito crescente: a medição, depois o arquivo que ela alimenta, depois o
+  // painel inteiro. Nenhum dos três está destacado: a escolha é do leitor.
+  // Curtos de propósito: os quatro cartões estão lado a lado, e um rótulo de
+  // duas linhas ao lado de um de uma linha fica desalinhado. Ao mexer nestes
+  // textos, confirmar que continuam a caber numa linha no ecrã largo.
   var TIERS = [
-    { v: 5,  rot: "um café",        destaque: false },
-    { v: 15, rot: "um mês de site", destaque: true  },
-    { v: 50, rot: "um trimestre",   destaque: false }
+    { v: 5,  rot: "mantém a medição" },
+    { v: 15, rot: "mantém as leituras diárias" },
+    { v: 50, rot: "mantém o painel no ar" }
   ];
 
   function renderApoio() {
@@ -2041,7 +2049,7 @@
     var ultimoDia = new Date(agora.getFullYear(), agora.getMonth() + 1, 0).getDate();
     var restam = ultimoDia - agora.getDate();
 
-    var ligado = !!(APOIO.paypal || APOIO.stripe["5"] || APOIO.stripe["15"] ||
+    var ligado = !!(APOIO.stripe["5"] || APOIO.stripe["15"] ||
                     APOIO.stripe["50"] || APOIO.stripe.livre);
     var temValor = typeof APOIO.angariado === "number" && APOIO.angariado >= 0;
     var pct = temValor ? Math.max(0, Math.min(100, (APOIO.angariado / APOIO.meta) * 100)) : 0;
@@ -2061,8 +2069,7 @@
       var url = APOIO.stripe[String(t.v)];
       var attrs = url ? 'href="' + escapeHTML(url) + '" rel="noopener"'
                       : 'href="#" aria-disabled="true" data-inerte';
-      return '<a class="apoio-tier' + (t.destaque ? " destaque" : "") + '" ' + attrs + ">" +
-             (t.destaque ? '<span class="selo">mais útil</span>' : "") +
+      return '<a class="apoio-tier" ' + attrs + ">" +
              "<b>" + APOIO.moeda + t.v + "</b><span>" + t.rot + "</span></a>";
     }).join("");
 
@@ -2078,7 +2085,7 @@
 
     var aviso = ligado ? "" :
       '<p class="apoio-aviso">Os botões ainda não estão ligados a nenhum sistema de pagamento. ' +
-      "Assim que tiver os endereços do Stripe e do PayPal, preencha o bloco <code>APOIO</code> " +
+      "Assim que tiver os endereços do Stripe, preencha o bloco <code>APOIO</code> " +
       "no topo de <code>js/app.js</code> e tudo passa a funcionar.</p>";
 
     var html =
@@ -2103,14 +2110,9 @@
         "</div>" +
 
         '<div class="apoio-tiers">' + botoes + "</div>" +
-        '<div class="apoio-ou">OU</div>' +
-        '<div class="apoio-paypal"><a class="btn" ' +
-          (APOIO.paypal ? 'href="' + escapeHTML(APOIO.paypal) + '" rel="noopener" target="_blank"'
-                        : 'href="#" aria-disabled="true" data-inerte') +
-          ">Doar com PayPal →</a></div>" +
 
         obrigado + aviso +
-        '<p class="apoio-porque">Pagamentos processados pelo Stripe e pelo PayPal. ' +
+        '<p class="apoio-porque">Pagamentos processados pelo Stripe. ' +
         "Não recebemos nem guardamos dados do seu cartão.</p>" +
       "</div>";
 

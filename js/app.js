@@ -1999,8 +1999,10 @@
   var APOIO = {
     moeda: "€",
     meta: 50,                // meta mensal, em euros
-    angariado: null,         // valor recebido este mês. null = ainda por ligar.
-                             // Atualize à mão, ou ligue ao Stripe mais tarde.
+    angariado: 10,           // valor recebido este mês. null = ainda por ligar.
+                             // Atualizar à mão a cada donativo, e pôr a zero no
+                             // dia 1 de cada mês. É um número real: nunca subir
+                             // isto sem o dinheiro ter entrado mesmo.
     apoiantes: [],           // ex.: ["Ana R.", "Miguel S."]. Só quem autorizar.
 
     // Endereços de pagamento. Deixe vazio o que ainda não tiver.
@@ -2058,11 +2060,16 @@
       ? APOIO.moeda + num(APOIO.angariado, 0) + ' <small>de ' + APOIO.moeda + num(APOIO.meta, 0) + "</small>"
       : '<small>meta de ' + APOIO.moeda + num(APOIO.meta, 0) + " este mês</small>";
 
+    // A frase do meio fala do que o apoio sustenta, não do que as coisas custam:
+    // é a mesma regra dos rótulos dos valores. Esta linha só passou a aparecer
+    // quando o "angariado" deixou de ser null, e ainda dizia "para cobrir
+    // domínio e alojamento".
     var nota = temValor
       ? (pct >= 100
           ? "<b>Meta atingida.</b> Obrigado. O que vier a mais fica para o mês seguinte."
           : "Faltam <b>" + APOIO.moeda + num(APOIO.meta - APOIO.angariado, 0) +
-            "</b> para cobrir domínio e alojamento deste mês.")
+            "</b> para a meta deste mês, que é o que mantém o painel gratuito, " +
+            "sem anúncios, e com os dados verificados um a um.")
       : "Todos os meses o objetivo é o mesmo: manter o painel gratuito, sem anúncios, e com os dados verificados um a um.";
 
     var botoes = TIERS.map(function (t) {

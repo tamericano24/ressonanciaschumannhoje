@@ -780,6 +780,9 @@ section { padding: 26px 0; }
   border-top: 1px solid var(--border); padding-top: 16px;
 }
 .apoio-obrigado b { color: var(--text); }
+/* A estrela ao lado dos nomes. Um pouco mais pequena do que o texto, senão o
+   emoji puxa a linha para baixo e desalinha a frase toda. */
+.apoio-estrela { font-size: 11.5px; vertical-align: 1px; }
 .apoio-porque { margin: 14px 0 0; font-size: 12.5px; color: var(--text-faint); }
 
 /* Estado por configurar: honesto, sem barra a zero a fingir movimento */

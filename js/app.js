@@ -2003,7 +2003,9 @@
                              // Atualizar à mão a cada donativo, e pôr a zero no
                              // dia 1 de cada mês. É um número real: nunca subir
                              // isto sem o dinheiro ter entrado mesmo.
-    apoiantes: [],           // ex.: ["Ana R.", "Miguel S."]. Só quem autorizar.
+    apoiantes: ["Maria F."], // Só quem autorizar. Nome próprio e a inicial do
+                             // apelido, que chega para a pessoa se reconhecer
+                             // sem ficar identificável para estranhos.
 
     // Endereços de pagamento. Deixe vazio o que ainda não tiver.
     stripe: {
@@ -2085,10 +2087,13 @@
       (livre ? 'href="' + escapeHTML(livre) + '" rel="noopener"' : 'href="#" aria-disabled="true" data-inerte') +
       '><b style="font-size:19px">Outro</b><span>valor à escolha</span></a>';
 
+    // A estrela é decoração: leva aria-hidden para os leitores de ecrã não
+    // anunciarem "faísca" no meio da frase. Vários nomes ficam separados por
+    // ponto médio, que fila melhor do que vírgulas numa linha só.
     var obrigado = APOIO.apoiantes.length
-      ? '<p class="apoio-obrigado">Obrigado a <b>' +
-        APOIO.apoiantes.map(escapeHTML).join("</b>, <b>") + "</b>."
-        : "";
+      ? '<p class="apoio-obrigado">Obrigado <span class="apoio-estrela" aria-hidden="true">✨</span> <b>' +
+        APOIO.apoiantes.map(escapeHTML).join("</b> · <b>") + "</b></p>"
+      : "";
 
     var aviso = ligado ? "" :
       '<p class="apoio-aviso">Os botões ainda não estão ligados a nenhum sistema de pagamento. ' +

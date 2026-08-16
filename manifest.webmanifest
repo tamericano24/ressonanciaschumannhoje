@@ -1,0 +1,24 @@
+{
+  "name": "Ressonância de Schumann Hoje",
+  "short_name": "Schumann Hoje",
+  "description": "Painel ao vivo da Ressonância de Schumann, índice Kp e clima espacial, em português.",
+  "lang": "pt",
+  "dir": "ltr",
+  "start_url": "/?fonte=app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#06070f",
+  "theme_color": "#06070f",
+  "categories": ["weather", "education", "science"],
+  "icons": [
+    { "src": "/assets/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Índice Kp agora", "url": "/indice-kp-agora" },
+    { "name": "Aurora esta noite", "url": "/aurora-esta-noite" },
+    { "name": "Leituras diárias", "url": "/leitura/" }
+  ]
+}

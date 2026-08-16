@@ -36,6 +36,25 @@ jobs:
       - name: Instalar dependencias
         run: pip install --quiet pillow numpy
 
+      # O historico vive na branch dados e cresce a cada execucao. Como essa
+      # branch e reescrita de cada vez, tem de ser trazido para aqui ANTES de
+      # o ler-schumann.py lhe acrescentar a linha nova. Sem este passo, cada
+      # execucao comecaria um historico do zero.
+      #
+      # Se o ficheiro ainda nao existir, na primeira vez, o curl falha e o
+      # script comeca um historico novo: e por isso que este passo nunca
+      # interrompe a execucao.
+      - name: Trazer o historico ja guardado
+        continue-on-error: true
+        run: |
+          url="https://raw.githubusercontent.com/${{ github.repository }}/dados/historico.json"
+          if curl -fsSL --max-time 30 "$url" -o historico.json; then
+            echo "historico anterior: $(wc -c < historico.json) bytes"
+          else
+            echo "sem historico anterior, comeca-se um novo"
+            rm -f historico.json
+          fi
+
       - name: Ler o espectrograma
         run: python ler-schumann.py
 
@@ -45,13 +64,15 @@ jobs:
           echo "estado da leitura: $estado"
 
           # Branch orfa, reescrita de cada vez: fica sempre com um so commit.
+          # O historico nao se perde porque foi descarregado no passo anterior
+          # e volta a subir aqui, ja com a linha nova.
           tmp=$(mktemp -d)
-          cp schumann.json "$tmp/"
+          cp schumann.json historico.json "$tmp/"
           cd "$tmp"
           git init --quiet -b dados
           git config user.name  "leitura-automatica"
           git config user.email "actions@users.noreply.github.com"
-          git add schumann.json
+          git add schumann.json historico.json
           git commit --quiet -m "Leitura de $(date -u +%Y-%m-%dT%H:%MZ) ($estado)"
           git push --quiet --force \
             "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" dados

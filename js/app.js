@@ -2812,6 +2812,20 @@
     window.addEventListener("scroll", aoRolar, { passive: true });
   }
 
+  // Regista o service worker, que é o que falta para o navegador oferecer
+  // "Instalar". Não guarda nada em cache: ver o cabeçalho do sw.js.
+  //
+  // Fica para o fim do carregamento de propósito, para não disputar rede com
+  // os dados do painel, que é o que a pessoa veio ver.
+  function wireInstalavel() {
+    if (!("serviceWorker" in navigator) || location.protocol === "file:") return;
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("/sw.js").catch(function (e) {
+        console.warn("Service worker não registado:", e);
+      });
+    });
+  }
+
   function wireNav() {
     renderMenu();
   }
@@ -2917,6 +2931,7 @@
 
   function init() {
     wireNav();
+    wireInstalavel();
     wireConviteApoio();
     wireNewsletter();
     renderDate();

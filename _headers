@@ -25,6 +25,16 @@
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
+# O service worker NUNCA fica em cache. Um sw.js antigo preso no navegador é
+# dos problemas mais difíceis de diagnosticar que há: fica lá durante dias e a
+# pessoa continua a ver a versão velha do site sem perceber porquê.
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/manifest.webmanifest
+  Cache-Control: public, max-age=3600
+  Content-Type: application/manifest+json
+
 # O HTML nunca fica em cache longa: é o que traz as correções aos visitantes.
 /*.html
   Cache-Control: public, max-age=0, must-revalidate

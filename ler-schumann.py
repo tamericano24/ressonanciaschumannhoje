@@ -22,7 +22,7 @@ import io
 import json
 import sys
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import numpy as np
@@ -214,6 +214,68 @@ def ler(dados):
                 fundamental={"estado": motivo_atual}, harmonicas=[])
 
 
+# ----------------------------------------------------------------------
+# Historico
+#
+# Ate agora cada leitura substituia a anterior e a medicao antiga
+# desaparecia: 48 medicoes por dia deitadas fora. Passa a haver um segundo
+# ficheiro que so cresce, ao lado do schumann.json.
+#
+# A branch continua a ser reescrita a cada execucao, portanto o repositorio
+# continua com um unico commit e nao incha. O que muda e que o ficheiro do
+# historico e descarregado antes, a linha nova e acrescentada ao fim, e o
+# conjunto volta a subir.
+#
+# Formato em listas e nao em objetos, para nao repetir os nomes dos campos
+# 1440 vezes: assim trinta dias cabem em cerca de 60 kB.
+# ----------------------------------------------------------------------
+
+HISTORICO = Path(__file__).resolve().parent / "historico.json"
+DIAS_HISTORICO = 30
+CAMPOS = ["t", "hz", "intensidade", "estado"]
+
+
+def carregar_historico():
+    try:
+        d = json.loads(HISTORICO.read_text(encoding="utf-8"))
+        return d.get("dados", []) if isinstance(d, dict) else []
+    except (OSError, ValueError):
+        return []
+
+
+def atualizar_historico(leitura):
+    """Junta esta leitura ao historico e corta o que passou dos 30 dias."""
+    linhas = carregar_historico()
+    f = leitura.get("fundamental") or {}
+
+    # Guarda-se sempre uma linha, mesmo quando a leitura foi recusada: saber
+    # que a estacao esteve saturada das 3h as 5h e informacao, nao e ruido.
+    linhas.append([
+        leitura.get("atualizado"),
+        round(f["pico_hz"], 2) if f.get("estado") == "ok" else None,
+        round(f["intensidade"], 1) if f.get("estado") == "ok" else None,
+        f.get("estado") or leitura.get("estado") or "desconhecido",
+    ])
+
+    # Ordena e remove repetidos pelo instante, para o caso de a mesma execucao
+    # correr duas vezes.
+    vistos, limpo = set(), []
+    for linha in sorted(linhas, key=lambda x: x[0] or ""):
+        if linha[0] and linha[0] not in vistos:
+            vistos.add(linha[0])
+            limpo.append(linha)
+
+    corte = (datetime.now(timezone.utc) - timedelta(days=DIAS_HISTORICO)).isoformat()
+    limpo = [linha for linha in limpo if linha[0] >= corte]
+
+    HISTORICO.write_text(json.dumps(
+        {"campos": CAMPOS, "dias": DIAS_HISTORICO,
+         "escala": "intensidade 0-100 na escala de cor do espectrograma, nao calibrada",
+         "dados": limpo}, ensure_ascii=False, separators=(",", ":")) + "\n",
+        encoding="utf-8")
+    return len(limpo)
+
+
 def main():
     if len(sys.argv) > 1:
         print(json.dumps(ler(open(sys.argv[1], "rb").read()), ensure_ascii=False, indent=2))
@@ -224,6 +286,7 @@ def main():
         r = {"atualizado": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
              "estado": "fonte_indisponivel", "detalhe": str(e)[:200]}
     SAIDA.write_text(json.dumps(r, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print("historico: {} leituras guardadas".format(atualizar_historico(r)))
     print(json.dumps(r, ensure_ascii=False, indent=2))
 
 

@@ -923,6 +923,32 @@ code {
 }
 .quake-feed .qd { flex: none; color: var(--text-faint); font-size: 11px; }
 
+/* A bandeira do país, antes do sítio. Largura fixa para as colunas da
+   esquerda ficarem alinhadas de linha para linha, senão a lista fica aos
+   degraus. Os desenhos vêm do js/bandeiras.js. */
+.quake-feed .pais {
+  flex: none; width: 22px; text-align: center;
+  align-self: center; line-height: 0;
+}
+.quake-feed .bandeira {
+  display: block; width: 20px; height: 14px; border-radius: 2px;
+  /* O contorno impede que uma bandeira branca, como a do Japão, desapareça
+     no fundo escuro do cartão. */
+  outline: 1px solid rgba(255, 255, 255, .22); outline-offset: -1px;
+}
+/* Países sem desenho: fica o código, que é melhor do que uma bandeira errada. */
+.quake-feed .pais--codigo {
+  font-family: var(--display); font-size: 9.5px; font-weight: 700;
+  letter-spacing: .04em; color: var(--text-dim); line-height: 1.4;
+}
+.quake-feed .pais--nenhum {
+  color: var(--text-faint); font-size: 12px; line-height: 1.2;
+}
+/* O triângulo do vulcão, a condizer com a marca no mapa. Mais estreito do que
+   a coluna da magnitude: aqui não há número, e 42 px deixavam um vão entre o
+   triângulo e a bandeira. */
+.quake-feed .vmk { flex: none; width: 14px; color: #ff5470; font-size: 11px; }
+
 /* ---------------- Grelha de ferramentas ---------------- */
 
 .tools { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }

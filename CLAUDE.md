@@ -38,7 +38,7 @@ de estilo antiga. Agora corrige-se sozinha no dia seguinte.
 ```powershell
 Get-ChildItem -Recurse -Include *.html,*.py -File | Where-Object { $_.FullName -notmatch '\\\.git\\' } | ForEach-Object {
   $c = Get-Content $_.FullName -Raw -Encoding UTF8
-  $n = $c -replace '(css/style\.css|js/app\.js|js/world-path\.js)\?v=\d+','$1?v=NOVO'
+  $n = $c -replace '(css/style\.css|js/app\.js|js/world-path\.js|js/bandeiras\.js)\?v=\d+','$1?v=NOVO'
   if ($n -ne $c) { Set-Content $_.FullName $n -Encoding UTF8 }
 }
 ```
@@ -179,6 +179,24 @@ o CSS da cache e mostra o resultado antigo. Para ver um bloco em detalhe,
 recortar com PIL. **O modo sem interface não emula telemóvel a sério**: corta o
 texto à direita e parece um defeito que não existe. Para telemóvel, medir com
 JavaScript na página em vez de acreditar na imagem.
+
+**As bandeiras emoji não funcionam no Windows.** O `🇯🇵` sai como `JP` em
+letras no Chrome e no Edge, porque a Segoe UI Emoji não traz os desenhos das
+bandeiras. Foi testado. Por isso as bandeiras da lista de sismos são
+desenhadas em SVG pelo [js/bandeiras.js](js/bandeiras.js), 149 delas, feitas
+com bandas, discos, cruzes e cantões. **Não trocar por emoji.**
+
+A [folha-bandeiras.html](folha-bandeiras.html) mostra-as todas de uma vez, para
+conferir cores e desenhos. É página de trabalho, está no `.assetsignore` e não
+é servida. A esta escala, 20 px, um brasão é uma mancha da cor certa: é
+deliberado e está explicado no cabeçalho do ficheiro. Um país que não esteja na
+tabela fica com as duas letras, nunca com uma bandeira inventada.
+
+**Os dois mapas.** Sismos e vulcões têm mapas separados, `#quake-map` e
+`#volcano-map`, desenhados pela mesma `renderMapa(hostId, camadas)`. As marcas
+de cada um vivem em `marcasPorMapa[hostId]`: havia uma lista só, e com dois
+mapas na página o segundo apagava as marcas do primeiro. As abas
+"Tudo / Só sismos / Só vulcões" foram removidas, já não faziam sentido.
 
 **`set(id, html, cls)` em [js/app.js](js/app.js) substitui a classe toda.**
 Passar só `"is-calm"` apaga `tile-value` e o número perde o tamanho grande.

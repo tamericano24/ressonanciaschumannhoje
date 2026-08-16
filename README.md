@@ -38,9 +38,13 @@ js/app.js           Toda a lógica: APIs, gráficos SVG, fase da Lua, relógios
 assets/favicon.svg
 robots.txt · sitemap.xml · ads.txt · wrangler.jsonc
 
+js/bandeiras.js     149 bandeiras nacionais desenhadas em SVG, sem imagens de fora
+js/world-path.js    Contornos dos continentes (Natural Earth, domínio público)
+
 gerar-leitura.py    Escreve a leitura do dia (secção 8)
 ler-schumann.py     Extrai a medição da Schumann do espectrograma (secção 9)
 prerender.py        Escreve essa medição dentro do index.html (secção 12)
+folha-bandeiras.html  Folha de conferência das bandeiras, não é servida
 .github/workflows/  Os dois robôs que correm sozinhos
 ```
 

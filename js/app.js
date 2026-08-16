@@ -804,6 +804,191 @@
     "Myanmar": "Mianmar", "Malaysia": "Malásia", "Nepal": "Nepal", "Cyprus": "Chipre"
   };
 
+  // ----------------------------------------------------------
+  // De que país é este sismo
+  //
+  // O USGS e a NASA dão sempre o sítio em inglês, com o país ou o estado
+  // depois da última vírgula: "78 km SE of Ende, Indonesia". A deteção corre
+  // sobre o texto original, antes de ser traduzido, porque o inglês é
+  // constante e a tradução não.
+  //
+  // Sem correspondência exata não se atribui país nenhum. Muitos sismos são
+  // em mar aberto ("Southern East Pacific Rise") e não pertencem a lado
+  // nenhum: pôr ali a bandeira do país mais próximo seria inventar.
+  // ----------------------------------------------------------
+
+  var ISO = {
+    // Cintura de fogo e resto do mundo sísmico
+    Japan: "JP", Philippines: "PH", Indonesia: "ID", Russia: "RU", Mexico: "MX",
+    "New Zealand": "NZ", "Papua New Guinea": "PG", Greece: "GR", Turkey: "TR",
+    Italy: "IT", Colombia: "CO", Ecuador: "EC", Nicaragua: "NI", India: "IN",
+    "Solomon Islands": "SB", Iran: "IR", Afghanistan: "AF", Pakistan: "PK",
+    Chile: "CL", Peru: "PE", China: "CN", Taiwan: "TW", Fiji: "FJ", Tonga: "TO",
+    Vanuatu: "VU", Guatemala: "GT", "El Salvador": "SV", "Costa Rica": "CR",
+    Argentina: "AR", Bolivia: "BO", Panama: "PA", "Dominican Republic": "DO",
+    Iceland: "IS", Norway: "NO", Morocco: "MA", Algeria: "DZ", Ethiopia: "ET",
+    Myanmar: "MM", Malaysia: "MY", Nepal: "NP", Cyprus: "CY", Canada: "CA",
+    Spain: "ES", Portugal: "PT", France: "FR", Romania: "RO", Bulgaria: "BG",
+    Albania: "AL", Croatia: "HR", Georgia: "GE", Armenia: "AM", Azerbaijan: "AZ",
+    Kazakhstan: "KZ", Kyrgyzstan: "KG", Tajikistan: "TJ", Bangladesh: "BD",
+    Thailand: "TH", Vietnam: "VN", "South Korea": "KR", "North Korea": "KP",
+    Mongolia: "MN", Australia: "AU", Venezuela: "VE", Brazil: "BR",
+    Honduras: "HN", Cuba: "CU", Jamaica: "JM", Haiti: "HT", Egypt: "EG",
+    Tanzania: "TZ", Kenya: "KE", Congo: "CD", Yemen: "YE", Oman: "OM",
+    Iraq: "IQ", Syria: "SY", Israel: "IL", Lebanon: "LB", Jordan: "JO",
+    Tunisia: "TN", Libya: "LY", "South Africa": "ZA", Madagascar: "MG",
+    "East Timor": "TL", "Timor Leste": "TL", "Sri Lanka": "LK", Bhutan: "BT",
+    Serbia: "RS", "Bosnia and Herzegovina": "BA", Montenegro: "ME",
+    "North Macedonia": "MK", Slovenia: "SI", Austria: "AT", Switzerland: "CH",
+    Germany: "DE", Poland: "PL", Ukraine: "UA", "United Kingdom": "GB",
+    Ireland: "IE", Sweden: "SE", Finland: "FI", Denmark: "DK",
+    Uzbekistan: "UZ", Turkmenistan: "TM", "Saudi Arabia": "SA",
+    "United Arab Emirates": "AE", Qatar: "QA", Cameroon: "CM", Uganda: "UG",
+    Mozambique: "MZ", Malawi: "MW", Zambia: "ZM", Zimbabwe: "ZW",
+    Eritrea: "ER", Djibouti: "DJ", Somalia: "SO", Sudan: "SD", Chad: "TD",
+    Mali: "ML", Niger: "NE", Nigeria: "NG", Ghana: "GH", Guinea: "GN",
+    Uruguay: "UY", Paraguay: "PY", Suriname: "SR", Guyana: "GY",
+    Belize: "BZ", "Trinidad and Tobago": "TT", Barbados: "BB",
+
+    // Territórios com bandeira própria, que o USGS nomeia à parte
+    "Puerto Rico": "PR", Greenland: "GL", "New Caledonia": "NC",
+    "French Polynesia": "PF", Guam: "GU", "U.S. Virgin Islands": "VI",
+    "British Virgin Islands": "VG", "Cayman Islands": "KY", Bermuda: "BM",
+    "Faroe Islands": "FO", Gibraltar: "GI", Samoa: "WS", "American Samoa": "AS",
+    "Cook Islands": "CK", Niue: "NU", Palau: "PW", Micronesia: "FM",
+    "Marshall Islands": "MH", Kiribati: "KI", Nauru: "NR", Tuvalu: "TV",
+
+    // Estados dos Estados Unidos: o USGS escreve o estado, não o país
+    Alaska: "US", California: "US", Hawaii: "US", Nevada: "US", Washington: "US",
+    Oregon: "US", Idaho: "US", Montana: "US", Utah: "US", Wyoming: "US",
+    Oklahoma: "US", Texas: "US", Arkansas: "US", Missouri: "US", Tennessee: "US",
+    Kansas: "US", Colorado: "US", Arizona: "US", "New Mexico": "US",
+    Illinois: "US", Kentucky: "US", Maine: "US", "New York": "US",
+    "South Carolina": "US", "North Carolina": "US", Virginia: "US",
+    // "Georgia" fica de fora: é ao mesmo tempo o país e um estado dos EUA, e
+    // o USGS escreve as duas da mesma maneira. Fica o país, que é o caso
+    // sísmico a sério; a Geórgia americana quase não aparece nestes dados.
+    Nebraska: "US", "South Dakota": "US", "North Dakota": "US",
+    Wisconsin: "US", Michigan: "US", Ohio: "US", Alabama: "US",
+    Mississippi: "US", Louisiana: "US", Florida: "US", Minnesota: "US",
+    Iowa: "US", Indiana: "US", "West Virginia": "US", Pennsylvania: "US",
+    "New Jersey": "US", Massachusetts: "US", Connecticut: "US",
+    "Rhode Island": "US", Vermont: "US", "New Hampshire": "US", Delaware: "US",
+    Maryland: "US",
+
+    // Ilhas soltas que pertencem a um país e o USGS nomeia sem o dizer
+    "Kermadec Islands": "NZ", "Kuril Islands": "RU", "Bonin Islands": "JP",
+    "Volcano Islands": "JP", "Ryukyu Islands": "JP", "Izu Islands": "JP",
+    // As Balleny são antárticas e não são de ninguém: null diz "conhecida, e
+    // sem país", que é diferente de não estar na lista.
+    "Balleny Islands": null, "Andreanof Islands": "US", "Fox Islands": "US",
+    "Rat Islands": "US", "Near Islands": "US", "Aleutian Islands": "US",
+    "Canary Islands": "ES", Azores: "PT", "Cape Verde": "CV",
+    "Macquarie Island": "AU", "Easter Island": "CL", "Galapagos Islands": "EC",
+    "Svalbard": "NO", "Jan Mayen": "NO",
+
+    // As redes regionais do USGS escrevem a sigla do estado em vez do nome:
+    // "19 km SW of Toms Place, CA". São siglas de estados, não códigos de
+    // país: aqui dentro "CA" é a Califórnia e nunca o Canadá, porque o USGS
+    // escreve os países por extenso. Só valem para o texto que vem do USGS.
+    AK: "US", AL: "US", AR: "US", AZ: "US", CA: "US", CO: "US", CT: "US",
+    DE: "US", FL: "US", GA: "US", HI: "US", IA: "US", ID: "US", IL: "US",
+    IN: "US", KS: "US", KY: "US", LA: "US", MA: "US", MD: "US", ME: "US",
+    MI: "US", MN: "US", MO: "US", MS: "US", MT: "US", NC: "US", ND: "US",
+    NE: "US", NH: "US", NJ: "US", NM: "US", NV: "US", NY: "US", OH: "US",
+    OK: "US", OR: "US", PA: "US", RI: "US", SC: "US", SD: "US", TN: "US",
+    TX: "US", UT: "US", VA: "US", VT: "US", WA: "US", WI: "US", WV: "US",
+    WY: "US", PR: "PR", MX: "MX"
+  };
+
+  // Nome em português para mostrar por baixo da bandeira.
+  var ISO_NOME = {
+    JP: "Japão", PH: "Filipinas", ID: "Indonésia", RU: "Rússia", MX: "México",
+    NZ: "Nova Zelândia", PG: "Papua-Nova Guiné", GR: "Grécia", TR: "Turquia",
+    IT: "Itália", CO: "Colômbia", EC: "Equador", NI: "Nicarágua", IN: "Índia",
+    SB: "Ilhas Salomão", IR: "Irão", AF: "Afeganistão", PK: "Paquistão",
+    CL: "Chile", PE: "Peru", CN: "China", TW: "Taiwan", FJ: "Fiji", TO: "Tonga",
+    VU: "Vanuatu", GT: "Guatemala", SV: "Salvador", CR: "Costa Rica",
+    AR: "Argentina", BO: "Bolívia", PA: "Panamá", DO: "República Dominicana",
+    IS: "Islândia", NO: "Noruega", MA: "Marrocos", DZ: "Argélia", ET: "Etiópia",
+    MM: "Mianmar", MY: "Malásia", NP: "Nepal", CY: "Chipre", CA: "Canadá",
+    ES: "Espanha", PT: "Portugal", FR: "França", RO: "Roménia", BG: "Bulgária",
+    AL: "Albânia", HR: "Croácia", GE: "Geórgia", AM: "Arménia", AZ: "Azerbaijão",
+    KZ: "Cazaquistão", KG: "Quirguistão", TJ: "Tajiquistão", BD: "Bangladexe",
+    TH: "Tailândia", VN: "Vietname", KR: "Coreia do Sul", KP: "Coreia do Norte",
+    MN: "Mongólia", AU: "Austrália", VE: "Venezuela", BR: "Brasil",
+    HN: "Honduras", CU: "Cuba", JM: "Jamaica", HT: "Haiti", EG: "Egito",
+    TZ: "Tanzânia", KE: "Quénia", CD: "Congo", YE: "Iémen", OM: "Omã",
+    IQ: "Iraque", SY: "Síria", IL: "Israel", LB: "Líbano", JO: "Jordânia",
+    TN: "Tunísia", LY: "Líbia", ZA: "África do Sul", MG: "Madagáscar",
+    TL: "Timor-Leste", LK: "Sri Lanca", BT: "Butão", RS: "Sérvia",
+    BA: "Bósnia e Herzegovina", ME: "Montenegro", MK: "Macedónia do Norte",
+    SI: "Eslovénia", AT: "Áustria", CH: "Suíça", DE: "Alemanha", PL: "Polónia",
+    UA: "Ucrânia", GB: "Reino Unido", IE: "Irlanda", SE: "Suécia",
+    FI: "Finlândia", DK: "Dinamarca", UZ: "Usbequistão", TM: "Turquemenistão",
+    SA: "Arábia Saudita", AE: "Emirados Árabes Unidos", QA: "Catar",
+    CM: "Camarões", UG: "Uganda", MZ: "Moçambique", MW: "Maláui",
+    ZM: "Zâmbia", ZW: "Zimbabué", ER: "Eritreia", DJ: "Jibuti", SO: "Somália",
+    SD: "Sudão", TD: "Chade", ML: "Mali", NE: "Níger", NG: "Nigéria",
+    GH: "Gana", GN: "Guiné", UY: "Uruguai", PY: "Paraguai", SR: "Suriname",
+    GY: "Guiana", BZ: "Belize", TT: "Trindade e Tobago", BB: "Barbados",
+    US: "Estados Unidos", PR: "Porto Rico", GL: "Gronelândia",
+    NC: "Nova Caledónia", PF: "Polinésia Francesa", GU: "Guam",
+    VI: "Ilhas Virgens Americanas", VG: "Ilhas Virgens Britânicas",
+    KY: "Ilhas Caimão", BM: "Bermudas", FO: "Ilhas Faroé", GI: "Gibraltar",
+    WS: "Samoa", AS: "Samoa Americana", CK: "Ilhas Cook", NU: "Niue",
+    PW: "Palau", FM: "Micronésia", MH: "Ilhas Marshall", KI: "Quiribáti",
+    NR: "Nauru", TV: "Tuvalu", CV: "Cabo Verde"
+  };
+
+  // A bandeira do país, à frente do sítio, na lista de sismos e na de vulcões.
+  //
+  // NÃO trocar isto por emoji de bandeira. O Windows não traz os desenhos das
+  // bandeiras na Segoe UI Emoji, e o que aparece no Chrome e no Edge são as
+  // duas letras do código. Os desenhos vêm do js/bandeiras.js, feitos aqui.
+  //
+  // Um país que o js/bandeiras.js não saiba desenhar fica com o código em
+  // letras, e um sítio em mar aberto fica com um traço. Não se põe ali a
+  // bandeira do país mais próximo: dez por cento dos sismos são no meio do
+  // oceano e não são de ninguém.
+  function bandeira(pais) {
+    if (!pais) {
+      return '<span class="pais pais--nenhum" title="Em mar aberto, fora de qualquer país">—</span>';
+    }
+    var svg = window.BANDEIRA_SVG ? window.BANDEIRA_SVG(pais.iso) : "";
+    return '<span class="pais' + (svg ? "" : " pais--codigo") + '" title="' + escapeHTML(pais.nome) + '">' +
+           (svg || escapeHTML(pais.iso)) + "</span>";
+  }
+
+  // Recebe o texto original em inglês do USGS ou da EONET.
+  function paisDe(place) {
+    if (!place) return null;
+    var t = String(place).trim();
+
+    // O que interessa é o que vem depois da última vírgula. Sem vírgula, a
+    // frase inteira ainda pode ser o nome de uma região conhecida.
+    var cauda = t.indexOf(",") >= 0 ? t.slice(t.lastIndexOf(",") + 1) : t;
+    cauda = cauda.replace(/\s+region\s*$/i, "").trim();
+
+    var iso = ISO[cauda];
+    if (iso === undefined) iso = ISO[cauda.replace(/^the\s+/i, "")];
+
+    // Sem vírgula ainda pode acabar num sítio conhecido: "west of Macquarie
+    // Island". Procura-se um nome da tabela no fim da frase, e nunca no meio,
+    // senão "south of the Fiji Islands", que é mar alto, passava por Fiji.
+    if (iso === undefined) {
+      for (var k in ISO) {
+        if (k.length > 4 && cauda.length > k.length && cauda.slice(-k.length) === k) {
+          iso = ISO[k];
+          break;
+        }
+      }
+    }
+
+    if (!iso) return null;
+    return { iso: iso, nome: ISO_NOME[iso] || cauda };
+  }
+
   var RUMOS = {
     N: "N", S: "S", E: "E", W: "O",
     NE: "NE", NW: "NO", SE: "SE", SW: "SO",
@@ -1261,7 +1446,6 @@
 
   var MAPA_W = 720, MAPA_H = 360;
   var dadosMapa = { sismos: [], vulcoes: [] };
-  var vistaMapa = "ambos";
 
   function projX(lon) { return ((lon + 180) / 360) * MAPA_W; }
   function projY(lat) { return ((90 - lat) / 180) * MAPA_H; }
@@ -1270,13 +1454,39 @@
     return m >= 6.5 ? "#f43f5e" : m >= 5.5 ? "#fb923c" : m >= 4.5 ? "#fbbf24" : "#38bdf8";
   }
 
-  function renderQuakeMap() {
-    var host = document.getElementById("quake-map");
-    if (!host) return;
-    var s = "";
-    marcas = [];   // índice das marcas desenhadas, para a caixa de informação
+  // Nomes escritos por cima do desenho. Sem isto o mapa é uma silhueta e a
+  // pessoa tem de adivinhar o que está a ver. As posições são o centro
+  // aproximado de cada massa, escolhidas para não caírem em cima dos pontos
+  // da cintura de fogo, que é onde quase tudo acontece.
+  var CONTINENTES = [
+    { nome: "AMÉRICA DO NORTE", lon: -101, lat: 47 },
+    { nome: "AMÉRICA DO SUL",   lon: -60,  lat: -12 },
+    { nome: "EUROPA",           lon: 21,   lat: 55 },
+    { nome: "ÁFRICA",           lon: 20,   lat: 3 },
+    { nome: "ÁSIA",             lon: 88,   lat: 47 },
+    { nome: "OCEANIA",          lon: 134,  lat: -26 },
+    { nome: "ANTÁRTIDA",        lon: 10,   lat: -78 }
+  ];
 
-    s += '<defs>' +
+  var OCEANOS = [
+    { nome: "Oceano Pacífico", lon: -145, lat: 8 },
+    { nome: "Pacífico",        lon: 168,  lat: 22 },
+    { nome: "Oceano Atlântico", lon: -33, lat: 22 },
+    { nome: "Oceano Índico",   lon: 78,   lat: -28 }
+  ];
+
+  function texto(t, lon, lat, cor, tam, esp, italico) {
+    return '<text x="' + projX(lon).toFixed(1) + '" y="' + projY(lat).toFixed(1) +
+      '" fill="' + cor + '" font-size="' + tam + '" letter-spacing="' + esp +
+      '" text-anchor="middle" font-family="Segoe UI, system-ui, sans-serif"' +
+      (italico ? ' font-style="italic"' : ' font-weight="600"') +
+      ' pointer-events="none">' + escapeHTML(t) + "</text>";
+  }
+
+  // O fundo do mapa: oceano, grelha, terra e nomes. É igual nos dois mapas,
+  // o dos sismos e o dos vulcões, por isso vive numa função só.
+  function fundoDoMapa() {
+    var s = '<defs>' +
       '<linearGradient id="oceano" x1="0" y1="0" x2="0" y2="1">' +
         '<stop offset="0%" stop-color="#0b1a30"/><stop offset="55%" stop-color="#08111f"/>' +
         '<stop offset="100%" stop-color="#0b1a30"/></linearGradient>' +
@@ -1292,71 +1502,116 @@
       var y = projY(lat);
       s += '<line x1="0" y1="' + y + '" x2="' + MAPA_W + '" y2="' + y + '" stroke="rgba(125,180,235,.055)"/>';
     }
+
+    // O equador leva tracejado e nome, que é a referência que toda a gente
+    // reconhece e ajuda a ler a latitude do resto.
     s += '<line x1="0" y1="' + (MAPA_H / 2) + '" x2="' + MAPA_W + '" y2="' + (MAPA_H / 2) +
          '" stroke="rgba(125,180,235,.14)" stroke-dasharray="5 7"/>';
+    s += '<text x="6" y="' + (MAPA_H / 2 - 3) + '" fill="rgba(125,180,235,.4)" font-size="6.5" ' +
+         'letter-spacing="1.2" font-family="Segoe UI, system-ui, sans-serif" pointer-events="none">EQUADOR</text>';
+
+    OCEANOS.forEach(function (o) {
+      s += texto(o.nome, o.lon, o.lat, "rgba(125,180,235,.30)", 8, 0.6, true);
+    });
 
     if (window.MAPA_MUNDO) {
       s += '<path d="' + window.MAPA_MUNDO + '" fill="#15243a" stroke="#4a7ba8" stroke-width=".7" ' +
            'stroke-linejoin="round" stroke-opacity=".8"/>';
     }
 
-    // Sismos: raio proporcional à raiz da energia, sem desfoque.
-    // O desfoque transformava os pontos em manchas sobrepostas.
-    if (vistaMapa !== "vulcoes") {
-      dadosMapa.sismos.slice().sort(function (a, b) {
-        return (a.properties.mag || 0) - (b.properties.mag || 0);
-      }).forEach(function (f) {
-        var c = f.geometry && f.geometry.coordinates;
-        if (!c) return;
-        var m = f.properties.mag || 0;
-        var r = Math.max(2.2, Math.pow(Math.max(m - 2, 0.2), 1.45) * 1.25);
-        var cor = corSismo(m);
-        var i = marcas.length;
+    CONTINENTES.forEach(function (c) {
+      s += texto(c.nome, c.lon, c.lat, "rgba(174,205,238,.52)", 8.5, 1.3);
+    });
 
-        marcas.push({
-          tipo: "sismo", x: projX(c[0]), y: projY(c[1]), r: r,
-          titulo: "M" + num(m) + " · " + traduzLocal(f.properties.place),
-          linhas: [
-            (c[2] != null ? Math.round(c[2]) + " km de profundidade" : "profundidade desconhecida"),
-            ago(new Date(f.properties.time))
-          ],
-          cor: cor
-        });
+    return s;
+  }
 
-        // halo suave só nos sismos que importam
-        if (m >= 5.5) {
-          s += '<circle cx="' + projX(c[0]).toFixed(1) + '" cy="' + projY(c[1]).toFixed(1) +
-               '" r="' + (r * 2.1).toFixed(1) + '" fill="' + cor + '" fill-opacity=".13"/>';
-        }
-        s += '<circle class="mk" data-i="' + i + '" cx="' + projX(c[0]).toFixed(1) + '" cy="' +
-             projY(c[1]).toFixed(1) + '" r="' + r.toFixed(1) + '" fill="' + cor +
-             '" fill-opacity=".85" stroke="#0b1220" stroke-width=".9"/>';
+  // Cada mapa guarda as suas marcas à parte. Antes havia uma lista só, e com
+  // dois mapas na mesma página o segundo apagava as marcas do primeiro.
+  var marcasPorMapa = {};
+
+  function camadaSismos(s, marcas) {
+    // Raio proporcional à raiz da energia, sem desfoque: o desfoque
+    // transformava os pontos em manchas sobrepostas.
+    dadosMapa.sismos.slice().sort(function (a, b) {
+      return (a.properties.mag || 0) - (b.properties.mag || 0);
+    }).forEach(function (f) {
+      var c = f.geometry && f.geometry.coordinates;
+      if (!c) return;
+      var m = f.properties.mag || 0;
+      var r = Math.max(2.2, Math.pow(Math.max(m - 2, 0.2), 1.45) * 1.25);
+      var cor = corSismo(m);
+      var i = marcas.length;
+      var pais = paisDe(f.properties.place);
+
+      marcas.push({
+        tipo: "sismo", x: projX(c[0]), y: projY(c[1]), r: r,
+        titulo: "M" + num(m) + " · " + traduzLocal(f.properties.place),
+        linhas: [
+          (pais ? pais.nome : "Em mar aberto, fora de qualquer país"),
+          (c[2] != null ? Math.round(c[2]) + " km de profundidade" : "profundidade desconhecida"),
+          ago(new Date(f.properties.time))
+        ],
+        cor: cor
       });
-    }
 
-    if (vistaMapa !== "sismos") {
-      dadosMapa.vulcoes.forEach(function (v) {
-        var x = projX(v.lon), y = projY(v.lat), i = marcas.length;
-        marcas.push({
-          tipo: "vulcao", x: x, y: y, r: 5,
-          titulo: "Vulcão " + traduzLocal(v.nome),
-          linhas: ["em erupção" + (v.desde ? " " + ago(v.desde) : "")],
-          cor: "#ff5470"
-        });
-        s += '<path class="mk" data-i="' + i + '" d="M' + x.toFixed(1) + " " + (y - 5.2).toFixed(1) +
-             "L" + (x + 4.5).toFixed(1) + " " + (y + 3.4).toFixed(1) +
-             "L" + (x - 4.5).toFixed(1) + " " + (y + 3.4).toFixed(1) + 'Z" ' +
-             'fill="#ff5470" fill-opacity=".9" stroke="#0b1220" stroke-width=".8" stroke-linejoin="round"/>';
+      if (m >= 5.5) {
+        s.v += '<circle cx="' + projX(c[0]).toFixed(1) + '" cy="' + projY(c[1]).toFixed(1) +
+             '" r="' + (r * 2.1).toFixed(1) + '" fill="' + cor + '" fill-opacity=".13"/>';
+      }
+      s.v += '<circle class="mk" data-i="' + i + '" cx="' + projX(c[0]).toFixed(1) + '" cy="' +
+           projY(c[1]).toFixed(1) + '" r="' + r.toFixed(1) + '" fill="' + cor +
+           '" fill-opacity=".85" stroke="#0b1220" stroke-width=".9"/>';
+    });
+  }
+
+  function camadaVulcoes(s, marcas, grande) {
+    var t = grande ? 6.4 : 5;    // no mapa só de vulcões os triângulos são maiores
+    dadosMapa.vulcoes.forEach(function (v) {
+      var x = projX(v.lon), y = projY(v.lat), i = marcas.length;
+      marcas.push({
+        tipo: "vulcao", x: x, y: y, r: t,
+        titulo: "Vulcão " + traduzLocal(v.nome),
+        linhas: [
+          (v.pais ? v.pais.nome : "Localização em mar aberto"),
+          "em erupção" + (v.desde ? " " + ago(v.desde) : "")
+        ],
+        cor: "#ff5470"
       });
-    }
+      if (grande) {
+        s.v += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) +
+             '" r="' + (t * 2.2).toFixed(1) + '" fill="#ff5470" fill-opacity=".12"/>';
+      }
+      s.v += '<path class="mk" data-i="' + i + '" d="M' + x.toFixed(1) + " " + (y - t * 1.04).toFixed(1) +
+           "L" + (x + t * 0.9).toFixed(1) + " " + (y + t * 0.68).toFixed(1) +
+           "L" + (x - t * 0.9).toFixed(1) + " " + (y + t * 0.68).toFixed(1) + 'Z" ' +
+           'fill="#ff5470" fill-opacity=".9" stroke="#0b1220" stroke-width=".8" stroke-linejoin="round"/>';
+    });
+  }
 
-    s += '<circle id="mk-foco" r="0" fill="none" stroke="#fff" stroke-width="1.6" opacity="0" pointer-events="none"/>';
+  // hostId: "quake-map" ou "volcano-map". Cada um desenha só a sua camada.
+  function renderMapa(hostId, camadas) {
+    var host = document.getElementById(hostId);
+    if (!host) return;
 
-    host.innerHTML = '<svg viewBox="0 0 ' + MAPA_W + " " + MAPA_H +
-      '" role="img" aria-label="Mapa mundial de sismos das últimas 48 horas e vulcões em atividade">' + s + "</svg>";
+    var marcas = [];
+    var s = { v: fundoDoMapa() };
+
+    if (camadas.sismos) camadaSismos(s, marcas);
+    if (camadas.vulcoes) camadaVulcoes(s, marcas, !camadas.sismos);
+
+    s.v += '<circle class="mk-foco" r="0" fill="none" stroke="#fff" stroke-width="1.6" opacity="0" pointer-events="none"/>';
+
+    marcasPorMapa[hostId] = marcas;
+    host.innerHTML = '<svg viewBox="0 0 ' + MAPA_W + " " + MAPA_H + '" role="img" aria-label="' +
+      (camadas.sismos ? "Mapa mundial dos sismos das últimas 48 horas"
+                      : "Mapa mundial dos vulcões em erupção") + '">' + s.v + "</svg>";
 
     ligaInfoMapa(host);
   }
+
+  function renderQuakeMap() { renderMapa("quake-map", { sismos: true }); }
+  function renderVolcanoMap() { renderMapa("volcano-map", { vulcoes: true }); }
 
   // Lista dos sismos, do mais recente para o mais antigo, ligada ao mapa.
   function renderQuakeFeed() {
@@ -1372,25 +1627,26 @@
       return;
     }
 
-    host.innerHTML = lista.map(function (f, i) {
+    host.innerHTML = lista.map(function (f) {
       var p = f.properties, c = f.geometry.coordinates;
       var m = p.mag || 0;
       return '<li data-lon="' + c[0] + '" data-lat="' + c[1] + '" title="Clique para centrar no mapa">' +
         '<span class="mag" style="color:' + corSismo(m) + '">M' + num(m) + "</span>" +
+        bandeira(paisDe(p.place)) +
         '<span class="loc">' + escapeHTML(traduzLocal(p.place)) + "</span>" +
         '<span class="qd">' + (c[2] != null ? Math.round(c[2]) + " km · " : "") + ago(new Date(p.time)) + "</span></li>";
     }).join("");
 
     // Passar o rato numa linha acende a marca correspondente no mapa.
     $$("#quake-feed li[data-lon]").forEach(function (li) {
-      li.addEventListener("mouseenter", function () { focaMarca(+li.dataset.lon, +li.dataset.lat, true); });
-      li.addEventListener("mouseleave", function () { focaMarca(null); });
+      li.addEventListener("mouseenter", function () { focaMarca("quake-map", +li.dataset.lon, +li.dataset.lat, true); });
+      li.addEventListener("mouseleave", function () { focaMarca("quake-map", null); });
       li.addEventListener("click", function () {
         $$("#quake-feed li.on").forEach(function (o) { o.classList.remove("on"); });
         li.classList.add("on");
         var mapa = document.getElementById("quake-map");
         if (mapa) mapa.scrollIntoView({ block: "nearest", behavior: "smooth" });
-        focaMarca(+li.dataset.lon, +li.dataset.lat, true);
+        focaMarca("quake-map", +li.dataset.lon, +li.dataset.lat, true);
       });
     });
   }
@@ -1399,14 +1655,12 @@
   // Caixa de informação que segue o rato sobre o mapa
   // ----------------------------------------------------------
 
-  var marcas = [];
-
-  // Realça no mapa a marca que está nestas coordenadas.
-  function focaMarca(lon, lat, mostrarCaixa) {
-    var host = document.getElementById("quake-map");
+  // Realça no mapa indicado a marca que está nestas coordenadas.
+  function focaMarca(hostId, lon, lat, mostrarCaixa) {
+    var host = document.getElementById(hostId);
     if (!host) return;
     var svg = host.querySelector("svg");
-    var foco = svg && svg.querySelector("#mk-foco");
+    var foco = svg && svg.querySelector(".mk-foco");
     var tip = host.querySelector(".map-tip");
     if (!foco) return;
 
@@ -1417,7 +1671,7 @@
     }
 
     var x = projX(lon), y = projY(lat), alvo = null, dMin = Infinity;
-    marcas.forEach(function (m) {
+    (marcasPorMapa[hostId] || []).forEach(function (m) {
       var d = Math.hypot(m.x - x, m.y - y);
       if (d < dMin) { dMin = d; alvo = m; }
     });
@@ -1451,7 +1705,8 @@
       tip.hidden = true;
       host.appendChild(tip);
     }
-    var foco = svg.querySelector("#mk-foco");
+    var foco = svg.querySelector(".mk-foco");
+    var marcas = marcasPorMapa[host.id] || [];
 
     function maisPerto(ev) {
       // Converte a posição do rato para coordenadas do desenho e procura a
@@ -1497,29 +1752,9 @@
     };
   }
 
-  function wireMapaTabs() {
-    var host = document.getElementById("map-tabs");
-    if (!host) return;
-    var vistas = [
-      { id: "ambos", rot: "Tudo" },
-      { id: "sismos", rot: "Só sismos" },
-      { id: "vulcoes", rot: "Só vulcões" }
-    ];
-    function pinta() {
-      host.innerHTML = vistas.map(function (v) {
-        return '<button class="tab" type="button" data-id="' + v.id + '" aria-selected="' +
-               (v.id === vistaMapa) + '">' + v.rot + "</button>";
-      }).join("");
-      $$(".tab", host).forEach(function (b) {
-        b.addEventListener("click", function () {
-          vistaMapa = b.getAttribute("data-id");
-          pinta();
-          renderQuakeMap();
-        });
-      });
-    }
-    pinta();
-  }
+  // As abas "Tudo / Só sismos / Só vulcões" desapareceram: cada um dos dois
+  // mapas mostra agora uma coisa só, e uma aba para filtrar um mapa que já
+  // está filtrado não servia nada.
 
   // Sismos das últimas 48 horas (M2,5+), muitos mais pontos, desenha o risco tectónico
   function loadQuakes48() {
@@ -1556,6 +1791,37 @@
     }).catch(function (e) { console.warn("Sismos 30 dias:", e); });
   }
 
+  // Lista dos vulcões, ligada ao mapa dos vulcões da mesma maneira que a
+  // lista dos sismos está ligada ao mapa dos sismos.
+  function renderVolcanoList() {
+    var host = document.getElementById("volcano-list");
+    if (!host) return;
+
+    if (!dadosMapa.vulcoes.length) {
+      host.innerHTML = '<li class="muted">Sem erupções ativas registadas no momento.</li>';
+      return;
+    }
+
+    host.innerHTML = dadosMapa.vulcoes.map(function (v) {
+      return '<li data-lon="' + v.lon + '" data-lat="' + v.lat + '" title="Clique para centrar no mapa">' +
+        '<span class="vmk">▲</span>' + bandeira(v.pais) +
+        '<span class="loc">' + escapeHTML(traduzLocal(v.nome)) + "</span>" +
+        '<span class="qd">' + (v.desde ? "desde " + ago(v.desde) : "") + "</span></li>";
+    }).join("");
+
+    $$("#volcano-list li[data-lon]").forEach(function (li) {
+      li.addEventListener("mouseenter", function () { focaMarca("volcano-map", +li.dataset.lon, +li.dataset.lat, true); });
+      li.addEventListener("mouseleave", function () { focaMarca("volcano-map", null); });
+      li.addEventListener("click", function () {
+        $$("#volcano-list li.on").forEach(function (o) { o.classList.remove("on"); });
+        li.classList.add("on");
+        var mapa = document.getElementById("volcano-map");
+        if (mapa) mapa.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        focaMarca("volcano-map", +li.dataset.lon, +li.dataset.lat, true);
+      });
+    });
+  }
+
   // Vulcões em erupção, NASA EONET
   function loadVulcoes() {
     return getJSON(SRC.vulcoes).then(function (j) {
@@ -1564,28 +1830,22 @@
         var g = e.geometry && e.geometry[e.geometry.length - 1];
         var c = g && g.coordinates;
         if (!c) return null;
+        var titulo = String(e.title || "");
         return {
-          nome: String(e.title || "").replace(/\s*\bVolcano\b/i, "").replace(/\s+,/g, ",").trim(),
+          nome: titulo.replace(/\s*\bVolcano\b/i, "").replace(/\s+,/g, ",").trim(),
+          pais: paisDe(titulo),
           lon: c[0], lat: c[1],
           desde: g.date ? parseUTC(g.date) : null
         };
       }).filter(Boolean);
 
-      set("volcano-count", String(dadosMapa.vulcoes.length));
+      // Do mais recente para o mais antigo: uma erupção que começou ontem
+      // interessa mais do que uma que dura há três anos.
+      dadosMapa.vulcoes.sort(function (a, b) { return (b.desde || 0) - (a.desde || 0); });
 
-      var host = document.getElementById("volcano-list");
-      if (host) {
-        if (!dadosMapa.vulcoes.length) {
-          host.innerHTML = '<li class="muted">Sem erupções ativas registadas no momento.</li>';
-        } else {
-          host.innerHTML = dadosMapa.vulcoes.map(function (v) {
-            return '<li><span>🌋</span><span>' + escapeHTML(traduzLocal(v.nome)) + "</span>" +
-                   '<span class="v" style="font-weight:400;color:var(--text-faint);font-size:12px">' +
-                   (v.desde ? "desde " + ago(v.desde) : "") + "</span></li>";
-          }).join("");
-        }
-      }
-      renderQuakeMap();
+      set("volcano-count", String(dadosMapa.vulcoes.length));
+      renderVolcanoList();
+      renderVolcanoMap();
       mark("vulcoes", true);
     }).catch(function (e) {
       var host = document.getElementById("volcano-list");
@@ -2426,8 +2686,8 @@
     mostrarVistaSolar();
     wireLightbox();
     wireRefresh();
-    wireMapaTabs();
     renderQuakeMap();
+    renderVolcanoMap();
 
     if (document.getElementById("gauge-svg")) {
       loadAll();

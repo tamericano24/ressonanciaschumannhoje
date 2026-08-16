@@ -12,6 +12,9 @@ gerar-leitura.py
 iniciar-site.bat
 README.md
 
+# Folha de conferencia das bandeiras: pagina de trabalho, nao e do site.
+folha-bandeiras.html
+
 # Segurança e arrumação
 .claude
 node_modules

@@ -36,7 +36,7 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <!-- O sufixo ?v= força os navegadores a irem buscar a versão nova depois de cada
      atualização. Incremente-o sempre que mudar o CSS ou o JavaScript. -->
-<link rel="stylesheet" href="css/style.css?v=31">
+<link rel="stylesheet" href="css/style.css?v=34">
 
 <!-- Dados estruturados. O "dateModified" e os valores do Dataset são reescritos
      a cada publicação pelo prerender.py: é o que faz o Google mostrar uma data
@@ -605,11 +605,10 @@
 
       <div class="card">
         <div class="section-head" style="margin-bottom:12px">
-          <h3 style="margin:0">Mapa sísmico e vulcânico mundial</h3>
-          <p>Sismos das últimas 48 horas e vulcões atualmente em erupção</p>
+          <h3 style="margin:0">Mapa sísmico mundial</h3>
+          <p>Todos os sismos de magnitude 2,5 ou superior nas últimas 48 horas</p>
         </div>
 
-        <div class="tabs" id="map-tabs" role="tablist"></div>
         <div class="quake-map" id="quake-map"></div>
 
         <div class="metric-row" style="margin-top:14px">
@@ -626,21 +625,32 @@
           <span><i style="background:#fbbf24"></i>M4,5–5,4</span>
           <span><i style="background:#fb923c"></i>M5,5–6,4</span>
           <span><i style="background:#f43f5e"></i>M6,5+</span>
-          <span><i style="background:#f43f5e;clip-path:polygon(50% 0,100% 100%,0 100%)"></i>vulcão ativo</span>
         </div>
 
-        <div class="grid g-2" style="margin-top:18px">
-          <div>
-            <h4 style="margin:0 0 8px;font-size:15px">Todos os sismos das últimas 48 horas</h4>
-            <ul class="quake-feed" id="quake-feed"><li class="muted">A carregar…</li></ul>
-            <p class="src">Passe o rato por uma linha para a localizar no mapa. Clique para a fixar.</p>
-          </div>
-          <div>
-            <h4 style="margin:0 0 8px;font-size:15px">Vulcões em erupção agora</h4>
-            <ul class="list" id="volcano-list" style="max-height:300px;overflow-y:auto"><li class="muted">A carregar…</li></ul>
-            <p class="src">Sismos: USGS. Vulcões: NASA EONET. Contornos: Natural Earth (domínio público). O mapa é desenhado no seu navegador a partir dos dados, sem imagens de terceiros.</p>
-          </div>
+        <h4 style="margin:18px 0 8px;font-size:15px">Todos os sismos das últimas 48 horas</h4>
+        <ul class="quake-feed" id="quake-feed"><li class="muted">A carregar…</li></ul>
+        <p class="src">Passe o rato por uma linha para a localizar no mapa. Clique para a fixar. A bandeira é a do país onde o sismo se deu; um traço quer dizer mar aberto, fora de qualquer país.</p>
+        <p class="src">Sismos: USGS. Contornos: Natural Earth (domínio público). O mapa é desenhado no seu navegador a partir dos dados, sem imagens de terceiros.</p>
+      </div>
+
+      <!-- Os vulcões têm mapa próprio. Antes eram um triângulo no meio dos
+           sismos e uma lista encolhida a um quarto da largura, e nem se via
+           onde ficavam. -->
+      <div class="card" style="margin-top:16px">
+        <div class="section-head" style="margin-bottom:12px">
+          <h3 style="margin:0">Mapa vulcânico mundial</h3>
+          <p>Vulcões em erupção neste momento, segundo a NASA EONET</p>
         </div>
+
+        <div class="quake-map" id="volcano-map"></div>
+
+        <div class="legend" style="margin-top:12px">
+          <span><i style="background:#ff5470;clip-path:polygon(50% 0,100% 100%,0 100%)"></i>vulcão em erupção</span>
+        </div>
+
+        <h4 style="margin:18px 0 8px;font-size:15px">Vulcões em erupção agora</h4>
+        <ul class="quake-feed" id="volcano-list"><li class="muted">A carregar…</li></ul>
+        <p class="src">Do mais recente para o mais antigo. Passe o rato por uma linha para a localizar no mapa. Uma erupção fica nesta lista enquanto a NASA a mantiver aberta, o que pode durar anos.</p>
       </div>
 
       <div class="grid g-2" style="margin-top:16px">
@@ -846,8 +856,9 @@
   </div>
 </footer>
 
-<script src="js/world-path.js?v=31"></script>
-<script src="js/app.js?v=31"></script>
+<script src="js/world-path.js?v=34"></script>
+<script src="js/bandeiras.js?v=34"></script>
+<script src="js/app.js?v=34"></script>
 </body>
 </html>
 

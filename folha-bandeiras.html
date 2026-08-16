@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<title>Folha de conferência das bandeiras</title>
+<!-- Página de trabalho, não faz parte do site. Serve para olhar para todas as
+     bandeiras de uma vez e apanhar cores ou desenhos trocados. Está no
+     .assetsignore, portanto não é servida em producao. -->
+<style>
+  body { background:#0f1428; color:#e8ecf8; font:13px "Segoe UI",sans-serif; padding:20px; }
+  h1 { font-size:16px; margin:0 0 14px; }
+  .g { display:grid; grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:12px; }
+  .f { text-align:center; }
+  svg.bandeira { width:52px; height:36.4px; border-radius:2px; outline:1px solid rgba(255,255,255,.22); outline-offset:-1px; }
+  .n { font-size:10.5px; color:#9aa3c0; margin-top:4px; }
+  .c { font-weight:700; font-size:10px; color:#e8ecf8; }
+</style>
+</head>
+<body>
+<h1>Bandeiras desenhadas em <code>js/bandeiras.js</code></h1>
+<div class="g" id="g"></div>
+<script src="js/bandeiras.js"></script>
+<script>
+  var NOMES = {
+    US:"Estados Unidos",CA:"Canadá",MX:"México",GT:"Guatemala",SV:"Salvador",HN:"Honduras",
+    NI:"Nicarágua",CR:"Costa Rica",PA:"Panamá",CU:"Cuba",JM:"Jamaica",HT:"Haiti",
+    DO:"Rep. Dominicana",PR:"Porto Rico",VI:"Ilhas Virgens EUA",CO:"Colômbia",VE:"Venezuela",
+    EC:"Equador",PE:"Peru",BR:"Brasil",BO:"Bolívia",CL:"Chile",AR:"Argentina",UY:"Uruguai",
+    PY:"Paraguai",GY:"Guiana",SR:"Suriname",BZ:"Belize",GL:"Gronelândia",
+    PT:"Portugal",ES:"Espanha",FR:"França",IT:"Itália",DE:"Alemanha",GR:"Grécia",TR:"Turquia",
+    CY:"Chipre",IS:"Islândia",NO:"Noruega",SE:"Suécia",FI:"Finlândia",DK:"Dinamarca",
+    FO:"Ilhas Faroé",GB:"Reino Unido",IE:"Irlanda",RO:"Roménia",BG:"Bulgária",AL:"Albânia",
+    HR:"Croácia",RS:"Sérvia",BA:"Bósnia",ME:"Montenegro",MK:"Macedónia N.",SI:"Eslovénia",
+    AT:"Áustria",CH:"Suíça",PL:"Polónia",UA:"Ucrânia",NL:"Países Baixos",BE:"Bélgica",
+    RU:"Rússia",JP:"Japão",CN:"China",TW:"Taiwan",KR:"Coreia do Sul",KP:"Coreia do Norte",
+    PH:"Filipinas",ID:"Indonésia",MY:"Malásia",TH:"Tailândia",VN:"Vietname",MM:"Mianmar",
+    IN:"Índia",NP:"Nepal",BD:"Bangladexe",LK:"Sri Lanca",PK:"Paquistão",AF:"Afeganistão",
+    IR:"Irão",IQ:"Iraque",GE:"Geórgia",AM:"Arménia",AZ:"Azerbaijão",KZ:"Cazaquistão",
+    KG:"Quirguistão",TJ:"Tajiquistão",UZ:"Usbequistão",TM:"Turquemenistão",MN:"Mongólia",
+    TL:"Timor-Leste",IL:"Israel",LB:"Líbano",SY:"Síria",JO:"Jordânia",SA:"Arábia S.",
+    AE:"Emirados",QA:"Catar",OM:"Omã",YE:"Iémen",
+    MA:"Marrocos",DZ:"Argélia",TN:"Tunísia",LY:"Líbia",EG:"Egito",ET:"Etiópia",ER:"Eritreia",
+    DJ:"Jibuti",SO:"Somália",SD:"Sudão",TD:"Chade",ML:"Mali",NE:"Níger",NG:"Nigéria",
+    GH:"Gana",GN:"Guiné",CM:"Camarões",UG:"Uganda",KE:"Quénia",TZ:"Tanzânia",MZ:"Moçambique",
+    MW:"Maláui",ZM:"Zâmbia",ZW:"Zimbabué",ZA:"África do Sul",CV:"Cabo Verde",
+    AU:"Austrália",NZ:"Nova Zelândia",PG:"Papua-N. Guiné",SB:"Ilhas Salomão",VU:"Vanuatu",
+    FJ:"Fiji",TO:"Tonga",WS:"Samoa",AS:"Samoa Amer.",NC:"Nova Caledónia",PF:"Polinésia F.",
+    GU:"Guam",PW:"Palau",FM:"Micronésia",MH:"Ilhas Marshall",KI:"Quiribáti",NR:"Nauru",
+    TV:"Tuvalu",CK:"Ilhas Cook",NU:"Niue"
+  };
+  var faltam = [];
+  document.getElementById("g").innerHTML = Object.keys(NOMES).map(function (k) {
+    var svg = window.BANDEIRA_SVG(k);
+    if (!svg) { faltam.push(k); return ""; }
+    return '<div class="f">' + svg + '<div class="n"><span class="c">' + k + "</span><br>" + NOMES[k] + "</div></div>";
+  }).join("");
+  if (faltam.length) {
+    document.body.insertAdjacentHTML("beforeend",
+      '<p style="color:#fbbf24;margin-top:18px">Sem desenho: ' + faltam.join(", ") + "</p>");
+  }
+</script>
+</body>
+</html>

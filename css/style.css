@@ -231,6 +231,103 @@ a:hover { text-decoration: underline; }
 
 body.menu-aberto { overflow: hidden; }
 
+/* ---------------- Convite a apoiar ----------------
+   A janela só aparece a quem já cá veio três dias diferentes, nunca a quem
+   chega de uma pesquisa. Regras em wireConviteApoio(), no js/app.js. */
+
+.convite-fundo {
+  position: fixed; inset: 0; z-index: 300;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  background: rgba(4, 6, 14, 0.72);
+  backdrop-filter: blur(3px);
+  opacity: 0; transition: opacity .2s;
+}
+.convite-fundo.aberto { opacity: 1; }
+
+.convite {
+  position: relative; width: min(440px, 100%);
+  max-height: calc(100vh - 40px); overflow-y: auto;
+  background: linear-gradient(180deg, #121834, #0b0f22);
+  border: 1px solid var(--border-strong); border-radius: 18px;
+  padding: 22px 22px 18px;
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.95);
+  transform: translateY(10px) scale(.985);
+  transition: transform .22s cubic-bezier(.3, .9, .3, 1);
+}
+.convite-fundo.aberto .convite { transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .convite-fundo, .convite { transition: none; }
+}
+
+.convite-topo { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding-right: 34px; }
+/* O bloco de apoio esconde este ícone abaixo dos 560 px, porque lá ao lado de
+   um parágrafo largo não cabe. Aqui cabe, e sem ele o cabeçalho da janela fica
+   nu. Também é mais pequeno: 52 px é demasiado numa caixa de 440. */
+.convite .apoio-icone {
+  display: grid; width: 40px; height: 40px; font-size: 18px; box-shadow: none;
+}
+.convite-topo h2 {
+  margin: 0; flex: 1; min-width: 0; font-size: 19px; letter-spacing: -0.02em; line-height: 1.25;
+}
+/* Fora do fluxo, no canto: dentro da linha empurrava o título para duas
+   linhas mesmo quando havia espaço. */
+.convite-fechar {
+  position: absolute; top: 16px; right: 16px;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(255, 255, 255, .06); border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 13px; cursor: pointer; line-height: 1;
+}
+.convite-fechar:hover { color: var(--text); border-color: var(--border-strong); }
+
+.convite-lede { margin: 0 0 16px; font-size: 14px; line-height: 1.55; color: var(--text-dim); }
+
+.convite-meta { margin-bottom: 12px; }
+.convite-meta-topo {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 12px; color: var(--text-faint); margin-bottom: 7px;
+}
+.convite-meta-topo b { font-family: var(--display); font-size: 14px; color: var(--text); }
+
+.convite-obrigado {
+  margin: 0 0 14px; font-size: 12.5px; color: var(--text-dim); text-align: center;
+}
+.convite-obrigado b { color: var(--text); }
+
+/* Três cartões em vez dos quatro do painel: o "Outro" desce para uma linha de
+   texto, que numa janela pequena fila melhor do que um quarto cartão.
+   minmax(0, 1fr) e não 1fr: com 1fr a coluna cresce até caber o rótulo mais
+   comprido sem quebrar, e a janela transbordava para fora do ecrã no
+   telemóvel.
+
+   O seletor leva o ".convite" à frente de propósito: a regra do bloco de
+   apoio passa a duas colunas abaixo dos 760 px e vem mais abaixo nesta folha,
+   por isso ganhava a esta e deixava o terceiro cartão sozinho numa linha. */
+.convite .apoio-tiers { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.convite .apoio-tier { padding: 12px 6px 10px; }
+.convite .apoio-tier b { font-size: 20px; }
+.convite .apoio-tier span { font-size: 10.5px; line-height: 1.3; }
+
+.convite-outro {
+  display: block; text-align: center; margin-top: 14px;
+  font-size: 13.5px; color: var(--cyan); font-weight: 600;
+}
+.convite-agora-nao {
+  display: block; width: 100%; margin-top: 12px; padding: 6px;
+  background: none; border: 0; cursor: pointer;
+  font-size: 12.5px; color: var(--text-faint); font-family: inherit;
+}
+.convite-agora-nao:hover { color: var(--text-dim); }
+
+@media (max-width: 420px) {
+  .convite { padding: 18px 14px 14px; border-radius: 14px; }
+  .convite-topo h2 { font-size: 17.5px; }
+  .convite .apoio-tiers { gap: 6px; }
+  .convite .apoio-tier { padding: 11px 4px 9px; }
+  .convite .apoio-tier b { font-size: 18px; }
+  .convite .apoio-tier span { font-size: 10px; }
+}
+
 /* ---------------- Barra de apoio ---------------- */
 
 .support-bar {

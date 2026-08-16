@@ -288,6 +288,24 @@ chega. Os quatro cartões são iguais e a escolha é do leitor.
 próprio site (espectrograma, leituras diárias, painel), não o que custa nem
 comparações de fora. "Um café" e "um mês de site" foram rejeitados.
 
+**A janela de convite a apoiar** (`wireConviteApoio()` em [js/app.js](js/app.js))
+foi feita a pedido dele, a copiar o formato do concorrente, mas sem as três
+coisas que ele já tinha mandado tirar: o destaque "popular" num dos valores, o
+PayPal, e a conversa dos custos. O que lá está sai do bloco `APOIO`, portanto
+os números são os verdadeiros e mantêm-se sozinhos.
+
+As regras de convivência estão no comentário da função e **não se afrouxam sem
+ele pedir**: nunca a quem chega pela primeira vez (só ao terceiro dia diferente
+de visita), uma vez por sessão, depois de 40 segundos ou 55% da página, nunca
+na página de apoio, fechar adia 30 dias, clicar num valor adia 180. A regra dos
+três dias não é só delicadeza: o Google despromove sites que atiram janelas por
+cima do conteúdo a quem chega de uma pesquisa no telemóvel, e assim nem o
+visitante vindo da pesquisa nem o robô chegam a ver aquilo.
+
+**Para fotografar o convite ou o menu**, criar uma página de teste temporária
+na raiz que semeie o `localStorage` e deixe o `--virtual-time-budget` adiantar
+o temporizador. Apagá-la a seguir. Ver o histórico do commit do convite.
+
 **Cuidado ao escrever artigos novos:** verificar primeiro se já existe uma
 página do site para essa pesquisa. O artigo sobre o índice Kp foi abandonado a
 meio por competir com a [indice-kp-agora.html](indice-kp-agora.html), que já

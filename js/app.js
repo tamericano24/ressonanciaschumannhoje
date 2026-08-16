@@ -2693,6 +2693,190 @@
     }
   }
 
+  // ----------------------------------------------------------
+  // Convite a apoiar, em janela por cima da página
+  //
+  // Regras de convivência, para isto não ser uma praga:
+  //
+  //  - Nunca a quem chega pela primeira vez. Só a partir do terceiro dia
+  //    diferente em que a pessoa cá vem. Quem vem do Google e olha uma vez
+  //    nunca vê nada. Isto também nos protege do lado da pesquisa: o Google
+  //    despromove sites que atiram janelas por cima do conteúdo a quem chega
+  //    de uma pesquisa no telemóvel, e o robô dele também nunca chega ao
+  //    terceiro dia.
+  //  - Uma vez por sessão, e só depois de a pessoa ter ficado algum tempo ou
+  //    ter descido a página. A quem entra e sai não se pede nada.
+  //  - Fechar adia trinta dias. Clicar num valor adia meio ano.
+  //  - Nunca na própria página de apoio, onde já está tudo isto maior.
+  //
+  // O que está escrito na janela é verdade e sai dos mesmos dados do bloco de
+  // apoio: a meta, o que já entrou e quem apoiou. Sem contagem de apoiantes
+  // inventada, sem destaque a empurrar um valor e sem falar de custos.
+  // ----------------------------------------------------------
+
+  var POPUP = {
+    diasAteConvidar: 3,      // dias diferentes de visita antes do primeiro convite
+    segundosNaPagina: 40,    // ou
+    scrollMinimo: 0.55,      // fração da página descida, o que acontecer primeiro
+    adiarSeFechar: 30,       // dias
+    adiarSeApoiar: 180       // dias
+  };
+
+  var DIA = 86400000;
+
+  function lerEstadoApoio() {
+    try {
+      return JSON.parse(localStorage.getItem("apoio-convite") || "{}") || {};
+    } catch (e) { return {}; }
+  }
+
+  function gravarEstadoApoio(e) {
+    try { localStorage.setItem("apoio-convite", JSON.stringify(e)); } catch (err) { /* privado */ }
+  }
+
+  // Conta dias diferentes de visita, não páginas vistas: quem lê cinco artigos
+  // de seguida veio cá uma vez, não cinco.
+  function registaVisita() {
+    var e = lerEstadoApoio();
+    var hoje = new Date().toISOString().slice(0, 10);
+    if (e.ultimoDia !== hoje) {
+      e.dias = (e.dias || 0) + 1;
+      e.ultimoDia = hoje;
+      gravarEstadoApoio(e);
+    }
+    return e;
+  }
+
+  function podeConvidar(e) {
+    if (!APOIO.stripe.livre && !APOIO.stripe["5"]) return false;   // sem pagamentos ligados
+    if (/apoiar\.html$/.test(location.pathname) || location.pathname === "/apoiar") return false;
+    if ((e.dias || 0) < POPUP.diasAteConvidar) return false;
+    if (e.adiadoAte && Date.now() < e.adiadoAte) return false;
+    try { if (sessionStorage.getItem("apoio-convite-visto")) return false; } catch (err) { /* nada */ }
+    return true;
+  }
+
+  function conteudoConvite() {
+    var m = APOIO.moeda;
+    var temValor = typeof APOIO.angariado === "number" && APOIO.angariado >= 0;
+    var pct = temValor ? Math.max(0, Math.min(100, (APOIO.angariado / APOIO.meta) * 100)) : 0;
+
+    var mes = "";
+    try {
+      mes = new Intl.DateTimeFormat("pt-PT", { month: "long", year: "numeric" }).format(new Date());
+      mes = mes.charAt(0).toUpperCase() + mes.slice(1);
+    } catch (e) { mes = ""; }
+
+    var tiers = TIERS.map(function (t) {
+      var url = APOIO.stripe[String(t.v)];
+      return '<a class="apoio-tier" data-apoiar href="' + escapeHTML(url || "#") + '" rel="noopener">' +
+             "<b>" + m + t.v + "</b><span>" + t.rot + "</span></a>";
+    }).join("");
+
+    var obrigado = APOIO.apoiantes.length
+      ? '<p class="convite-obrigado">Obrigado <span aria-hidden="true">✨</span> <b>' +
+        APOIO.apoiantes.map(escapeHTML).join("</b> · <b>") + "</b></p>"
+      : "";
+
+    return '<div class="convite-topo">' +
+        '<div class="apoio-icone">💜</div>' +
+        "<h2>Já cá veio algumas vezes</h2>" +
+        '<button class="convite-fechar" type="button" aria-label="Fechar">✕</button>' +
+      "</div>" +
+      "<p class=\"convite-lede\">Isso diz-me que o painel lhe serve para alguma coisa. " +
+        "Não tem publicidade, não tem rastreadores e não tem paywall. Se quiser que " +
+        "continue assim, um contributo ajuda a mantê-lo no ar.</p>" +
+      '<div class="convite-meta">' +
+        '<div class="convite-meta-topo"><span>' + escapeHTML(mes) + "</span><span><b>" +
+          (temValor ? m + num(APOIO.angariado, 0) : "—") + "</b> de " + m + num(APOIO.meta, 0) + "</span></div>" +
+        '<div class="apoio-barra"><i style="width:' + pct.toFixed(1) + '%"></i></div>' +
+      "</div>" +
+      obrigado +
+      '<div class="apoio-tiers convite-tiers">' + tiers + "</div>" +
+      '<a class="convite-outro" data-apoiar href="' + escapeHTML(APOIO.stripe.livre || "#") +
+        '" rel="noopener">Escolher outro valor →</a>' +
+      '<button class="convite-agora-nao" type="button">Agora não</button>';
+  }
+
+  function mostrarConvite() {
+    if (document.querySelector(".convite-fundo")) return;
+
+    var fundo = document.createElement("div");
+    fundo.className = "convite-fundo";
+
+    var caixa = document.createElement("div");
+    caixa.className = "convite";
+    caixa.setAttribute("role", "dialog");
+    caixa.setAttribute("aria-modal", "true");
+    caixa.setAttribute("aria-label", "Apoiar o Ressonância de Schumann Hoje");
+    caixa.innerHTML = conteudoConvite();
+
+    fundo.appendChild(caixa);
+    document.body.appendChild(fundo);
+    requestAnimationFrame(function () { fundo.classList.add("aberto"); });
+
+    try { sessionStorage.setItem("apoio-convite-visto", "1"); } catch (e) { /* nada */ }
+
+    var antes = document.activeElement;
+    var fechaBt = caixa.querySelector(".convite-fechar");
+    if (fechaBt) fechaBt.focus();
+
+    function adiar(dias) {
+      var e = lerEstadoApoio();
+      e.adiadoAte = Date.now() + dias * DIA;
+      gravarEstadoApoio(e);
+    }
+
+    function fechar(dias) {
+      adiar(dias);
+      fundo.classList.remove("aberto");
+      setTimeout(function () { if (fundo.parentNode) fundo.parentNode.removeChild(fundo); }, 200);
+      document.removeEventListener("keydown", aoTeclado);
+      if (antes && antes.focus) antes.focus();
+    }
+
+    function aoTeclado(ev) {
+      if (ev.key === "Escape") { fechar(POPUP.adiarSeFechar); return; }
+      if (ev.key !== "Tab") return;
+      // Prende o foco dentro da janela enquanto ela estiver aberta.
+      var focaveis = caixa.querySelectorAll("a[href], button");
+      if (!focaveis.length) return;
+      var primeiro = focaveis[0], ultimo = focaveis[focaveis.length - 1];
+      if (ev.shiftKey && document.activeElement === primeiro) { ev.preventDefault(); ultimo.focus(); }
+      else if (!ev.shiftKey && document.activeElement === ultimo) { ev.preventDefault(); primeiro.focus(); }
+    }
+
+    caixa.querySelector(".convite-fechar").addEventListener("click", function () { fechar(POPUP.adiarSeFechar); });
+    caixa.querySelector(".convite-agora-nao").addEventListener("click", function () { fechar(POPUP.adiarSeFechar); });
+    fundo.addEventListener("click", function (ev) { if (ev.target === fundo) fechar(POPUP.adiarSeFechar); });
+    document.addEventListener("keydown", aoTeclado);
+
+    // Quem clica num valor não deve voltar a ver isto tão cedo.
+    $$("[data-apoiar]", caixa).forEach(function (a) {
+      a.addEventListener("click", function () { adiar(POPUP.adiarSeApoiar); });
+    });
+  }
+
+  function wireConviteApoio() {
+    var estado = registaVisita();
+    if (!podeConvidar(estado)) return;
+
+    var jaFoi = false;
+    function dispara() {
+      if (jaFoi) return;
+      jaFoi = true;
+      window.removeEventListener("scroll", aoRolar);
+      mostrarConvite();
+    }
+    function aoRolar() {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      if (h > 0 && window.scrollY / h >= POPUP.scrollMinimo) dispara();
+    }
+
+    setTimeout(dispara, POPUP.segundosNaPagina * 1000);
+    window.addEventListener("scroll", aoRolar, { passive: true });
+  }
+
   function wireNav() {
     renderMenu();
   }
@@ -2732,6 +2916,7 @@
 
   function init() {
     wireNav();
+    wireConviteApoio();
     wireNewsletter();
     renderDate();
     renderMoon();

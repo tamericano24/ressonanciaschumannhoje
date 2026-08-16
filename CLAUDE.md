@@ -146,6 +146,19 @@ fosse atual, incluindo o concorrente. O feed vivo é
 `sos70.ru/provider.php?file=shm.jpg`. Isto é a nossa principal vantagem
 competitiva e está explicado em [metodologia.html](metodologia.html).
 
+**A estação de Cumiana não mede a Schumann.** O site mostrava a imagem
+`last-geophone-multistrip-slow.jpg` do vlf.it a dizer que era uma "leitura
+independente da mesma banda ELF" e que um pico só em Tomsk seria ruído. É
+falso: esse instrumento é um **geofone de 0,2 a 6 Hz** e os 7,83 Hz ficam fora
+do alcance dele. Trocou-se pela `last-geomar.jpg`, que cobre 0,2 a 30 Hz e
+portanto inclui a banda, com a legenda corrigida.
+
+Mesmo essa **não serve para medir**: é geofone com sonda de campo elétrico, não
+antena magnética ELF, e a tira da imagem tem uns cem píxeis para trinta hertz,
+o que não chega para tirar de lá uma frequência de pico com as duas casas
+decimais que publicamos para Tomsk. Serve para comparação à vista, e é isso
+que a legenda diz. **Não voltar a apresentá-la como segunda medição.**
+
 **Fuso do espectrograma.** O eixo do gráfico está em hora local de Tomsk
 (UTC+7), não em UTC. Confirmado por haver dados às 20h quando em UTC eram 16h.
 O site não converte fusos de propósito: mostra "X h registadas, Y h por

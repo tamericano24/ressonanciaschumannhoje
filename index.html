@@ -36,7 +36,7 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <!-- O sufixo ?v= força os navegadores a irem buscar a versão nova depois de cada
      atualização. Incremente-o sempre que mudar o CSS ou o JavaScript. -->
-<link rel="stylesheet" href="css/style.css?v=45">
+<link rel="stylesheet" href="css/style.css?v=46">
 
 <!-- Dados estruturados. O "dateModified" e os valores do Dataset são reescritos
      a cada publicação pelo prerender.py: é o que faz o Google mostrar uma data
@@ -600,11 +600,16 @@
           <div class="spectro-frame"><img data-src="https://services.swpc.noaa.gov/images/animations/ctipe/tec/latest.png" alt="Mapa global de conteúdo total de eletrões na ionosfera" loading="lazy"></div>
           <p class="src">Valores altos degradam a precisão do GPS. Como a altura efetiva da ionosfera define a frequência da cavidade, é este mapa que ajuda a explicar as pequenas oscilações em torno dos 7,83 Hz.</p>
         </div>
+        <!-- A imagem aqui era a do geofone, de 0,2 a 6 Hz, e a legenda dizia
+             que servia para confirmar Tomsk. Não servia: os 7,83 Hz ficam fora
+             do alcance desse instrumento. Trocada pela do Geomar, que cobre
+             0,2 a 30 Hz e portanto inclui a banda, com a legenda a dizer o que
+             o instrumento é e o que não dá para concluir dele. -->
         <div class="card">
           <h3>Segunda estação, Cumiana, Itália</h3>
-          <p class="sub">Observatório vlf.it, leitura independente da mesma banda ELF</p>
-          <div class="spectro-frame"><img data-src="https://images.weserv.nl/?url=www.vlf.it%2Fcumiana%2Flast-geophone-multistrip-slow.jpg&n=-1" alt="Registo ELF da estação de Cumiana, Itália" loading="lazy"></div>
-          <p class="src">Ter duas estações em continentes diferentes é a única forma honesta de distinguir um evento global de interferência local. Se um pico aparece só em Tomsk e não em Cumiana, é quase de certeza ruído. Fonte: <a href="http://www.vlf.it/cumiana/livedata.html" rel="noopener nofollow" target="_blank">vlf.it</a>.</p>
+          <p class="sub">Observatório vlf.it, outro instrumento e outro continente</p>
+          <div class="spectro-frame"><img data-src="https://images.weserv.nl/?url=www.vlf.it%2Fcumiana%2Flast-geomar.jpg&n=-1" alt="Registo de 0,2 a 30 Hz da estação de Cumiana, Itália" loading="lazy"></div>
+          <p class="src">Cobre de 0,2 a 30 Hz, portanto a faixa dos 7,83 Hz cai lá dentro, na tira do meio. <b>Não é uma segunda medição da Schumann:</b> é um geofone com sonda de campo elétrico, e não uma antena magnética ELF como a de Tomsk, e a resolução vertical desta imagem não chega para tirar dela uma frequência de pico. Serve para o que é honesto servir: comparar à vista se uma perturbação forte aparece nos dois sítios ou só num. Fonte: <a href="http://www.vlf.it/cumiana/livedata.html" rel="noopener nofollow" target="_blank">vlf.it</a>.</p>
         </div>
       </div>
     </div>
@@ -871,9 +876,9 @@
   </div>
 </footer>
 
-<script src="js/world-path.js?v=45"></script>
-<script src="js/bandeiras.js?v=45"></script>
-<script src="js/app.js?v=45"></script>
+<script src="js/world-path.js?v=46"></script>
+<script src="js/bandeiras.js?v=46"></script>
+<script src="js/app.js?v=46"></script>
 </body>
 </html>
 

@@ -1,6 +1,13 @@
 User-agent: *
 Allow: /
-Disallow: /privacidade.html
-Disallow: /termos.html
+
+# Nada de Disallow aqui.
+#
+# A privacidade e os termos ja levam <meta name="robots" content="noindex">
+# dentro do HTML, e o Google so ve essa instrucao se puder rastrear a pagina.
+# Bloquea-las aqui impedia exatamente aquilo que se queria dizer, e o bloqueio
+# nem sequer acertava no endereco: a Cloudflare serve /termos, nao
+# /termos.html. Alem disso o menu liga a essas paginas em todas as paginas do
+# site. Deixar entrar e deixar o noindex fazer o trabalho.
 
 Sitemap: https://ressonanciaschumannhoje.com/sitemap.xml

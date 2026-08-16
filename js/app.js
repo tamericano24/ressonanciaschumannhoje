@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    Ressonância de Schumann Hoje, lógica do painel ao vivo
    Todas as fontes são APIs públicas e gratuitas com CORS aberto.
    Sem dependências externas.
@@ -14,10 +14,14 @@
     kp: "https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json",
     kpForecast: "https://services.swpc.noaa.gov/text/3-day-forecast.txt",
     kpForecastJson: "https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json",
-    xray: "https://services.swpc.noaa.gov/json/goes/primary/xrays-1-day.json",
+    // Seis horas em vez de um dia inteiro: 160 kB em vez de 642 kB, e este é
+    // pedido logo por causa do mosaico dos raios-X, no cimo da página. O
+    // gráfico passa a mostrar seis horas, que é o que a legenda diz.
+    xray: "https://services.swpc.noaa.gov/json/goes/primary/xrays-6-hour.json",
     flares: "https://services.swpc.noaa.gov/json/goes/primary/xray-flares-7-day.json",
     alerts: "https://services.swpc.noaa.gov/products/alerts.json",
-    protons: "https://services.swpc.noaa.gov/json/goes/primary/integral-protons-1-day.json",
+    // Também de seis horas: 59 kB em vez de 237 kB.
+    protons: "https://services.swpc.noaa.gov/json/goes/primary/integral-protons-6-hour.json",
     scales: "https://services.swpc.noaa.gov/products/noaa-scales.json",
     f107: "https://services.swpc.noaa.gov/json/f107_cm_flux.json",
     ventoPlasma: "https://services.swpc.noaa.gov/json/rtsw/rtsw_wind_1m.json",
@@ -378,6 +382,13 @@
     var legenda = document.getElementById("sr-legenda");
     set("sr-modos", fraseModos(d));
 
+    // A idade do espectrograma vem no mesmo ficheiro, calculada pelo robô.
+    if (document.getElementById("spectro-updated")) {
+      var janela = (d && d.janela_horas) || SPAN_H;
+      renderSpectroAge(d && typeof d.horas_registadas === "number"
+        ? d.horas_registadas / janela : null);
+    }
+
     // Só fica sem número se as 72 horas do espectrograma não tiverem uma
     // única medição válida, o que é raro. Fora isso mostra-se sempre a
     // última medição real, dizendo de quando é.
@@ -628,7 +639,8 @@
       resumo.sismos = feats.length;
       resumo.sismoMax = max || null;
       renderNowSummary();
-      loadQuakesMes();
+      // O feed de 30 dias, que traz 467 kB só para uma média, é pedido pelo
+      // aoAproximar() do mapa. Aqui chegava sempre, mesmo a quem não descia.
 
       var host = document.getElementById("quake-list");
       if (host) {
@@ -1042,98 +1054,24 @@
   // ----------------------------------------------------------
   // Idade real dos dados do espectrograma
   //
-  // A estação não publica cabeçalho Last-Modified, por isso a idade é lida
-  // da própria imagem: o gráfico cobre exatamente 72 horas e a zona sem
-  // dados fica preta. Encontrando a última coluna com sinal, sabe-se até
-  // que hora a estação registou.
+  // A estação não publica cabeçalho Last-Modified, por isso a idade sai da
+  // própria imagem: o gráfico cobre exatamente 72 horas e a zona ainda sem
+  // dados fica preta. Encontrando a última coluna com sinal, sabe-se até que
+  // hora a estação registou.
+  //
+  // Essa leitura é feita pelo ler-schumann.py, no servidor, e chega aqui já
+  // pronta no schumann.json, no campo "horas_registadas". Antes era feita no
+  // navegador: como a estação não envia cabeçalhos CORS, os píxeis não são
+  // legíveis do lado do visitante e a imagem tinha de passar por um
+  // intermediário, o que custava 204 kB e uma dependência de terceiros a cada
+  // visita, para calcular um número que o robô já tinha à mão.
   //
   // O eixo está em UTC, verificável pelo facto de o último painel datado
   // corresponder sempre à data UTC corrente, e não à data local de Tomsk
   // (UTC+7), que já virou o dia. Ver metodologia.html.
-  //
-  // A leitura de píxeis exige CORS, que a estação não envia; por isso a
-  // análise usa um proxy de imagem. Se o proxy falhar, o painel continua a
-  // funcionar, apenas não mostra a idade. A imagem visível vem sempre
-  // diretamente da estação, sem intermediários.
   // ----------------------------------------------------------
 
-  var SPECTRO_PROXY = "https://images.weserv.nl/?url=" +
-    encodeURIComponent("sos70.ru/provider.php?file=shm.jpg") + "&n=-1";
   var SPAN_H = 72;              // horas cobertas pela imagem
-  var ATRASO_ALERTA_H = 4;      // acima disto, mostra aviso de atraso
-
-  function probeSpectroAge() {
-    var img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onerror = function () { renderSpectroAge(null); };
-    img.onload = function () {
-      try { renderSpectroAge(readLastSample(img)); }
-      catch (e) { renderSpectroAge(null); console.warn("Idade do espectrograma:", e); }
-    };
-    img.src = SPECTRO_PROXY + "&_=" + Date.now();
-  }
-
-  function readLastSample(img) {
-    var W = img.naturalWidth, H = img.naturalHeight;
-    if (!W || !H) return null;
-
-    var c = document.createElement("canvas");
-    c.width = W; c.height = H;
-    var g = c.getContext("2d");
-    g.drawImage(img, 0, 0);
-    var px = g.getImageData(0, 0, W, H).data;
-
-    // Limites do gráfico: dados pela linha branca horizontal mais longa do terço
-    // inferior, o eixo dos tempos. Não se pode usar colunas brancas para isto,
-    // porque as plumas de sinal saturado também ocupam a coluna toda.
-    var esq = -1, dir = -1, melhor = 0;
-    for (var y = Math.round(H * 0.85); y < Math.round(H * 0.99); y++) {
-      var run = 0, ini = 0;
-      for (var x = 0; x < W; x++) {
-        var i = (y * W + x) * 4;
-        if ((px[i] + px[i + 1] + px[i + 2]) / 3 > 200) {
-          if (run === 0) ini = x;
-          run++;
-          if (run > melhor) { melhor = run; esq = ini; dir = x; }
-        } else run = 0;
-      }
-    }
-    if (esq < 0 || dir - esq < W * 0.5) return null;
-
-    // Brilho médio de cada coluna, na faixa vertical do gráfico.
-    var y0 = Math.round(H * 0.14), y1 = Math.round(H * 0.92);
-    var media = new Float32Array(W);
-    for (var x2 = esq; x2 <= dir; x2++) {
-      var soma = 0, n = 0;
-      for (var y2 = y0; y2 < y1; y2 += 2) {
-        var j = (y2 * W + x2) * 4;
-        soma += (px[j] + px[j + 1] + px[j + 2]) / 3;
-        n++;
-      }
-      media[x2] = soma / n;
-    }
-
-    // Limiar adaptativo: as colunas com sinal são muito mais claras do que a
-    // zona sem dados. Um limiar fixo falharia se a estação mudasse a paleta.
-    var pico = 0;
-    for (var x3 = esq + 3; x3 < dir - 3; x3++) if (media[x3] > pico) pico = media[x3];
-    if (pico < 30) return null;
-    var limiar = pico * 0.25;
-
-    // Última coluna com sinal: exige três colunas seguidas acima do limiar,
-    // para não confundir um artefacto isolado com dados reais.
-    var fim = -1;
-    for (var x4 = dir - 4; x4 > esq + 2; x4--) {
-      if (media[x4] > limiar && media[x4 - 1] > limiar && media[x4 - 2] > limiar) { fim = x4; break; }
-    }
-    if (fim < 0) return null;
-
-    // Devolve apenas a fração da janela de 72 h que está preenchida com dados.
-    // Não se converte isto numa hora UTC absoluta: as datas do gráfico são
-    // texto desenhado na imagem, e quando a estação atrasa, o último painel
-    // deixa de ser o dia de hoje. Assumir o contrário dava um erro de 24 h.
-    return (fim - esq) / (dir - esq);
-  }
 
   // Deteção de estagnação: guarda a posição da frente de dados entre visitas.
   // Se a frente não avança enquanto o relógio avança, a estação parou.
@@ -2893,6 +2831,66 @@
   // ----------------------------------------------------------
   // Arranque
   // ----------------------------------------------------------
+
+  // Corre a função quando o elemento se aproxima do ecrã, e uma vez só.
+  //
+  // Serve para os feeds grandes que alimentam secções lá para baixo: juntos
+  // são vários megabytes que não fazem falta a quem abre a página e não desce.
+  //
+  // Mede a distância no scroll em vez de usar IntersectionObserver. O
+  // observador parece mais limpo, mas não entrega avisos quando o separador
+  // está em segundo plano ou tapado, e ficavam secções por preencher sem erro
+  // nenhum na consola. Um ouvinte de scroll é mais bruto e não falha.
+  //
+  // Há ainda uma rede de segurança por tempo, mas larga: 45 segundos. Curta
+  // demais anulava a poupança, porque toda a gente acabava por descarregar
+  // tudo à mesma; serve só para o caso raro de a secção ficar por preencher
+  // sem ninguém dar por isso.
+  var jaCarregado = {};
+  var aVigiar = [];
+  var vigiaLigada = false;
+  var MARGEM = 700;         // px de antecedência, para os dados chegarem antes
+  var ESPERA_MAX = 45000;
+
+  function verificaVigiados() {
+    for (var i = aVigiar.length - 1; i >= 0; i--) {
+      var v = aVigiar[i];
+      var r = v.el.getBoundingClientRect();
+      if (r.top < window.innerHeight + MARGEM && r.bottom > -MARGEM) {
+        aVigiar.splice(i, 1);
+        v.corre();
+      }
+    }
+  }
+
+  function aoAproximar(id, fn) {
+    var el = document.getElementById(id);
+    if (!el || jaCarregado[id]) return;
+
+    function corre() {
+      if (jaCarregado[id]) return;
+      jaCarregado[id] = true;
+      fn();
+    }
+
+    aVigiar.push({ el: el, corre: corre });
+    setTimeout(corre, ESPERA_MAX);
+
+    if (!vigiaLigada) {
+      vigiaLigada = true;
+      window.addEventListener("scroll", verificaVigiados, { passive: true });
+      window.addEventListener("resize", verificaVigiados, { passive: true });
+      // A primeira verificação só passado um tempo, e não já.
+      //
+      // No arranque a página ainda não tem altura nenhuma: os mosaicos estão
+      // vazios, os gráficos por desenhar, e todas estas secções ficam
+      // amontoadas perto do topo. Verificar nesse instante dava-as todas como
+      // visíveis e descarregava tudo à mesma, que é exatamente o que se
+      // queria evitar. Dois segundos chegam para o painel tomar a sua forma.
+      setTimeout(verificaVigiados, 2000);
+    }
+  }
+
   function loadAll() {
     // Cada página só pede o que mostra. Evita descarregar dados e imagens
     // pesadas em páginas que não os apresentam.
@@ -2904,11 +2902,17 @@
     if (document.getElementById("flare-list") || document.getElementById("t-flare")) loadFlares();
     if (document.getElementById("quake-list") || document.getElementById("t-quakes")) loadQuakes();
     if (document.getElementById("forecast-raw")) loadForecast();
-    if (document.getElementById("proton-chart")) loadProtons();
-    if (document.getElementById("vs-chart")) loadVentoSolar();
-    if (document.getElementById("f107-value")) loadF107();
-    if (document.getElementById("quake-map")) { loadQuakes48(); loadVulcoes(); }
-    if (document.getElementById("spectro-updated")) probeSpectroAge();
+
+    // Os quatro pesados. Juntos são vários megabytes de JSON, e nenhum deles
+    // se vê sem descer a página: o vento solar sozinho traz 4 MB. Só são
+    // pedidos quando a secção respetiva se aproxima do ecrã, o que tira esse
+    // peso todo de cima de quem abre a página e não desce, que é a maioria.
+    aoAproximar("proton-chart", loadProtons);
+    aoAproximar("vs-chart", loadVentoSolar);
+    aoAproximar("f107-value", loadF107);
+    aoAproximar("quake-map", function () { loadQuakes48(); loadVulcoes(); loadQuakesMes(); });
+    // A idade do espectrograma vem agora dentro do schumann.json, tratada em
+    // renderSchumann(), e já não precisa de um pedido só para ela.
   }
 
   function init() {

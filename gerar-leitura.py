@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 Gerador da leitura diaria.
 
@@ -37,7 +37,13 @@ FONTES = {
     "previsao": "https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json",
     "sismos":   "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson",
     "vulcoes":  "https://eonet.gsfc.nasa.gov/api/v3/events?category=volcanoes&status=open&limit=100",
+    # A nossa propria medicao, lida do espectrograma pelo ler-schumann.py.
+    "schumann": ("https://raw.githubusercontent.com/tamericano24/"
+                 "ressonanciaschumannhoje/dados/schumann.json"),
 }
+
+NOMES_HARM = {14.3: "2.ª harmónica", 20.8: "3.ª harmónica",
+              27.3: "4.ª harmónica", 33.8: "5.ª harmónica"}
 
 MESES = ["janeiro", "fevereiro", "marco", "abril", "maio", "junho",
          "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"]
@@ -224,7 +230,14 @@ def escolher_titulo(palavra, data):
 # ----------------------------------------------------------------------
 
 def escrever_corpo(d):
-    """Constrói o texto a partir dos números. Cada frase só aparece se o dado existir."""
+    """Constroi o texto a partir dos numeros. Cada frase so aparece se o dado
+    existir.
+
+    Devolve uma lista de blocos (titulo_h2, paragrafo). O titulo pode ser None
+    na abertura, que vem logo a seguir ao h1 e nao precisa de cabecalho. Os
+    restantes levam h2: sem eles a pagina era uma parede de paragrafos sem
+    estrutura nenhuma, o que nao ajuda quem le nem quem indexa.
+    """
     p = []
 
     # 1. abertura com o estado geral
@@ -238,7 +251,7 @@ def escrever_corpo(d):
     if d["energia"] is not None:
         ab.append(f" O índice de energia composto deste site marca {d['energia']} em 100, "
                   f"o que corresponde a um dia {d['banda'].lower()}.")
-    p.append("".join(ab))
+    p.append((None, "".join(ab)))
 
     # 2. Sol
     sol = []
@@ -262,22 +275,26 @@ def escrever_corpo(d):
         else:
             sol.append(", dentro do normal.")
     if sol:
-        p.append("".join(sol))
+        p.append(("O que o Sol está a fazer", "".join(sol)))
 
     # 3. Bz, o dado que antecipa tempestades
     if d["bz"] is not None:
+        titulo_bz = "O aviso prévio: a componente Bz"
         if d["bz"] <= -10:
-            p.append(f"A componente Bz do campo magnético interplanetário está em "
-                     f"{nvl(d['bz'])} nT, fortemente virada a sul. É a configuração que permite "
-                     f"ao vento solar acoplar-se ao campo da Terra e injetar energia. Se se "
-                     f"mantiver, o Kp tende a subir nas horas seguintes.")
+            p.append((titulo_bz,
+                      f"A componente Bz do campo magnético interplanetário está em "
+                      f"{nvl(d['bz'])} nT, fortemente virada a sul. É a configuração que permite "
+                      f"ao vento solar acoplar-se ao campo da Terra e injetar energia. Se se "
+                      f"mantiver, o Kp tende a subir nas horas seguintes."))
         elif d["bz"] < 0:
-            p.append(f"A componente Bz está em {nvl(d['bz'])} nT, ligeiramente a sul. "
-                     f"Há algum acoplamento com o campo terrestre, mas fraco.")
+            p.append((titulo_bz,
+                      f"A componente Bz está em {nvl(d['bz'])} nT, ligeiramente a sul. "
+                      f"Há algum acoplamento com o campo terrestre, mas fraco."))
         else:
-            p.append(f"A componente Bz está em {nvl(d['bz'])} nT, virada a norte. Nesta "
-                     f"orientação o vento solar passa ao lado sem transferir energia "
-                     f"significativa: é a porta fechada.")
+            p.append((titulo_bz,
+                      f"A componente Bz está em {nvl(d['bz'])} nT, virada a norte. Nesta "
+                      f"orientação o vento solar passa ao lado sem transferir energia "
+                      f"significativa: é a porta fechada."))
 
     # 4. o que significa na prática
     pratico = []
@@ -297,7 +314,7 @@ def escrever_corpo(d):
     if d["prev_kp"]:
         pratico.append(f" A previsão da NOAA aponta um Kp máximo de {nvl(d['prev_kp'])} para as "
                        f"próximas 24 horas.")
-    p.append("".join(pratico))
+    p.append(("O que isto significa na prática", "".join(pratico)))
 
     # 5. Terra
     terra = []
@@ -310,21 +327,41 @@ def escrever_corpo(d):
     if terra:
         terra.append(" Estes números aparecem como contexto do dia, não como consequência da "
                      "atividade solar: não existe ligação demonstrada entre as duas coisas.")
-        p.append("".join(terra))
+        p.append(("O que a Terra registou", "".join(terra)))
 
-    # 6. o que observar
+    # 6. a Ressonancia de Schumann propriamente dita, medida nesta manha.
+    #    E o unico numero desta pagina que e nosso, lido do espectrograma pelo
+    #    ler-schumann.py, e por isso e o que torna cada leitura diferente das
+    #    outras em vez de mais uma variacao dos mesmos indices da NOAA.
+    if d.get("sr_hz"):
+        sr = [f"No espectrograma da estação de Tomsk, o pico da fundamental estava em "
+              f"<b>{nvl(d['sr_hz'], 2)} Hz</b>, com uma intensidade de {d['sr_int']} em 100 "
+              f"na escala de cor da imagem"]
+        sr.append(f", na medição das {d['sr_hora']} UTC." if d.get("sr_hora") else ".")
+        if d.get("sr_harm"):
+            sr.append(" " + d["sr_harm"])
+        sr.append(" A frequência de referência é 7,83 Hz, e a variação de décimas ao longo do dia "
+                  "é normal: acompanha a altura da ionosfera, que sobe de noite e desce de dia. "
+                  "A intensidade não está calibrada em picotesla, porque a estação não publica a "
+                  "calibração.")
+        p.append(("A Ressonância de Schumann medida hoje", "".join(sr)))
+
+    # 7. o que observar
     if d["kp"] >= 5:
-        p.append("<b>O que observar hoje:</b> se estiver no norte da Europa e o céu estiver "
-                 "limpo, vale a pena olhar para norte depois do anoitecer. Confirme também se há "
-                 "alertas ativos da NOAA antes de contar com GPS para trabalho de precisão.")
+        p.append(("O que observar hoje",
+                  "Se estiver no norte da Europa e o céu estiver "
+                  "limpo, vale a pena olhar para norte depois do anoitecer. Confirme também se há "
+                  "alertas ativos da NOAA antes de contar com GPS para trabalho de precisão."))
     elif d["kp"] >= 4:
-        p.append("<b>O que observar hoje:</b> o campo está agitado sem chegar a tempestade. É um "
-                 "bom dia para acompanhar o Bz, porque é ele que decide se a agitação passa a "
-                 "tempestade nas próximas horas.")
+        p.append(("O que observar hoje",
+                  "O campo está agitado sem chegar a tempestade. É um "
+                  "bom dia para acompanhar o Bz, porque é ele que decide se a agitação passa a "
+                  "tempestade nas próximas horas."))
     else:
-        p.append("<b>O que observar hoje:</b> dias calmos como este são os mais úteis para "
-                 "estabelecer uma linha de base. Se está a registar como se sente ao longo do "
-                 "tempo, é hoje que fica a saber como é um dia normal.")
+        p.append(("O que observar hoje",
+                  "Dias calmos como este são os mais úteis para "
+                  "estabelecer uma linha de base. Se está a registar como se sente ao longo do "
+                  "tempo, é hoje que fica a saber como é um dia normal."))
 
     return p
 
@@ -338,7 +375,7 @@ CABECA = """<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{titulo} | Leitura de {data_curta}</title>
+<title>{titulo} · {data_curta}</title>
 <meta name="description" content="{descricao}">
 <!-- Sem .html de proposito: a Cloudflare responde a /leitura/{iso}.html com um
      307 para /leitura/{iso}. Um canonico que redireciona gasta rastreio a toa. -->
@@ -418,7 +455,10 @@ def gerar_html(d, anterior, seguinte):
     data_curta = f"{d['data'].day}/{d['data'].month:02d}/{d['data'].year}"
     dia_semana = DIAS_PT[d["data"].weekday()]
 
-    corpo = "\n".join(f"  <p>{par}</p>" for par in escrever_corpo(d))
+    corpo = "\n".join(
+        (f"  <h2>{t}</h2>\n  <p>{par}</p>" if t else f"  <p>{par}</p>")
+        for t, par in escrever_corpo(d)
+    )
     resumo = (
         f"Kp {nvl(d['kp'])} ({d['kp_label']})"
         + (f", raios-X {d['raiox']}" if d["raiox"] else "")
@@ -426,21 +466,57 @@ def gerar_html(d, anterior, seguinte):
         + f". Índice de energia {d['energia']} em 100."
     )
 
+    # A description do Google, diferente do resumo mostrado na pagina: aquele e
+    # uma lista de numeros e sozinho dava 85 caracteres, metade do que cabe num
+    # resultado de pesquisa. Esta leva a data e a Schumann do dia, que e o que
+    # distingue esta leitura de todas as outras.
+    #
+    # Monta-se por pedacos, do mais importante para o menos, e so entra o
+    # pedaco que ainda couber: assim nunca sai uma frase cortada a meio.
+    descricao = f"Clima espacial de {data_longa}: Kp {nvl(d['kp'])} ({d['kp_label']})"
+    for pedaco in [
+        f", raios-X {d['raiox']}" if d["raiox"] else "",
+        (f". Ressonância de Schumann medida em {nvl(d['sr_hz'], 2)} Hz"
+         if d.get("sr_hz") else
+         f", vento solar a {nvl(d['vento_vel'], 0)} km/s" if d["vento_vel"] else ""),
+        f". Índice de energia {d['energia']} em 100" if d["energia"] is not None else "",
+    ]:
+        if pedaco and len(descricao) + len(pedaco) + 1 <= 158:
+            descricao += pedaco
+    descricao += "."
+
     jsonld = json.dumps({
         "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": d["titulo"],
-        "datePublished": iso,
-        "inLanguage": "pt",
-        "description": resumo,
-        "author": {"@type": "Organization", "name": "Ressonância de Schumann Hoje"},
-        "publisher": {"@type": "Organization", "name": "Ressonância de Schumann Hoje"},
+        "@graph": [{
+            "@type": "Article",
+            "headline": f"{d['titulo']} · {data_curta}",
+            "datePublished": iso,
+            "dateModified": iso,
+            "inLanguage": "pt",
+            "description": descricao,
+            "mainEntityOfPage": f"{DOMINIO}/leitura/{iso}",
+            "isPartOf": {"@type": "WebSite", "@id": f"{DOMINIO}/#site"},
+            "about": {"@type": "Thing", "name": "Ressonância de Schumann"},
+            "author": {"@type": "Organization", "name": "Ressonância de Schumann Hoje",
+                       "url": f"{DOMINIO}/sobre"},
+            "publisher": {"@type": "Organization", "name": "Ressonância de Schumann Hoje",
+                          "url": DOMINIO},
+        }, {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Painel", "item": DOMINIO + "/"},
+                {"@type": "ListItem", "position": 2, "name": "Leituras diárias",
+                 "item": f"{DOMINIO}/leitura/"},
+                {"@type": "ListItem", "position": 3, "name": data_longa,
+                 "item": f"{DOMINIO}/leitura/{iso}"},
+            ],
+        }],
     }, ensure_ascii=False, indent=1)
 
     return CABECA.format(
         titulo=d["titulo"], iso=iso, dominio=DOMINIO, versao=VERSAO,
         data_curta=data_curta, data_longa=data_longa, dia_semana=dia_semana,
-        descricao=resumo.replace('"', "'"), jsonld=jsonld,
+        descricao=descricao.replace('"', "'"), jsonld=jsonld,
         cls=d["cls"], banda=d["banda"], resumo=resumo,
         energia=d["energia"], kp=nvl(d["kp"]),
         raiox=d["raiox"] or "n/d",
@@ -525,6 +601,24 @@ def recolher(data):
         if futuros:
             d["prev_kp"] = max(futuros)
 
+    # A medicao da Schumann desta manha. Nao se aceita uma leitura recusada
+    # nem uma leitura velha: se o recetor de Tomsk estava saturado, a seccao
+    # simplesmente nao aparece na pagina, como acontece com as outras fontes.
+    sr = tenta("schumann")
+    if sr and (sr.get("fundamental") or {}).get("estado") == "ok" and sr.get("estado") == "ok":
+        f = sr["fundamental"]
+        d["sr_hz"] = f.get("pico_hz")
+        d["sr_int"] = round(f.get("intensidade", 0))
+        t = ler_utc(sr.get("atualizado"))
+        d["sr_hora"] = t.strftime("%H:%M") if t else None
+        hs = [h for h in (sr.get("harmonicas") or []) if h.get("estado") == "ok"]
+        if hs:
+            d["sr_harm"] = "Nessa mesma coluna, " + ", ".join(
+                "a {} aparecia em {} Hz ({})".format(
+                    NOMES_HARM.get(h["nominal_hz"], h.get("modo", "harmónica")),
+                    nvl(h["pico_hz"], 2), round(h["intensidade"]))
+                for h in hs) + "."
+
     d["energia"] = indice_energia(d["kp"], nivel_raiox, d["sismos"], d["mag_max"])
     d["banda"], d["cls"] = banda(d["energia"])
     d["titulo"] = escolher_titulo(d["banda"], data)
@@ -594,8 +688,8 @@ def escrever_indice(itens):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Leituras diárias do clima espacial | Ressonância de Schumann Hoje</title>
-<meta name="description" content="Arquivo das leituras diárias: o estado do campo geomagnético, do Sol e do vento solar, dia a dia, em português.">
+<title>Leituras diárias da Ressonância de Schumann</title>
+<meta name="description" content="Arquivo das leituras diárias: a Ressonância de Schumann medida, o campo geomagnético, o Sol e o vento solar, dia a dia e em português.">
 <link rel="canonical" href="{DOMINIO}/leitura/">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../css/style.css?v={VERSAO}">

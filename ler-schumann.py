@@ -36,6 +36,7 @@ SAIDA = Path(__file__).parent / "schumann.json"
 LARGURA, ALTURA = 1540, 460
 TOPO, BASE, ESQ = 29, 430, 59          # 0 Hz, 40 Hz, hora 0 do primeiro dia
 LARG_DIA, DIAS, HZ_MAX = 480, 3, 40.0
+SPAN_HORAS = DIAS * 24          # a imagem cobre exatamente tres dias
 BARRA_X = (1512, 1527)
 
 # Bandas onde procurar cada pico, largas o suficiente para o pico se mover.
@@ -181,6 +182,16 @@ def ler(dados):
     x_novo, dia_novo = colunas[0]
     t_novo = instante(x_novo, dia_novo)
     motivo_atual = ler_modo(a, escala, x_novo, *MODOS[0])["estado"]
+
+    # Ate onde a estacao ja escreveu, dentro da janela de 72 horas da imagem.
+    #
+    # O painel mostrava isto lendo os pixeis da imagem no navegador. Como a
+    # estacao nao envia cabecalhos CORS, essa leitura tinha de passar por um
+    # intermediario de imagens, o que custava 204 kB e uma dependencia de
+    # terceiros a cada visita. Aqui a imagem ja esta aberta: calcula-se e
+    # publica-se, e o navegador deixa de precisar do intermediario.
+    base = dict(base, janela_horas=SPAN_HORAS,
+                horas_registadas=round(min(max(t_novo, 0.0), SPAN_HORAS), 2))
 
     # Recua na imagem, de 15 em 15 minutos, ate encontrar uma medicao valida.
     # O valor mostrado e sempre uma medicao real; quando nao e da hora atual,

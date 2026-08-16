@@ -38,6 +38,8 @@
     // corre de 30 em 30 minutos e publica na branch "dados". Fica fora do
     // projeto de propósito, para o histórico não encher de commits do robô.
     schumann: "https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/schumann.json",
+    // Trinta dias de medições, acumuladas pelo mesmo robô. Ver ler-schumann.py.
+    historico: "https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/historico.json",
     auroraN: "https://services.swpc.noaa.gov/images/animations/ovation/north/latest.jpg",
     auroraS: "https://services.swpc.noaa.gov/images/animations/ovation/south/latest.jpg",
     drap: "https://services.swpc.noaa.gov/images/animations/d-rap/global/latest.png",
@@ -1306,6 +1308,103 @@
     s += '<text x="' + (padL + 6) + '" y="' + (H - padB - 4) + '" fill="#f43f5e" font-size="10">sul, deixa entrar energia</text>';
 
     host.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none">' + s + "</svg>";
+  }
+
+  // ----------------------------------------------------------
+  // A Ressonância de Schumann ao longo dos dias
+  //
+  // Desenha a frequência do pico da fundamental ao longo do tempo, com a
+  // referência dos 7,83 Hz marcada. É a resposta visual à pergunta que mais
+  // aparece sobre este tema, a de a frequência estar a subir: vê-se de
+  // relance que oscila em torno da mesma linha.
+  //
+  // Os buracos são deixados como buracos. Quando a estação de Tomsk está
+  // saturada não há leitura, e a linha corta: unir os dois lados inventaria
+  // uma medição que não existiu.
+  // ----------------------------------------------------------
+
+  var SR_MIN_PONTOS = 12;      // menos de 6 horas não vale um gráfico
+
+  function serieSchumann(hostId, linhas) {
+    var host = document.getElementById(hostId);
+    if (!host) return;
+
+    var W = 900, H = 220, padL = 40, padB = 26, padT = 12, padR = 10;
+    var iw = W - padL - padR, ih = H - padB - padT;
+
+    var t0 = new Date(linhas[0][0]).getTime();
+    var t1 = new Date(linhas[linhas.length - 1][0]).getTime();
+    var span = Math.max(t1 - t0, 1);
+
+    // Escala fixa e generosa: com escala automática, um dia calmo parecia
+    // dramático só porque o eixo se apertava à volta de meia décima.
+    var lo = 6.8, hi = 9.0;
+    var px = function (t) { return padL + ((t - t0) / span) * iw; };
+    var py = function (v) { return padT + (1 - (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo)) * ih; };
+
+    var s = "";
+    [7.0, 7.5, 8.0, 8.5].forEach(function (v) {
+      s += '<line x1="' + padL + '" y1="' + py(v).toFixed(1) + '" x2="' + (W - padR) +
+           '" y2="' + py(v).toFixed(1) + '" stroke="rgba(255,255,255,.06)"/>' +
+           '<text x="' + (padL - 6) + '" y="' + (py(v) + 4).toFixed(1) +
+           '" fill="#6b7391" font-size="10" text-anchor="end">' + num(v) + "</text>";
+    });
+
+    // A linha dos 7,83 Hz, que é a referência de que toda a gente fala.
+    s += '<line x1="' + padL + '" y1="' + py(7.83).toFixed(1) + '" x2="' + (W - padR) +
+         '" y2="' + py(7.83).toFixed(1) + '" stroke="#38bdf8" stroke-opacity=".5" stroke-dasharray="5 6"/>' +
+         '<text x="' + (W - padR - 4) + '" y="' + (py(7.83) - 5).toFixed(1) +
+         '" fill="#38bdf8" font-size="10" text-anchor="end" fill-opacity=".8">7,83 Hz</text>';
+
+    var d = "", aberto = false, medidos = 0;
+    linhas.forEach(function (l) {
+      if (l[1] === null || l[1] === undefined) { aberto = false; return; }
+      medidos++;
+      var x = px(new Date(l[0]).getTime()), y = py(l[1]);
+      d += (aberto ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1) + " ";
+      aberto = true;
+    });
+    s += '<path d="' + d + '" fill="none" stroke="#e8ecf8" stroke-width="1.7" ' +
+         'stroke-linejoin="round" stroke-linecap="round"/>';
+
+    var dias = span / 86400000;
+    s += '<text x="' + padL + '" y="' + (H - 6) + '" fill="#6b7391" font-size="10">' +
+         (dias >= 1 ? "há " + Math.round(dias) + (Math.round(dias) === 1 ? " dia" : " dias")
+                    : "há " + Math.round(span / 3600000) + " h") + "</text>" +
+         '<text x="' + (W - padR) + '" y="' + (H - 6) +
+         '" fill="#6b7391" font-size="10" text-anchor="end">agora</text>';
+
+    host.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" ' +
+      'aria-label="Frequência do pico da Ressonância de Schumann ao longo do tempo">' + s + "</svg>";
+    return medidos;
+  }
+
+  function loadHistorico() {
+    var caixa = document.getElementById("sr-historico");
+    if (!caixa) return;
+
+    return getJSON(SRC.historico).then(function (d) {
+      var linhas = (d && d.dados) || [];
+      var medidos = linhas.filter(function (l) { return l[1] !== null && l[1] !== undefined; }).length;
+
+      // Enquanto não houver medições que cheguem, a secção não aparece.
+      // Antes uma caixa vazia do que um gráfico com dois pontos.
+      if (medidos < SR_MIN_PONTOS) return;
+
+      caixa.hidden = false;
+      serieSchumann("sr-serie", linhas);
+
+      var hz = linhas.filter(function (l) { return l[1] != null; }).map(function (l) { return l[1]; });
+      var min = Math.min.apply(null, hz), max = Math.max.apply(null, hz);
+      var recusadas = linhas.length - medidos;
+
+      set("sr-historico-nota",
+        "Nas últimas " + Math.round((new Date(linhas[linhas.length - 1][0]) - new Date(linhas[0][0])) / 3600000) +
+        " horas, o pico da fundamental andou entre <b>" + num(min, 2) + "</b> e <b>" + num(max, 2) +
+        "&nbsp;Hz</b>, em " + medidos + " medições" +
+        (recusadas ? ", com " + recusadas + " leituras recusadas por falta de confiança" : "") +
+        ". A linha corta onde não houve leitura: não se une o que não foi medido.");
+    }).catch(function (e) { console.warn("Histórico da Schumann:", e); });
   }
 
   // ----------------------------------------------------------
@@ -2921,6 +3020,10 @@
     // se vê sem descer a página: o vento solar sozinho traz 4 MB. Só são
     // pedidos quando a secção respetiva se aproxima do ecrã, o que tira esse
     // peso todo de cima de quem abre a página e não desce, que é a maioria.
+    // Vigia-se a secção do espectrograma e não o cartão do histórico: o cartão
+    // nasce escondido, e um elemento escondido não tem caixa nenhuma, portanto
+    // apareceria sempre como estando à vista e o adiamento não servia de nada.
+    aoAproximar("espectrograma", loadHistorico);
     aoAproximar("proton-chart", loadProtons);
     aoAproximar("vs-chart", loadVentoSolar);
     aoAproximar("f107-value", loadF107);

@@ -1012,6 +1012,17 @@ code {
 .map-tip b { display: block; font-size: 13px; margin-bottom: 2px; }
 .map-tip span { display: block; color: var(--text-faint); font-size: 11.5px; }
 
+/* Série do histórico da Schumann, por baixo do espectrograma */
+.sr-historico { margin-top: 22px; }
+.sr-historico[hidden] { display: none; }
+.sr-historico h3 { margin: 0 0 4px; font-size: 18px; letter-spacing: -0.02em; }
+.sr-historico .sub { margin: 0 0 14px; }
+.serie {
+  background: #060a16; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); overflow: hidden;
+}
+.serie svg { display: block; width: 100%; height: auto; }
+
 /* Lista dos sismos ao lado do mapa */
 .quake-feed {
   max-height: 300px; overflow-y: auto; margin: 0; padding: 0; list-style: none;

@@ -76,8 +76,15 @@ inventar. Por isso o valor é extraído da própria imagem.
 | [.github/workflows/schumann.yml](.github/workflows/schumann.yml) | corre de 30 em 30 min |
 | branch `dados` | onde o resultado é publicado, **fora do projeto** |
 
-A branch `dados` é reescrita a cada execução (`push --force` de uma branch
-órfã), portanto tem sempre **um único commit** e não cresce. Foi essa a razão
+A branch `dados` tem dois ficheiros: o `schumann.json`, com a leitura do
+momento, e o `historico.json`, que acumula 30 dias de medições e alimenta o
+gráfico da série no painel. Antes só existia o primeiro, e as 48 medições
+diárias eram deitadas fora.
+
+O robô **descarrega o histórico antes de correr**, acrescenta a linha nova e
+volta a subir tudo. É por isso que a branch pode continuar a ser reescrita a
+cada execução (`push --force` de uma branch órfã), com **um único commit**, sem
+o histórico se perder. Ao mexer no workflow, não tirar esse passo do curl. Foi essa a razão
 da escolha: guardar o JSON dentro do projeto encheria o histórico de 48 commits
 automáticos por dia. O painel lê de
 `raw.githubusercontent.com/.../dados/schumann.json`, que envia

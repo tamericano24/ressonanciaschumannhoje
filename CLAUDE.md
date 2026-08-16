@@ -339,6 +339,32 @@ meio por competir com a [indice-kp-agora.html](indice-kp-agora.html), que já
 cobre o mesmo termo. Duas páginas nossas na mesma pesquisa dividem força em vez
 de somar.
 
+## A secção em inglês, e porque só tem três páginas
+
+O painel é todo escrito por JavaScript em português: **764 cadeias visíveis,
+4 820 palavras**, mais 13 578 palavras no HTML. Traduzir tudo de uma vez daria
+um painel meio traduzido, que é pior do que nenhum.
+
+A primeira fase são as páginas que **não dependem do painel** e que são as que
+atraem ligações de fora: [en/index.html](en/index.html) como entrada,
+[en/methodology.html](en/methodology.html) e [en/history.html](en/history.html)
+com o Dataset. Todas apontam para o painel em português, sem fingir que ele
+está traduzido.
+
+- O `prefixo()` do [js/app.js](js/app.js) já contempla `en/`, tal como `blog/`
+  e `leitura/`.
+- O `emIngles()` lê o `lang` do `<html>` e serve as poucas frases que o
+  JavaScript escreve dentro de páginas inglesas, como a legenda do gráfico.
+  **Não é uma camada de tradução**, e não deve crescer para uma: se um dia se
+  traduzir o painel, faz-se com um dicionário a sério.
+- O `PARES_IDIOMA` liga cada página ao seu par. Página sem par vai para a
+  entrada do outro idioma, que é o mais honesto sem prometer tradução.
+- **hreflang só entre pares que existam.** Apontar `hreflang` para uma página
+  que não existe é pior do que não ter nenhum.
+
+A fase seguinte, se houver, é o dicionário do painel. Não se começa isso sem
+decidir primeiro se vale a pena manter duas versões vivas.
+
 ## Documentação mais longa
 
 O [README.md](README.md) tem o guia completo: fontes de dados, monetização,

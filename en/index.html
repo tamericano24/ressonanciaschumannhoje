@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schumann Resonance: measured, not guessed</title>
+<meta name="description" content="We read the Schumann resonance peak from the Tomsk spectrogram every 30 minutes and publish the numbers, the method and the raw data. Refused readings stay refused.">
+<link rel="canonical" href="https://ressonanciaschumannhoje.com/en/">
+<link rel="alternate" hreflang="pt" href="https://ressonanciaschumannhoje.com/">
+<link rel="alternate" hreflang="en" href="https://ressonanciaschumannhoje.com/en/">
+<link rel="alternate" hreflang="x-default" href="https://ressonanciaschumannhoje.com/">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_GB">
+<meta property="og:locale:alternate" content="pt_PT">
+<meta property="og:title" content="Schumann Resonance: measured, not guessed">
+<meta property="og:description" content="The peak frequency read from the Tomsk spectrogram every 30 minutes, with the method and the raw data published.">
+<meta property="og:url" content="https://ressonanciaschumannhoje.com/en/">
+<meta property="og:image" content="https://ressonanciaschumannhoje.com/assets/og.png">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/assets/icone-apple.png">
+<link rel="stylesheet" href="../css/style.css?v=48">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "WebPage",
+   "@id": "https://ressonanciaschumannhoje.com/en/#page",
+   "url": "https://ressonanciaschumannhoje.com/en/",
+   "name": "Schumann Resonance: measured, not guessed",
+   "description": "The Schumann resonance peak read from the Tomsk spectrogram every 30 minutes, with the method and the raw data published.",
+   "inLanguage": "en",
+   "isPartOf": { "@type": "WebSite", "@id": "https://ressonanciaschumannhoje.com/#site" },
+   "about": { "@type": "Thing", "name": "Schumann resonance" },
+   "publisher": { "@type": "Organization", "name": "Ressonância de Schumann Hoje",
+                  "url": "https://ressonanciaschumannhoje.com/" }
+  },
+  {
+   "@type": "BreadcrumbList",
+   "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ressonanciaschumannhoje.com/" },
+    { "@type": "ListItem", "position": 2, "name": "English", "item": "https://ressonanciaschumannhoje.com/en/" }
+   ]
+  }
+ ]
+}
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html"><svg class="brand-icone" viewBox="0 0 28 24" aria-hidden="true"><path d="M1 12h5l2.6-8.5L13 20l3.4-11 2.2 3H27" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="brand-nome">Ressonância Schumann Hoje</span></a>
+      <button class="nav-toggle" type="button" aria-label="Open site menu"><span class="barras"><i></i><i></i><i></i></span>Menu</button>
+  </div>
+</header>
+
+<main class="wrap">
+<article class="article">
+  <p class="meta"><a href="../index.html">Painel (Português)</a> / English</p>
+
+  <h1>Schumann resonance, measured</h1>
+  <p class="meta">A Portuguese-language space weather monitor. This page explains, in English, what it measures and how.</p>
+
+  <p>The live dashboard on this site is written in Portuguese. This page exists so that English readers, and anyone deciding whether the data is worth citing, can understand what is being measured and how, without having to translate a panel first.</p>
+
+  <p><a class="btn" href="../index.html">Open the live dashboard →</a></p>
+
+  <h2>What is actually published here</h2>
+
+  <p>Every 30 minutes a program downloads the public spectrogram from the Space Observing System at Tomsk State University, locates the most recent column of data, finds the peak of the fundamental inside the 6.6 to 9.2 Hz band, and records two things: the frequency of that peak, and its intensity.</p>
+
+  <p>The intensity comes from the colour bar printed on the image itself, on a scale of 0 to 100. <b>It is not calibrated in picotesla</b>, because the station does not publish a calibration. Comparing values between days is legitimate; converting them into physical units is not, and we do not do it.</p>
+
+  <h2>Why read it from an image at all</h2>
+
+  <p>Because there is no public source that publishes these values as numbers. We checked file by file: the Tomsk server returns content for the spectrogram image and empty files for every data endpoint we tried. The HeartMath network has no documented API.</p>
+
+  <p>That leaves two options. Read the image, and say so. Or invent the numbers. Sites publishing a live "F1 = 7.70 Hz" are doing one or the other, and it is worth knowing which.</p>
+
+  <h2>The refusal rules, which are the point</h2>
+
+  <p>A measurement is refused, rather than estimated, when:</p>
+
+  <ul>
+    <li>the receiver at Tomsk is saturated and the whole band reads white, which happens roughly one hour in four;</li>
+    <li>the detected peak sits against the edge of the search band, meaning what was found is probably not the fundamental;</li>
+    <li>the colours in the image do not match the published scale;</li>
+    <li>the image changes dimensions, which is how a change of format at the station is detected.</li>
+  </ul>
+
+  <p>When that happens the reading is marked as refused, with the reason, and the series shows a gap. Nothing is interpolated and nothing is filled in. Joining the two sides of a gap would draw a measurement that never existed.</p>
+
+  <p>When the current half hour has no usable reading, the dashboard steps back through the image, which covers 72 hours, until it finds the last reading it trusts, and displays that one <b>with its age shown</b>.</p>
+
+  <h2>One thing worth knowing about the source</h2>
+
+  <div class="disclaimer">
+    <strong>The old Tomsk address is frozen.</strong> Until September 2025 the spectrogram was published at <code>sosrff.tsu.ru/new/shm.jpg</code>. That file stopped updating on 1 September 2025 and is still online, unchanged. Several sites continue to publish it as if it were live. The live feed is now at <code>sos70.ru</code>, and that is the one used here. The dates printed along the top of the image let anyone verify this in a few seconds.
+  </div>
+
+  <h2>The data is open</h2>
+
+  <p>The full series of measurements, covering the last 30 days, is available as a JSON file with no registration and no key. Each row holds the timestamp in UTC, the peak frequency in hertz, the intensity on the 0 to 100 colour scale, and the state of the reading. A null frequency means the reading was refused, and the state says why.</p>
+
+  <p><a class="btn" href="https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/historico.json" rel="noopener" target="_blank">Download the series as JSON →</a></p>
+
+  <p>If you use it, please credit this site and the original source, the Space Observing System at Tomsk State University.</p>
+
+  <h2>Read further</h2>
+
+  <ul>
+    <li><a href="methodology.html">Method, in full</a>: every source, the extraction step by step, and the known limitations.</li>
+    <li><a href="history.html">The measurement history</a>: the peak frequency over the past days, and the answer to whether it is rising.</li>
+    <li><a href="../index.html">The live dashboard</a>, in Portuguese: spectrogram, Kp index, solar activity, earthquakes and volcanoes.</li>
+  </ul>
+
+  <p class="src">This site is independent, carries no advertising and uses no tracking. It is written in Portuguese because that language was badly served on this topic; these English pages cover the parts that do not need translating to be useful.</p>
+
+<p><a href="../index.html">← Ver o painel em português</a></p>
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-bottom">
+      <span>© <span data-year></span> Ressonância de Schumann Hoje</span>
+      <span><a href="methodology.html">Method</a> · <a href="history.html">History</a> · <a href="../sobre.html">About</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/app.js?v=48"></script>
+</body>
+</html>

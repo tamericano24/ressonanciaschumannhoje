@@ -747,6 +747,10 @@ def escrever_sitemap(itens):
         ("/sobre", "yearly", "0.4"),
         ("/apoiar", "yearly", "0.4"),
         ("/blog/", "weekly", "0.7"),
+        # Paginas em ingles. Ver o /en/ e as etiquetas hreflang.
+        ("/en/", "weekly", "0.8"),
+        ("/en/methodology", "monthly", "0.7"),
+        ("/en/history", "daily", "0.7"),
         ("/blog/o-que-e-a-ressonancia-de-schumann", "monthly", "0.9"),
         ("/blog/7-83-hz-frequencia-da-terra", "monthly", "0.9"),
         ("/blog/tempestades-geomagneticas-e-o-corpo", "monthly", "0.9"),

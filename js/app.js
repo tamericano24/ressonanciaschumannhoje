@@ -1368,14 +1368,18 @@
          'stroke-linejoin="round" stroke-linecap="round"/>';
 
     var dias = span / 86400000;
-    s += '<text x="' + padL + '" y="' + (H - 6) + '" fill="#6b7391" font-size="10">' +
-         (dias >= 1 ? "há " + Math.round(dias) + (Math.round(dias) === 1 ? " dia" : " dias")
-                    : "há " + Math.round(span / 3600000) + " h") + "</text>" +
-         '<text x="' + (W - padR) + '" y="' + (H - 6) +
-         '" fill="#6b7391" font-size="10" text-anchor="end">agora</text>';
+    var d1 = Math.round(dias), h1 = Math.round(span / 3600000);
+    var inicio = emIngles()
+      ? (dias >= 1 ? d1 + (d1 === 1 ? " day ago" : " days ago") : h1 + " h ago")
+      : (dias >= 1 ? "há " + d1 + (d1 === 1 ? " dia" : " dias") : "há " + h1 + " h");
 
-    host.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" ' +
-      'aria-label="Frequência do pico da Ressonância de Schumann ao longo do tempo">' + s + "</svg>";
+    s += '<text x="' + padL + '" y="' + (H - 6) + '" fill="#6b7391" font-size="10">' + inicio + "</text>" +
+         '<text x="' + (W - padR) + '" y="' + (H - 6) +
+         '" fill="#6b7391" font-size="10" text-anchor="end">' + (emIngles() ? "now" : "agora") + "</text>";
+
+    host.innerHTML = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' +
+      (emIngles() ? "Schumann resonance peak frequency over time"
+                  : "Frequência do pico da Ressonância de Schumann ao longo do tempo") + '">' + s + "</svg>";
     return medidos;
   }
 
@@ -1401,13 +1405,18 @@
       var hz = linhas.filter(function (l) { return l[1] != null; }).map(function (l) { return l[1]; });
       var min = Math.min.apply(null, hz), max = Math.max.apply(null, hz);
       var recusadas = linhas.length - medidos;
+      var horas = Math.round((new Date(linhas[linhas.length - 1][0]) - new Date(linhas[0][0])) / 3600000);
 
-      set("sr-historico-nota",
-        "Nas últimas " + Math.round((new Date(linhas[linhas.length - 1][0]) - new Date(linhas[0][0])) / 3600000) +
-        " horas, o pico da fundamental andou entre <b>" + num(min, 2) + "</b> e <b>" + num(max, 2) +
-        "&nbsp;Hz</b>, em " + medidos + " medições" +
-        (recusadas ? ", com " + recusadas + " leituras recusadas por falta de confiança" : "") +
-        ". A linha corta onde não houve leitura: não se une o que não foi medido.");
+      set("sr-historico-nota", emIngles()
+        ? "Over the last " + horas + " hours the fundamental peak ranged between <b>" +
+          min.toFixed(2) + "</b> and <b>" + max.toFixed(2) + "&nbsp;Hz</b>, across " + medidos +
+          " measurements" + (recusadas ? ", with " + recusadas + " readings refused as untrustworthy" : "") +
+          ". The line breaks where there was no reading: what was not measured is not joined up."
+        : "Nas últimas " + horas +
+          " horas, o pico da fundamental andou entre <b>" + num(min, 2) + "</b> e <b>" + num(max, 2) +
+          "&nbsp;Hz</b>, em " + medidos + " medições" +
+          (recusadas ? ", com " + recusadas + " leituras recusadas por falta de confiança" : "") +
+          ". A linha corta onde não houve leitura: não se une o que não foi medido.");
     }).catch(function (e) { console.warn("Histórico da Schumann:", e); });
   }
 
@@ -2588,9 +2597,29 @@
     { txt: "Termos",          href: "termos.html" }
   ];
 
-  // Páginas dentro de blog/ e leitura/ precisam de subir um nível.
+  // Troca de idioma. Cada página em inglês tem o seu par em português, e o
+  // menu leva a pessoa ao par certo em vez de a atirar sempre para a entrada.
+  // As páginas sem par apontam para a entrada do outro idioma, que é o mais
+  // honesto que se pode fazer sem prometer uma tradução que não existe.
+  var PARES_IDIOMA = {
+    "index.html":       "en/index.html",
+    "metodologia.html": "en/methodology.html",
+    "historico.html":   "en/history.html",
+    "en/index.html":       "index.html",
+    "en/methodology.html": "metodologia.html",
+    "en/history.html":     "historico.html"
+  };
+
+  // Páginas dentro de blog/, leitura/ e en/ precisam de subir um nível.
   function prefixo() {
-    return /\/(blog|leitura)\//.test(location.pathname) ? "../" : "";
+    return /\/(blog|leitura|en)\//.test(location.pathname) ? "../" : "";
+  }
+
+  // Verdadeiro nas páginas em inglês. O painel continua em português: o que
+  // isto serve é o punhado de frases que o JavaScript escreve dentro de
+  // páginas inglesas, como a legenda do gráfico da série.
+  function emIngles() {
+    return (document.documentElement.lang || "").slice(0, 2) === "en";
   }
 
   // Caminho da página atual a partir da raiz do site, por exemplo
@@ -2610,6 +2639,15 @@
     // uma leitura diária mantém aceso o item "Leituras diárias"
     var pasta = alvo.replace(/index\.html$/, "");
     return pasta !== "" && alvo.slice(-10) === "index.html" && atual.indexOf(pasta) === 0;
+  }
+
+  // A linha de troca de idioma no rodapé do menu.
+  function ligacaoIdioma(p) {
+    var alvo = PARES_IDIOMA[caminhoAtual()];
+    if (!alvo) alvo = emIngles() ? "index.html" : "en/index.html";
+    return '<p class="menu-idioma"><a href="' + p + alvo + '" hreflang="' +
+      (emIngles() ? "pt" : "en") + '" rel="alternate">' +
+      (emIngles() ? "Ver em português" : "Read in English") + "</a></p>";
   }
 
   function renderMenu() {
@@ -2646,6 +2684,7 @@
             return '<a href="' + p + it.href + '">' + it.txt + "</a>";
           }).join("") +
         "</nav>" +
+        ligacaoIdioma(p) +
         "<p>Sem publicidade e sem rastreadores</p>" +
       "</div>";
 

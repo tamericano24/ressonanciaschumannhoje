@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How we measure the Schumann resonance | Method</title>
+<meta name="description" content="Every data source, the peak extraction from the Tomsk spectrogram step by step, the four rules for refusing a reading, and the known limitations.">
+<link rel="canonical" href="https://ressonanciaschumannhoje.com/en/methodology">
+<link rel="alternate" hreflang="pt" href="https://ressonanciaschumannhoje.com/metodologia">
+<link rel="alternate" hreflang="en" href="https://ressonanciaschumannhoje.com/en/methodology">
+<link rel="alternate" hreflang="x-default" href="https://ressonanciaschumannhoje.com/metodologia">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/assets/icone-apple.png">
+<link rel="stylesheet" href="../css/style.css?v=48">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "TechArticle",
+   "@id": "https://ressonanciaschumannhoje.com/en/methodology#page",
+   "url": "https://ressonanciaschumannhoje.com/en/methodology",
+   "name": "How we measure the Schumann resonance",
+   "description": "Every data source, the peak extraction from the Tomsk spectrogram step by step, the rules for refusing a reading, and the known limitations.",
+   "inLanguage": "en",
+   "proficiencyLevel": "Beginner",
+   "isPartOf": { "@type": "WebSite", "@id": "https://ressonanciaschumannhoje.com/#site" },
+   "author": { "@type": "Organization", "name": "Ressonância de Schumann Hoje" },
+   "publisher": { "@type": "Organization", "name": "Ressonância de Schumann Hoje",
+                  "url": "https://ressonanciaschumannhoje.com/" }
+  },
+  {
+   "@type": "BreadcrumbList",
+   "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "English", "item": "https://ressonanciaschumannhoje.com/en/" },
+    { "@type": "ListItem", "position": 2, "name": "Method", "item": "https://ressonanciaschumannhoje.com/en/methodology" }
+   ]
+  }
+ ]
+}
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html"><svg class="brand-icone" viewBox="0 0 28 24" aria-hidden="true"><path d="M1 12h5l2.6-8.5L13 20l3.4-11 2.2 3H27" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="brand-nome">Ressonância Schumann Hoje</span></a>
+      <button class="nav-toggle" type="button" aria-label="Open site menu"><span class="barras"><i></i><i></i><i></i></span>Menu</button>
+  </div>
+</header>
+
+<main class="wrap">
+<article class="article">
+  <p class="meta"><a href="index.html">English</a> / Method</p>
+
+  <h1>Method</h1>
+  <p class="meta">How this site obtains, calculates and presents each number.</p>
+
+  <p>This page exists so that anyone can check what is published here. Almost nothing on the dashboard is measured by us: it comes from public institutions that publish their data freely. What we do is translate, organise and explain. The one exception is the Schumann resonance reading itself, and that is described in detail below.</p>
+
+  <h2>Data sources</h2>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Indicator</th><th>Source</th><th>Update</th></tr></thead>
+    <tbody>
+      <tr><td>Schumann resonance spectrogram</td><td>Space Observing System (SOS-70), Tomsk State University, Russia</td><td>New image roughly every 20 min; we read it every 30 min</td></tr>
+      <tr><td>Kp index</td><td>NOAA Space Weather Prediction Center</td><td>Every 3 hours</td></tr>
+      <tr><td>Solar X-ray flux</td><td>GOES satellites / NOAA SWPC</td><td>Every minute</td></tr>
+      <tr><td>Solar flares</td><td>NOAA SWPC, 7-day catalogue</td><td>Continuous</td></tr>
+      <tr><td>Three-day forecast</td><td>NOAA SWPC text bulletin</td><td>Three times a day</td></tr>
+      <tr><td>Space weather alerts</td><td>NOAA SWPC</td><td>As issued</td></tr>
+      <tr><td>Earthquakes M4.5+</td><td>United States Geological Survey</td><td>Every minute</td></tr>
+      <tr><td>Proton flux and S scale</td><td>GOES satellites / NOAA SWPC</td><td>Every 5 minutes</td></tr>
+      <tr><td>F10.7 solar flux</td><td>NOAA SWPC</td><td>Several times a day</td></tr>
+      <tr><td>Aurora and ionosphere maps</td><td>NOAA SWPC (OVATION, D-RAP, TEC)</td><td>Every 5 minutes</td></tr>
+      <tr><td>Second station, visual comparison only (0.2–30 Hz, not a Schumann measurement)</td><td>Cumiana observatory, Italy (vlf.it)</td><td>Continuous</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Requests are made by your browser directly to the source servers. We keep no copy of the data and do not sit in the middle of those requests.</p>
+
+  <div class="disclaimer">
+    <strong>A note on the Tomsk address.</strong> Until September 2025 the spectrogram was published at <code>sosrff.tsu.ru/new/shm.jpg</code>. That file stopped being updated on 1 September 2025 and remains online, frozen; several sites still publish it as if it were current. The live feed moved to <code>sos70.ru</code>, and that is the one we use. The dates printed along the top of the image let anyone confirm it.
+  </div>
+
+  <h2>How the Schumann resonance is measured here</h2>
+
+  <p>The large gauge on the dashboard shows a measurement, not a composite index. It shows two things: <b>the frequency of the fundamental peak</b> at that moment, and <b>the intensity</b> of that peak.</p>
+
+  <p>No public source publishes these values as numbers. We verified this: the Tomsk station publishes the spectrogram as an image and nothing else, and every other data endpoint we tested on that server returns an empty file. So the value is extracted from the published image itself.</p>
+
+  <h3>The method, step by step</h3>
+  <ol>
+    <li>Download the Tomsk spectrogram, which covers the last 72 hours.</li>
+    <li>Locate the most recent time column that contains data.</li>
+    <li>Within the fundamental band, between 6.6 and 9.2 Hz, find the strongest line. That is the peak frequency.</li>
+    <li>Convert the colour of that line into a number, using the colour bar printed on the image itself as the scale, from 0 to 100.</li>
+    <li>Repeat for the second and third harmonics, near 14.3 and 20.8 Hz.</li>
+  </ol>
+
+  <h3>When we refuse to give a number</h3>
+  <p>This is the part that separates a reading from a guess. The reading is discarded, rather than shown, in any of these cases:</p>
+  <ul>
+    <li><b>Saturated receiver.</b> When the band reads entirely white the instrument is above scale, typically from local interference. There is no value to read. In the spectrogram we analysed, this affected <b>19 of the 72 hours</b>.</li>
+    <li><b>Peak against the edge of the band.</b> Almost always the rim of a saturated area next to it, rather than the resonance.</li>
+    <li><b>Colours that do not match the scale.</b> Captions, watermarks or compression artefacts.</li>
+    <li><b>The image changed format.</b> If the dimensions or the colour bar stop matching what is expected, the reading stops rather than returning wrong numbers.</li>
+  </ul>
+
+  <h3>Why the value sometimes has an age</h3>
+  <p>When the current half hour yields no trustworthy reading, we step back through the image itself to the last valid measurement and display that one, saying <b>when it was taken</b>. The number shown is always a real measurement that actually happened. It is never interpolated, estimated or filled in.</p>
+
+  <h3>What this number is not</h3>
+  <ul>
+    <li><b>It is not calibrated in picotesla.</b> The intensity comes from the spectrogram colour scale, 0 to 100. Tomsk does not publish the calibration that would allow conversion into physical units.</li>
+    <li><b>It is not a planetary value.</b> It is the Earth-ionosphere cavity as seen from Siberia. Another station would give another value.</li>
+    <li><b>It is not a standardised quantity.</b> It should not be cited as an official measurement, unlike the Kp index, which is produced by GFZ Potsdam.</li>
+  </ul>
+
+  <p>The standard objection to this method, which we used to raise on this page ourselves, is that reading colours automatically confuses real peaks with instrument noise. That is true, and it is exactly why the four refusal rules above exist. We would rather show a measurement from three hours ago, labelled as such, than a made-up number for the current hour.</p>
+
+  <h2>Known limitations</h2>
+  <ul>
+    <li>Tomsk is a research instrument. Outages, noise and maintenance are normal and do not indicate planetary events.</li>
+    <li>A single station does not measure the whole planet: it measures the Earth-ionosphere cavity as seen from Siberia.</li>
+    <li>The Kp index is global and averaged; local conditions can differ considerably.</li>
+    <li>When a source is offline the dashboard says so, instead of showing the last known value as if it were current.</li>
+  </ul>
+
+  <h2>Corrections</h2>
+  <p>If you find a factual error, write to <b>geral@ressonanciaschumannhoje.com</b> and we will correct it, with a visible note on the page. We would rather correct than pretend it did not happen.</p>
+
+  <p>To see how these numbers behave over time rather than at a single instant, see <a href="history.html">the measurement history</a>, which includes the raw data as a download.</p>
+
+<p><a href="index.html">← Back to the English index</a> · <a href="../metodologia.html">Ler em português →</a></p>
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-bottom">
+      <span>© <span data-year></span> Ressonância de Schumann Hoje</span>
+      <span><a href="index.html">English</a> · <a href="history.html">History</a> · <a href="../metodologia.html">Português</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="../js/app.js?v=48"></script>
+</body>
+</html>

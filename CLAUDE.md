@@ -297,9 +297,14 @@ os números são os verdadeiros e mantêm-se sozinhos.
 **Aparece a toda a gente, durante a visita, incluindo a quem chega pela
 primeira vez.** Houve uma versão que só a mostrava ao terceiro dia diferente de
 visita; ele mandou tirar essa regra, que não tinha pedido. Os números todos
-vivem no objeto `POPUP`: 40 segundos ou 55% da página, uma vez por sessão,
-fechar adia 7 dias, clicar num valor adia 180, e nunca na página de apoio.
-Esses travões são só para a janela não se repetir em cima de si própria.
+vivem no objeto `POPUP`: uma vez por sessão, fechar adia 7 dias, clicar num
+valor adia 180, e nunca na página de apoio. Esses travões são só para a janela
+não se repetir em cima de si própria.
+
+**O momento é sorteado a cada carregamento de página**, entre 25 e 80 segundos
+ou entre 35% e 75% de descida, o que vier primeiro. Foi pedido assim: aparecer
+sempre ao mesmo segundo dá sensação de armadilha e cansa quem cá vem muitas
+vezes. Ao mexer nisto, manter o sorteio.
 
 O título não pode dizer nada sobre quantas vezes a pessoa cá veio, porque
 agora aparece também a quem chega pela primeira vez.

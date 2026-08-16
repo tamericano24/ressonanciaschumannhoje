@@ -2700,10 +2700,14 @@
   // travões são os que impedem a janela de se repetir em cima de si própria:
   //
   //  - Depois de a pessoa ter ficado algum tempo na página ou ter descido
-  //    metade dela. A quem abre e fecha logo não se pede nada.
+  //    parte dela. A quem abre e fecha logo não se pede nada.
   //  - Uma vez por sessão. Sem isto voltava a saltar a cada página aberta.
   //  - Fechar adia sete dias. Clicar num valor adia meio ano.
   //  - Nunca na própria página de apoio, onde já está tudo isto maior.
+  //
+  // O momento é sorteado a cada visita, dentro dos intervalos abaixo, em vez
+  // de ser sempre ao mesmo segundo: aparecer sempre no mesmo sítio da leitura
+  // dá a sensação de armadilha e cansa quem cá vem muitas vezes.
   //
   // Todos estes números vivem no POPUP aqui em baixo, num sítio só.
   //
@@ -2713,11 +2717,13 @@
   // ----------------------------------------------------------
 
   var POPUP = {
-    segundosNaPagina: 40,    // ou
-    scrollMinimo: 0.55,      // fração da página descida, o que acontecer primeiro
-    adiarSeFechar: 7,        // dias
-    adiarSeApoiar: 180       // dias
+    segundosMin: 25, segundosMax: 80,   // sorteia o tempo de espera, ou
+    scrollMin: 0.35, scrollMax: 0.75,   // sorteia a descida, o que vier primeiro
+    adiarSeFechar: 7,                   // dias
+    adiarSeApoiar: 180                  // dias
   };
+
+  function entre(a, b) { return a + Math.random() * (b - a); }
 
   var DIA = 86400000;
 
@@ -2847,6 +2853,11 @@
   function wireConviteApoio() {
     if (!podeConvidar()) return;
 
+    // Sorteado uma vez por carregamento de página: quem abre o site duas vezes
+    // não apanha a janela no mesmo ponto da leitura.
+    var espera = entre(POPUP.segundosMin, POPUP.segundosMax);
+    var descida = entre(POPUP.scrollMin, POPUP.scrollMax);
+
     var jaFoi = false;
     function dispara() {
       if (jaFoi) return;
@@ -2856,10 +2867,10 @@
     }
     function aoRolar() {
       var h = document.documentElement.scrollHeight - window.innerHeight;
-      if (h > 0 && window.scrollY / h >= POPUP.scrollMinimo) dispara();
+      if (h > 0 && window.scrollY / h >= descida) dispara();
     }
 
-    setTimeout(dispara, POPUP.segundosNaPagina * 1000);
+    setTimeout(dispara, espera * 1000);
     window.addEventListener("scroll", aoRolar, { passive: true });
   }
 

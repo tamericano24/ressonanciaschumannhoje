@@ -1392,6 +1392,10 @@
       if (medidos < SR_MIN_PONTOS) return;
 
       caixa.hidden = false;
+      // Na página do histórico há um aviso a dizer que a série está a encher.
+      // Deixa de fazer sentido a partir do momento em que o gráfico aparece.
+      var vazio = document.getElementById("sr-historico-vazio");
+      if (vazio) vazio.hidden = true;
       serieSchumann("sr-serie", linhas);
 
       var hz = linhas.filter(function (l) { return l[1] != null; }).map(function (l) { return l[1]; });
@@ -2562,6 +2566,7 @@
       { ic: "💛", txt: "Como se sente hoje", href: "index.html#pulso" }
     ]},
     { grupo: "Registos", itens: [
+      { ic: "📈", txt: "Histórico da Schumann", href: "historico.html",      nota: "Nosso" },
       { ic: "📄", txt: "Leituras diárias",   href: "leitura/index.html",     nota: "Diário" },
       { ic: "📅", txt: "Arquivo de 30 dias", href: "arquivo.html" }
     ]},
@@ -3020,10 +3025,6 @@
     // se vê sem descer a página: o vento solar sozinho traz 4 MB. Só são
     // pedidos quando a secção respetiva se aproxima do ecrã, o que tira esse
     // peso todo de cima de quem abre a página e não desce, que é a maioria.
-    // Vigia-se a secção do espectrograma e não o cartão do histórico: o cartão
-    // nasce escondido, e um elemento escondido não tem caixa nenhuma, portanto
-    // apareceria sempre como estando à vista e o adiamento não servia de nada.
-    aoAproximar("espectrograma", loadHistorico);
     aoAproximar("proton-chart", loadProtons);
     aoAproximar("vs-chart", loadVentoSolar);
     aoAproximar("f107-value", loadF107);
@@ -3051,6 +3052,18 @@
     wireRefresh();
     renderQuakeMap();
     renderVolcanoMap();
+
+    // A série da Schumann existe em dois sítios: por baixo do espectrograma,
+    // na página inicial, e como conteúdo principal da página do histórico.
+    //
+    // Na inicial adia-se, e vigia-se a secção do espectrograma em vez do
+    // cartão: o cartão nasce escondido, e um elemento escondido não tem caixa
+    // nenhuma, portanto apareceria sempre como estando à vista. Na página do
+    // histórico é o que a pessoa lá foi ver, e vai buscar-se logo.
+    if (document.getElementById("sr-historico")) {
+      if (document.getElementById("espectrograma")) aoAproximar("espectrograma", loadHistorico);
+      else loadHistorico();
+    }
 
     if (document.getElementById("gauge-svg")) {
       loadAll();

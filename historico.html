@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Histórico da Ressonância de Schumann, medição a medição</title>
+<meta name="description" content="A frequência do pico da Ressonância de Schumann ao longo dos dias, medida de meia em meia hora no espectrograma de Tomsk. Com os dados em bruto para descarregar.">
+<link rel="canonical" href="https://ressonanciaschumannhoje.com/historico">
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/assets/icone-apple.png">
+<meta name="apple-mobile-web-app-title" content="Schumann Hoje">
+<link rel="stylesheet" href="css/style.css?v=47">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "WebPage",
+   "@id": "https://ressonanciaschumannhoje.com/historico#pagina",
+   "url": "https://ressonanciaschumannhoje.com/historico",
+   "name": "Histórico da Ressonância de Schumann, medição a medição",
+   "description": "A frequência do pico da fundamental ao longo dos dias, medida de meia em meia hora no espectrograma da estação de Tomsk.",
+   "inLanguage": "pt",
+   "isPartOf": { "@type": "WebSite", "@id": "https://ressonanciaschumannhoje.com/#site" },
+   "about": { "@type": "Thing", "name": "Ressonância de Schumann" },
+   "publisher": { "@type": "Organization", "name": "Ressonância de Schumann Hoje",
+                  "url": "https://ressonanciaschumannhoje.com/" }
+  },
+  {
+   "@type": "Dataset",
+   "@id": "https://ressonanciaschumannhoje.com/historico#serie",
+   "name": "Série temporal da Ressonância de Schumann medida em Tomsk",
+   "description": "Frequência do pico e intensidade da fundamental da Ressonância de Schumann, medidas de 30 em 30 minutos a partir do espectrograma público do Space Observing System da Universidade Estatal de Tomsk. Cobre os últimos 30 dias. As leituras sem confiança ficam registadas como recusadas, com o motivo, em vez de serem estimadas ou omitidas.",
+   "url": "https://ressonanciaschumannhoje.com/historico",
+   "inLanguage": "pt",
+   "isAccessibleForFree": true,
+   "license": "https://ressonanciaschumannhoje.com/termos",
+   "keywords": ["ressonância de schumann", "histórico", "série temporal", "7,83 Hz", "ELF", "Tomsk"],
+   "measurementTechnique": "Extração do pico espectral a partir do espectrograma publicado, com a barra de cores da própria imagem usada como escala",
+   "temporalCoverage": "2026-08-16/..",
+   "variableMeasured": [
+    { "@type": "PropertyValue", "name": "Frequência do pico da fundamental", "unitCode": "HTZ", "minValue": 6.6, "maxValue": 9.2 },
+    { "@type": "PropertyValue", "name": "Intensidade do pico", "description": "Escala de cor do espectrograma, 0 a 100, não calibrada em picotesla", "minValue": 0, "maxValue": 100 }
+   ],
+   "distribution": {
+    "@type": "DataDownload",
+    "encodingFormat": "application/json",
+    "contentUrl": "https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/historico.json"
+   },
+   "creator": { "@type": "Organization", "name": "Ressonância de Schumann Hoje" },
+   "isBasedOn": "https://sos70.ru/"
+  },
+  {
+   "@type": "BreadcrumbList",
+   "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Painel", "item": "https://ressonanciaschumannhoje.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Histórico", "item": "https://ressonanciaschumannhoje.com/historico" }
+   ]
+  }
+ ]
+}
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html"><svg class="brand-icone" viewBox="0 0 28 24" aria-hidden="true"><path d="M1 12h5l2.6-8.5L13 20l3.4-11 2.2 3H27" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="brand-nome">Ressonância Schumann Hoje</span></a>
+      <button class="nav-toggle" type="button" aria-label="Abrir menu do site"><span class="barras"><i></i><i></i><i></i></span>Menu</button>
+  </div>
+</header>
+
+<main class="wrap">
+<article class="article">
+  <p class="meta"><a href="index.html">Painel</a> / Histórico</p>
+
+  <h1>Histórico da Ressonância de Schumann</h1>
+  <p class="meta">A frequência do pico ao longo dos dias, medida de meia em meia hora</p>
+
+  <p>Esta página mostra a nossa própria série de medições da Ressonância de Schumann. De trinta em trinta minutos, um programa lê o espectrograma público da estação de Tomsk, encontra o pico da fundamental e regista a frequência e a intensidade. O resultado fica guardado, e é isso que se vê aqui.</p>
+
+  <p><b>Não existe nenhuma fonte pública que publique estes valores em número.</b> Verificámos ficheiro a ficheiro: a estação publica uma imagem e mais nada. Quem apresenta "F1 = 7,70 Hz" ao vivo está a lê-lo da imagem, tal como nós, ou a inventá-lo. A diferença está em dizê-lo, e em mostrar o método.</p>
+
+  <!-- O cartão nasce escondido e o JavaScript revela-o quando o histórico
+       tiver medições que cheguem. Ver loadHistorico() em js/app.js. -->
+  <div class="card sr-historico" id="sr-historico" hidden>
+    <h3>A série completa</h3>
+    <p class="sub">Cada ponto é uma leitura do espectrograma. A linha corta onde não houve medição de confiança.</p>
+    <div class="serie" id="sr-serie"></div>
+    <p class="src" id="sr-historico-nota"></p>
+  </div>
+
+  <div class="disclaimer" id="sr-historico-vazio">
+    <strong>A série ainda está a encher.</strong> As medições começaram a ser guardadas a 16 de agosto de 2026, e o gráfico só aparece a partir de seis horas de leituras. Se chegou aqui antes disso, volte amanhã: cada dia acrescenta quarenta e oito pontos.
+  </div>
+
+  <h2>A frequência está a subir?</h2>
+
+  <p>É a pergunta que mais aparece sobre este tema, e a série responde-lhe melhor do que qualquer explicação. A fundamental oscila, todos os dias, tipicamente entre cerca de 7,6 e 8,1 Hz. Sobe de noite e desce de dia, porque a altura efetiva da ionosfera muda com a luz solar e a cavidade entre a Terra e a ionosfera muda de tamanho com ela.</p>
+
+  <p>Essa oscilação diária é o comportamento normal do sistema. Não é um sinal de coisa nenhuma, e sobretudo não é uma tendência: olhe para a linha dos 7,83 Hz no gráfico e repare que a série a atravessa para cima e para baixo continuamente, sem se afastar.</p>
+
+  <p>A ideia de que a frequência estaria a subir para 40 Hz nasce de uma leitura errada do próprio espectrograma. O eixo vertical da imagem vai até perto de 40 Hz porque mostra também os modos superiores, em torno de 14,3, 20,8, 27,3 e 33,8 Hz. Ver atividade no topo da imagem é ver outra faixa do mesmo gráfico, não a fundamental a deslocar-se.</p>
+
+  <h2>O que é uma leitura recusada</h2>
+
+  <p>Nem todas as meias horas dão uma medição. O gráfico mostra buracos, e esses buracos são deliberados.</p>
+
+  <p>A leitura é recusada quando o recetor de Tomsk está saturado, o que acontece cerca de uma hora em cada quatro e enche a banda toda de branco; quando o pico encosta ao limite da banda de procura, sinal de que o que se encontrou provavelmente não é a fundamental; quando as cores da imagem não correspondem à escala publicada; e quando a imagem muda de dimensões, que é como se deteta que a estação mudou de formato.</p>
+
+  <p>Nesses casos fica registada uma linha a dizer que não houve leitura, com o motivo. <b>Não se interpola e não se preenche.</b> Unir os dois lados de um buraco desenharia uma medição que nunca existiu, e é precisamente isso que separa uma série de dados de um gráfico bonito.</p>
+
+  <h2>Os dados em bruto</h2>
+
+  <p>A série está disponível como ficheiro JSON, sem registo e sem chave, para quem quiser verificar, analisar ou usar noutro trabalho:</p>
+
+  <p><a class="btn" href="https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/historico.json" rel="noopener" target="_blank">Descarregar a série em JSON →</a></p>
+
+  <p>O formato é uma lista de linhas com quatro campos: o instante em UTC, a frequência do pico em hertz, a intensidade na escala de cor de 0 a 100, e o estado da leitura. Uma frequência a <code>null</code> quer dizer leitura recusada, e o estado diz porquê. Guardam-se os últimos trinta dias.</p>
+
+  <p>Se usar estes dados, agradecemos a atribuição a este site e à origem, o Space Observing System da Universidade Estatal de Tomsk. A intensidade vem na escala de cor do espectrograma e <b>não está calibrada em picotesla</b>, porque a estação não publica a calibração: comparar valores entre dias é legítimo, converter em unidades físicas não é.</p>
+
+  <h2>Outras séries neste site</h2>
+
+  <ul>
+    <li><a href="arquivo.html">Arquivo do índice Kp</a>, com o valor diário dos últimos 30 dias e o índice Ap.</li>
+    <li><a href="leitura/index.html">Leituras diárias</a>, uma página por dia com o estado do campo geomagnético, do Sol e a medição da Schumann dessa manhã.</li>
+    <li><a href="metodologia.html">Metodologia</a>, com o método passo a passo e as regras de recusa ao pormenor.</li>
+  </ul>
+
+<p><a href="index.html">← Ver o painel ao vivo</a></p>
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-bottom">
+      <span>© <span data-year></span> Ressonância de Schumann Hoje</span>
+      <span><a href="metodologia.html">Metodologia</a> · <a href="sobre.html">Sobre</a> · <a href="termos.html">Termos</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js?v=47"></script>
+</body>
+</html>

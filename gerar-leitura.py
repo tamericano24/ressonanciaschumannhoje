@@ -738,6 +738,7 @@ def escrever_sitemap(itens):
         ("/indice-kp-agora", "hourly", "0.9"),
         ("/aurora-esta-noite", "hourly", "0.9"),
         ("/leitura/", "daily", "0.8"),
+        ("/historico", "daily", "0.8"),
         ("/arquivo", "daily", "0.7"),
         ("/incorporar", "monthly", "0.7"),
         ("/sintomas", "monthly", "0.8"),
@@ -758,7 +759,7 @@ def escrever_sitemap(itens):
     # so quando e verdade. As paginas ao vivo mudam mesmo todos os dias: o
     # prerender.py reescreve o index.html e as outras leem dados novos.
     hoje = datetime.now(timezone.utc).date().isoformat()
-    vivas = {"/", "/indice-kp-agora", "/aurora-esta-noite", "/leitura/", "/arquivo"}
+    vivas = {"/", "/indice-kp-agora", "/aurora-esta-noite", "/leitura/", "/arquivo", "/historico"}
     for caminho, freq, pri in estaticas:
         lastmod = f"<lastmod>{hoje}</lastmod>" if caminho in vivas else ""
         linhas.append(f"  <url><loc>{DOMINIO}{caminho}</loc>{lastmod}"

@@ -268,7 +268,8 @@ body.menu-aberto { overflow: hidden; }
   display: grid; width: 40px; height: 40px; font-size: 18px; box-shadow: none;
 }
 .convite-topo h2 {
-  margin: 0; flex: 1; min-width: 0; font-size: 19px; letter-spacing: -0.02em; line-height: 1.25;
+  margin: 0; flex: 1; min-width: 0; font-size: 17.5px; letter-spacing: -0.025em; line-height: 1.25;
+  text-wrap: balance;
 }
 /* Fora do fluxo, no canto: dentro da linha empurrava o título para duas
    linhas mesmo quando havia espaço. */

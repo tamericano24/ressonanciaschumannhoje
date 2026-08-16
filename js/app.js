@@ -2696,18 +2696,16 @@
   // ----------------------------------------------------------
   // Convite a apoiar, em janela por cima da página
   //
-  // Regras de convivência, para isto não ser uma praga:
+  // Aparece durante a visita, a qualquer visitante, como pedido. Os únicos
+  // travões são os que impedem a janela de se repetir em cima de si própria:
   //
-  //  - Nunca a quem chega pela primeira vez. Só a partir do terceiro dia
-  //    diferente em que a pessoa cá vem. Quem vem do Google e olha uma vez
-  //    nunca vê nada. Isto também nos protege do lado da pesquisa: o Google
-  //    despromove sites que atiram janelas por cima do conteúdo a quem chega
-  //    de uma pesquisa no telemóvel, e o robô dele também nunca chega ao
-  //    terceiro dia.
-  //  - Uma vez por sessão, e só depois de a pessoa ter ficado algum tempo ou
-  //    ter descido a página. A quem entra e sai não se pede nada.
-  //  - Fechar adia trinta dias. Clicar num valor adia meio ano.
+  //  - Depois de a pessoa ter ficado algum tempo na página ou ter descido
+  //    metade dela. A quem abre e fecha logo não se pede nada.
+  //  - Uma vez por sessão. Sem isto voltava a saltar a cada página aberta.
+  //  - Fechar adia sete dias. Clicar num valor adia meio ano.
   //  - Nunca na própria página de apoio, onde já está tudo isto maior.
+  //
+  // Todos estes números vivem no POPUP aqui em baixo, num sítio só.
   //
   // O que está escrito na janela é verdade e sai dos mesmos dados do bloco de
   // apoio: a meta, o que já entrou e quem apoiou. Sem contagem de apoiantes
@@ -2715,10 +2713,9 @@
   // ----------------------------------------------------------
 
   var POPUP = {
-    diasAteConvidar: 3,      // dias diferentes de visita antes do primeiro convite
     segundosNaPagina: 40,    // ou
     scrollMinimo: 0.55,      // fração da página descida, o que acontecer primeiro
-    adiarSeFechar: 30,       // dias
+    adiarSeFechar: 7,        // dias
     adiarSeApoiar: 180       // dias
   };
 
@@ -2734,23 +2731,10 @@
     try { localStorage.setItem("apoio-convite", JSON.stringify(e)); } catch (err) { /* privado */ }
   }
 
-  // Conta dias diferentes de visita, não páginas vistas: quem lê cinco artigos
-  // de seguida veio cá uma vez, não cinco.
-  function registaVisita() {
+  function podeConvidar() {
     var e = lerEstadoApoio();
-    var hoje = new Date().toISOString().slice(0, 10);
-    if (e.ultimoDia !== hoje) {
-      e.dias = (e.dias || 0) + 1;
-      e.ultimoDia = hoje;
-      gravarEstadoApoio(e);
-    }
-    return e;
-  }
-
-  function podeConvidar(e) {
     if (!APOIO.stripe.livre && !APOIO.stripe["5"]) return false;   // sem pagamentos ligados
     if (/apoiar\.html$/.test(location.pathname) || location.pathname === "/apoiar") return false;
-    if ((e.dias || 0) < POPUP.diasAteConvidar) return false;
     if (e.adiadoAte && Date.now() < e.adiadoAte) return false;
     try { if (sessionStorage.getItem("apoio-convite-visto")) return false; } catch (err) { /* nada */ }
     return true;
@@ -2780,12 +2764,15 @@
 
     return '<div class="convite-topo">' +
         '<div class="apoio-icone">💜</div>' +
-        "<h2>Já cá veio algumas vezes</h2>" +
+        // Sem frases sobre quantas vezes a pessoa cá veio: a janela agora
+        // aparece a toda a gente, incluindo a quem chega pela primeira vez, e
+        // dizer-lhe "já cá veio algumas vezes" seria mentira.
+        "<h2>Este painel vive de quem o usa</h2>" +
         '<button class="convite-fechar" type="button" aria-label="Fechar">✕</button>' +
       "</div>" +
-      "<p class=\"convite-lede\">Isso diz-me que o painel lhe serve para alguma coisa. " +
-        "Não tem publicidade, não tem rastreadores e não tem paywall. Se quiser que " +
-        "continue assim, um contributo ajuda a mantê-lo no ar.</p>" +
+      "<p class=\"convite-lede\">Não tem publicidade, não tem rastreadores e não tem paywall. " +
+        "Se o espectrograma ao vivo e as leituras diárias lhe são úteis, um contributo " +
+        "mantém isto no ar.</p>" +
       '<div class="convite-meta">' +
         '<div class="convite-meta-topo"><span>' + escapeHTML(mes) + "</span><span><b>" +
           (temValor ? m + num(APOIO.angariado, 0) : "—") + "</b> de " + m + num(APOIO.meta, 0) + "</span></div>" +
@@ -2858,8 +2845,7 @@
   }
 
   function wireConviteApoio() {
-    var estado = registaVisita();
-    if (!podeConvidar(estado)) return;
+    if (!podeConvidar()) return;
 
     var jaFoi = false;
     function dispara() {

@@ -294,13 +294,15 @@ coisas que ele já tinha mandado tirar: o destaque "popular" num dos valores, o
 PayPal, e a conversa dos custos. O que lá está sai do bloco `APOIO`, portanto
 os números são os verdadeiros e mantêm-se sozinhos.
 
-As regras de convivência estão no comentário da função e **não se afrouxam sem
-ele pedir**: nunca a quem chega pela primeira vez (só ao terceiro dia diferente
-de visita), uma vez por sessão, depois de 40 segundos ou 55% da página, nunca
-na página de apoio, fechar adia 30 dias, clicar num valor adia 180. A regra dos
-três dias não é só delicadeza: o Google despromove sites que atiram janelas por
-cima do conteúdo a quem chega de uma pesquisa no telemóvel, e assim nem o
-visitante vindo da pesquisa nem o robô chegam a ver aquilo.
+**Aparece a toda a gente, durante a visita, incluindo a quem chega pela
+primeira vez.** Houve uma versão que só a mostrava ao terceiro dia diferente de
+visita; ele mandou tirar essa regra, que não tinha pedido. Os números todos
+vivem no objeto `POPUP`: 40 segundos ou 55% da página, uma vez por sessão,
+fechar adia 7 dias, clicar num valor adia 180, e nunca na página de apoio.
+Esses travões são só para a janela não se repetir em cima de si própria.
+
+O título não pode dizer nada sobre quantas vezes a pessoa cá veio, porque
+agora aparece também a quem chega pela primeira vez.
 
 **Para fotografar o convite ou o menu**, criar uma página de teste temporária
 na raiz que semeie o `localStorage` e deixe o `--virtual-time-budget` adiantar

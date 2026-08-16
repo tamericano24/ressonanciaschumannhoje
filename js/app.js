@@ -2503,30 +2503,47 @@
   // dezasseis ficheiros e esquecer um.
   // ----------------------------------------------------------
 
+  // O grupo "O projeto" foi eliminado. Metodologia subiu para "Aprender", que
+  // é onde as pessoas a procuram e é a página que mais credibilidade dá ao
+  // site. Sobre, widget, privacidade e termos passaram para a linha de
+  // rodapé do painel: são páginas que se visitam uma vez, e ocupavam quatro
+  // linhas do mesmo tamanho das que se usam todos os dias.
+  //
+  // As âncoras do painel ficaram num grupo à parte, "Dentro do painel". Antes
+  // estavam misturadas com páginas verdadeiras em "Ao vivo", e não se percebia
+  // que umas abrem uma página e outras saltam para um sítio da inicial.
   var MENU = [
     { grupo: "Ao vivo", itens: [
-      { ic: "📡", txt: "Painel",            href: "index.html",             nota: "Ao vivo" },
-      { ic: "🧭", txt: "Índice Kp agora",   href: "indice-kp-agora.html" },
-      { ic: "🌌", txt: "Aurora esta noite", href: "aurora-esta-noite.html" },
-      { ic: "〰️", txt: "Espectrograma",     href: "index.html#espectrograma" },
-      { ic: "🌋", txt: "Sismos e vulcões",  href: "index.html#terra" }
+      { ic: "📡", txt: "Painel",             href: "index.html",             nota: "Ao vivo" },
+      { ic: "🧭", txt: "Índice Kp agora",    href: "indice-kp-agora.html" },
+      { ic: "🌌", txt: "Aurora esta noite",  href: "aurora-esta-noite.html" }
+    ]},
+    { grupo: "Dentro do painel", itens: [
+      { ic: "〰️", txt: "Espectrograma",      href: "index.html#espectrograma" },
+      { ic: "🔴", txt: "Mapa sísmico",       href: "index.html#terra" },
+      { ic: "🌋", txt: "Mapa vulcânico",     href: "index.html#vulcoes" },
+      { ic: "💛", txt: "Como se sente hoje", href: "index.html#pulso" }
     ]},
     { grupo: "Registos", itens: [
-      { ic: "📄", txt: "Leituras diárias",  href: "leitura/index.html",     nota: "Diário" },
+      { ic: "📄", txt: "Leituras diárias",   href: "leitura/index.html",     nota: "Diário" },
       { ic: "📅", txt: "Arquivo de 30 dias", href: "arquivo.html" }
     ]},
     { grupo: "Aprender", itens: [
       { ic: "❓", txt: "O que é a Ressonância", href: "blog/o-que-e-a-ressonancia-de-schumann.html" },
-      { ic: "💛", txt: "Sintomas relatados",    href: "sintomas.html" },
+      { ic: "🔬", txt: "Como medimos",          href: "metodologia.html" },
+      { ic: "🩺", txt: "Sintomas relatados",    href: "sintomas.html" },
       { ic: "📚", txt: "Artigos",               href: "blog/index.html" },
       { ic: "💬", txt: "Perguntas frequentes",  href: "faq.html" }
-    ]},
-    { grupo: "O projeto", itens: [
-      { ic: "🔬", txt: "Metodologia",       href: "metodologia.html" },
-      { ic: "🧩", txt: "Widget gratuito",   href: "incorporar.html",        nota: "Grátis" },
-      { ic: "ℹ️", txt: "Sobre",             href: "sobre.html" },
-      { ic: "🔒", txt: "Privacidade",       href: "privacidade.html" }
     ]}
+  ];
+
+  // Páginas que se visitam uma vez. Vão para o rodapé do painel, em letra
+  // pequena, em vez de ocuparem uma linha inteira cada uma.
+  var MENU_RODAPE = [
+    { txt: "Widget gratuito", href: "incorporar.html" },
+    { txt: "Sobre",           href: "sobre.html" },
+    { txt: "Privacidade",     href: "privacidade.html" },
+    { txt: "Termos",          href: "termos.html" }
   ];
 
   // Páginas dentro de blog/ e leitura/ precisam de subir um nível.
@@ -2577,11 +2594,16 @@
       '<div class="menu-topo"><b>Ressonância de Schumann</b>' +
         '<button class="menu-fechar" type="button" aria-label="Fechar menu">✕</button></div>' +
       '<div class="menu-vivo">' +
+        '<div><span>Ressonância</span><b id="menu-sr">…</b></div>' +
         '<div><span>Índice Kp</span><b id="menu-kp">…</b></div>' +
-        '<div><span>Energia</span><b id="menu-energia">…</b></div>' +
       "</div>" + corpo +
       '<div class="menu-rodape">' +
         '<a class="btn" data-apoio-direto href="' + p + 'apoiar.html">Apoiar o projeto</a>' +
+        '<nav class="menu-secundario">' +
+          MENU_RODAPE.map(function (it) {
+            return '<a href="' + p + it.href + '">' + it.txt + "</a>";
+          }).join("") +
+        "</nav>" +
         "<p>Sem publicidade e sem rastreadores</p>" +
       "</div>";
 
@@ -2619,18 +2641,55 @@
     $$(".menu-item", painel).forEach(function (a) { a.addEventListener("click", fechar); });
   }
 
-  // Traz para o menu os valores que já estão no painel.
+  // Os dois números no topo do menu.
+  //
+  // Antes limitavam-se a copiar os valores do painel, e o painel só existe na
+  // página inicial: em todas as outras páginas do site ficavam com reticências
+  // para sempre. Agora, quando não há painel de onde copiar, vão eles próprios
+  // buscar os dados. São dois pedidos pequenos e só acontecem quando alguém
+  // abre o menu.
+  var menuJaBuscou = false;
+
+  function poeNoMenu(id, valor, cls) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = valor;
+    el.className = cls || "";
+  }
+
   function espelhaValoresNoMenu() {
-    var kp = document.getElementById("t-kp") || document.getElementById("kp-value");
-    var en = document.getElementById("t-energy") || document.getElementById("idx-value");
-    var mk = document.getElementById("menu-kp"), me = document.getElementById("menu-energia");
-    if (mk) {
-      mk.textContent = kp && kp.textContent.trim() !== "…" ? kp.textContent.trim() : "…";
-      if (kp) mk.className = kp.className;
+    var kp = document.getElementById("t-kp");
+    var sr = document.getElementById("t-sr");
+    var kpOk = kp && kp.textContent.trim() !== "…";
+    var srOk = sr && sr.textContent.trim() !== "…";
+
+    if (kpOk) poeNoMenu("menu-kp", kp.textContent.trim(), kp.className);
+    if (srOk) poeNoMenu("menu-sr", sr.textContent.trim() + " / 100");
+
+    // Numa página sem painel, ou antes de os dados chegarem, procura sozinho.
+    if (kpOk && srOk) return;
+    if (menuJaBuscou) return;
+    menuJaBuscou = true;
+
+    if (!kpOk) {
+      getJSON(SRC.kp).then(function (rows) {
+        var linhas = Array.isArray(rows[0])
+          ? rows.slice(1).map(function (r) { return { time_tag: r[0], Kp: r[1] }; })
+          : rows;
+        var r = maisRecente(linhas);
+        if (r) poeNoMenu("menu-kp", num(Number(r.Kp)), "");
+      }).catch(function () { poeNoMenu("menu-kp", "sem dados", "menu-sem"); });
     }
-    if (me) {
-      me.textContent = en && en.textContent.trim() !== "…" ? en.textContent.trim() : "…";
-      if (en) me.className = en.className;
+
+    if (!srOk) {
+      getJSON(SRC.schumann).then(function (d) {
+        var f = d && d.fundamental;
+        if (f && f.estado === "ok") {
+          poeNoMenu("menu-sr", Math.round(f.intensidade) + " / 100");
+        } else {
+          poeNoMenu("menu-sr", "sem leitura", "menu-sem");
+        }
+      }).catch(function () { poeNoMenu("menu-sr", "sem dados", "menu-sem"); });
     }
   }
 

@@ -59,9 +59,18 @@
     // Actions corre quando pode: na prática dá cerca de uma leitura por hora
     // e meia. Fica fora do
     // projeto de propósito, para o histórico não encher de commits do robô.
-    schumann: "https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/schumann.json",
+    // Os ficheiros schumann.json e historico.json são servidos do próprio
+    // domínio (pasta /dados) para evitar rate limiting do raw.githubusercontent.com.
+    // Se a pasta /dados não estiver disponível, usa-se o fallback no GitHub.
+    schumann: {
+      primary: "/dados/schumann.json",
+      fallback: "https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/schumann.json"
+    },
     // Trinta dias de medições, acumuladas pelo mesmo robô. Ver ler-schumann.py.
-    historico: "https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/historico.json",
+    historico: {
+      primary: "/dados/historico.json",
+      fallback: "https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/historico.json"
+    },
     auroraN: "https://services.swpc.noaa.gov/images/animations/ovation/north/latest.jpg",
     auroraS: "https://services.swpc.noaa.gov/images/animations/ovation/south/latest.jpg",
     drap: "https://services.swpc.noaa.gov/images/animations/d-rap/global/latest.png",
@@ -530,40 +539,49 @@
   }
 
   function carregarSchumann() {
-    return getJSON(SRC.schumann).then(function (d) {
+    var urls = SRC.schumann;
+    return getJSON(urls.primary).then(function (d) {
       renderSchumann(d);
       guardaCopia("schumann", d);
       mark("medicao", true);
     }).catch(function (e) {
-      // A copia guardada costuma ser mais recente do que o que o prerender.py
-      // escreveu no ficheiro, e traz a sua propria hora.
-      var copia = leCopia("schumann");
-      if (copia) renderSchumann(copia);
+      console.warn("Schumann (primary):", e);
+      // Tenta o fallback no GitHub
+      return getJSON(urls.fallback).then(function (d) {
+        renderSchumann(d);
+        guardaCopia("schumann", d);
+        mark("medicao", true);
+      }).catch(function (e2) {
+        console.warn("Schumann (fallback):", e2);
+        // A copia guardada costuma ser mais recente do que o que o prerender.py
+        // escreveu no ficheiro, e traz a sua propria hora.
+        var copia = leCopia("schumann");
+        if (copia) renderSchumann(copia);
 
-      // Uma falha de rede não apaga um número datado.
-      //
-      // Isto chamava renderSchumann(null), que punha "?" e "sem leitura" por
-      // cima do valor que o prerender.py já tinha escrito no HTML. Trocava
-      // informação verdadeira e com hora à vista ("medido às 10:07 UTC") por
-      // uma mensagem de erro, e bastava um pedido falhado em cada cinco
-      // minutos para o medidor principal do site ficar vazio.
-      //
-      // A regra da casa continua a valer: não se mostra um valor velho como
-      // se fosse de agora. Mas o valor que lá está não se apresenta como
-      // atual, traz a hora a que foi medido. O que se faz é acrescentar que
-      // a fonte ao vivo não respondeu, e marcá-la em baixo na lista das
-      // fontes, em vez de deitar fora o que se sabe.
-      var v = document.getElementById("idx-value");
-      var temNumero = v && /\d/.test(v.textContent || "");
-      if (temNumero) {
-        var leg = document.getElementById("sr-legenda");
-        if (leg && leg.textContent.indexOf("sem resposta") === -1)
-          leg.textContent += " · a fonte ao vivo não respondeu";
-      } else {
-        renderSchumann(null);
-      }
-      mark("medicao", false);
-      console.warn("Schumann:", e);
+        // Uma falha de rede não apaga um número datado.
+        //
+        // Isto chamava renderSchumann(null), que punha "?" e "sem leitura" por
+        // cima do valor que o prerender.py já tinha escrito no HTML. Trocava
+        // informação verdadeira e com hora à vista ("medido às 10:07 UTC") por
+        // uma mensagem de erro, e bastava um pedido falhado em cada cinco
+        // minutos para o medidor principal do site ficar vazio.
+        //
+        // A regra da casa continua a valer: não se mostra um valor velho como
+        // se fosse de agora. Mas o valor que lá está não se apresenta como
+        // atual, traz a hora a que foi medido. O que se faz é acrescentar que
+        // a fonte ao vivo não respondeu, e marcá-la em baixo na lista das
+        // fontes, em vez de deitar fora o que se sabe.
+        var v = document.getElementById("idx-value");
+        var temNumero = v && /\d/.test(v.textContent || "");
+        if (temNumero) {
+          var leg = document.getElementById("sr-legenda");
+          if (leg && leg.textContent.indexOf("sem resposta") === -1)
+            leg.textContent += " · a fonte ao vivo não respondeu";
+        } else {
+          renderSchumann(null);
+        }
+        mark("medicao", false);
+      });
     });
   }
 
@@ -1588,17 +1606,26 @@
     var caixa = document.getElementById("sr-historico");
     if (!caixa) return;
 
-    return getJSON(SRC.historico).then(function (d) {
+    var urls = SRC.historico;
+    return getJSON(urls.primary).then(function (d) {
       guardaCopia("historico", d);
       return d;
     }).catch(function (e) {
-      // Sem isto o cartao do grafico ficava escondido e a pagina com um
-      // buraco. Com a ultima copia, mostra-se a serie que se conhece.
-      var copia = leCopia("historico");
-      if (!copia) throw e;
-      console.warn("Historico da Schumann, a usar a ultima copia:", e);
-      copia.__decopia = true;
-      return copia;
+      console.warn("Histórico (primary):", e);
+      // Tenta o fallback no GitHub
+      return getJSON(urls.fallback).then(function (d) {
+        guardaCopia("historico", d);
+        return d;
+      }).catch(function (e2) {
+        console.warn("Histórico (fallback):", e2);
+        // Sem isto o cartao do grafico ficava escondido e a pagina com um
+        // buraco. Com a ultima copia, mostra-se a serie que se conhece.
+        var copia = leCopia("historico");
+        if (!copia) throw e2;
+        console.warn("Historico da Schumann, a usar a ultima copia:", e2);
+        copia.__decopia = true;
+        return copia;
+      });
     }).then(function (d) {
       var linhas = (d && d.dados) || [];
       var medidos = linhas.filter(function (l) { return l[1] !== null && l[1] !== undefined; }).length;

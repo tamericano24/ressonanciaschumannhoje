@@ -47,11 +47,11 @@
     { "@type": "PropertyValue", "name": "Frequência do pico da fundamental", "unitCode": "HTZ", "minValue": 6.6, "maxValue": 9.2 },
     { "@type": "PropertyValue", "name": "Intensidade do pico", "description": "Escala de cor do espectrograma, 0 a 100, não calibrada em picotesla", "minValue": 0, "maxValue": 100 }
    ],
-   "distribution": {
-    "@type": "DataDownload",
-    "encodingFormat": "application/json",
-    "contentUrl": "https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/historico.json"
-   },
+"distribution": {
+     "@type": "DataDownload",
+     "encodingFormat": "application/json",
+     "contentUrl": "https://ressonanciaschumannhoje.com/dados/historico.json"
+    },
    "creator": { "@type": "Organization", "name": "Ressonância de Schumann Hoje" },
    "isBasedOn": "https://sos70.ru/"
   },
@@ -122,7 +122,7 @@
 
   <p>A série está disponível como ficheiro JSON, sem registo e sem chave, para quem quiser verificar, analisar ou usar noutro trabalho:</p>
 
-  <p><a class="btn" href="https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/historico.json" rel="noopener" target="_blank">Descarregar a série em JSON →</a></p>
+  <p><a class="btn" href="/dados/historico.json" rel="noopener" target="_blank">Descarregar a série em JSON →</a></p>
 
   <p>O formato é uma lista de linhas com quatro campos: o instante em UTC, a frequência do pico em hertz, a intensidade na escala de cor de 0 a 100, e o estado da leitura. Uma frequência a <code>null</code> quer dizer leitura recusada, e o estado diz porquê. Guardam-se os últimos trinta dias.</p>
 

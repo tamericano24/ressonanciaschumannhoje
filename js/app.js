@@ -1462,16 +1462,57 @@
          '<text x="' + (W - padR - 4) + '" y="' + (py(7.83) - 5).toFixed(1) +
          '" fill="#38bdf8" font-size="10" text-anchor="end" fill-opacity=".8">7,83 Hz</text>';
 
+    // Antes daqui só se desenhava a linha, e meio gráfico ficava em branco
+    // sem nada que explicasse porquê: numa noite típica o robô corre três
+    // vezes em oito horas e duas dessas leituras são recusadas, o que deixava
+    // 51% da largura vazia. Estava certo e lia-se como avaria.
+    //
+    // Passam a desenhar-se três coisas por cima da linha: uma faixa ténue por
+    // baixo dos intervalos sem medição nenhuma, um ponto em cada medição, e
+    // uma cruz em baixo em cada leitura recusada. O vazio deixa de ser vazio
+    // e passa a dizer o que se passou ali. Continua a não se unir o que não
+    // foi medido, que é a regra.
     var d = "", aberto = false, medidos = 0;
+    var pontos = [], recusas = [], buracos = [], ultimoBom = null;
+
     linhas.forEach(function (l) {
-      if (l[1] === null || l[1] === undefined) { aberto = false; return; }
+      var t = new Date(l[0]).getTime(), x = px(t);
+      if (l[1] === null || l[1] === undefined) {
+        aberto = false;
+        recusas.push({ x: x, motivo: SR_MOTIVOS[l[3]] || l[3] || "sem leitura" });
+        return;
+      }
       medidos++;
-      var x = px(new Date(l[0]).getTime()), y = py(l[1]);
+      var y = py(l[1]);
+      if (!aberto && ultimoBom !== null && x - ultimoBom > 4) buracos.push([ultimoBom, x]);
       d += (aberto ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1) + " ";
+      pontos.push({ x: x, y: y, hz: l[1], t: t });
       aberto = true;
+      ultimoBom = x;
     });
+
+    buracos.forEach(function (b) {
+      s += '<rect x="' + b[0].toFixed(1) + '" y="' + padT + '" width="' + (b[1] - b[0]).toFixed(1) +
+           '" height="' + ih + '" fill="#6b7391" fill-opacity=".07"/>';
+    });
+
     s += '<path d="' + d + '" fill="none" stroke="#e8ecf8" stroke-width="1.7" ' +
          'stroke-linejoin="round" stroke-linecap="round"/>';
+
+    pontos.forEach(function (p) {
+      s += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="2.6" fill="#e8ecf8">' +
+           "<title>" + hhmm(new Date(p.t)) + " UTC · " + num(p.hz, 1) + " Hz</title></circle>";
+    });
+
+    // As recusas ficam na linha de base, onde não tapam a série. Uma leitura
+    // recusada não tem frequência: pô-la a uma altura qualquer seria inventá-la.
+    var yb = padT + ih;
+    recusas.forEach(function (r) {
+      s += '<path d="M' + (r.x - 3).toFixed(1) + " " + (yb - 3) + "l6 6M" + (r.x + 3).toFixed(1) +
+           " " + (yb - 3) + "l-6 6\" stroke=\"#6b7391\" stroke-width=\"1.4\" stroke-linecap=\"round\">" +
+           "<title>" + (emIngles() ? "Reading refused: " : "Leitura recusada: ") +
+           escapeHTML(r.motivo) + "</title></path>";
+    });
 
     var dias = span / 86400000;
     var d1 = Math.round(dias), h1 = Math.round(span / 3600000);
@@ -1513,16 +1554,23 @@
       var recusadas = linhas.length - medidos;
       var horas = Math.round((new Date(linhas[linhas.length - 1][0]) - new Date(linhas[0][0])) / 3600000);
 
+      // A legenda diz o que é cada marca. Sem isto, metade do gráfico em
+      // branco numa noite de poucas leituras parece avaria em vez de dizer
+      // que naquelas horas não houve medição de confiança.
       set("sr-historico-nota", emIngles()
         ? "Over the last " + horas + " hours the fundamental peak ranged between <b>" +
           min.toFixed(1) + "</b> and <b>" + max.toFixed(1) + "&nbsp;Hz</b>, across " + medidos +
           " measurements" + (recusadas ? ", with " + recusadas + " readings refused as untrustworthy" : "") +
-          ". The line breaks where there was no reading: what was not measured is not joined up."
+          ". Each dot is one measurement" + (recusadas ? " and each cross along the bottom is a refused reading" : "") +
+          "; the shaded stretches are the hours with no trustworthy reading at all. The line breaks there: " +
+          "what was not measured is not joined up."
         : "Nas últimas " + horas +
           " horas, o pico da fundamental andou entre <b>" + num(min, 1) + "</b> e <b>" + num(max, 1) +
           "&nbsp;Hz</b>, em " + medidos + " medições" +
           (recusadas ? ", com " + recusadas + " leituras recusadas por falta de confiança" : "") +
-          ". A linha corta onde não houve leitura: não se une o que não foi medido.");
+          ". Cada ponto é uma medição" + (recusadas ? " e cada cruz em baixo é uma leitura recusada" : "") +
+          "; as faixas sombreadas são as horas em que não houve medição de confiança nenhuma. " +
+          "A linha corta aí: não se une o que não foi medido.");
     }).catch(function (e) { console.warn("Histórico da Schumann:", e); });
   }
 

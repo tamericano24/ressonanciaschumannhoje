@@ -248,6 +248,42 @@ HISTORICO = Path(__file__).resolve().parent / "historico.json"
 DIAS_HISTORICO = 30
 CAMPOS = ["t", "hz", "intensidade", "estado"]
 
+# As correcoes feitas a mao ao historico ja publicado, dentro do proprio
+# ficheiro. Quem descarrega o conjunto de dados le isto ao lado dos numeros,
+# sem ter de ir ao site saber o que mudou.
+#
+# Vive aqui e nao no JSON porque o ficheiro e reescrito de raiz a cada
+# execucao: uma chave acrescentada a mao desaparecia na leitura seguinte.
+CORRECOES = [
+    {
+        "data": "2026-08-17",
+        "afeta": ["2026-08-17T03:15:37+00:00", "2026-08-17T05:21:59+00:00"],
+        "o_que": "Duas leituras de 6,70 Hz passaram de 'ok' a recusadas, com o "
+                 "estado 'pico_no_limite'. Os valores nao foram apagados nem "
+                 "substituidos por outros: a linha continua la, marcada como "
+                 "recusa.",
+        "porque": "6,70 Hz e a segunda linha de pixeis da banda de procura da "
+                  "fundamental. A guarda que recusa picos encostados ao limite "
+                  "cobria so a primeira linha, e a franja da zona de ruido que "
+                  "fica por baixo da banda passava por ela. A fundamental nao "
+                  "desce a 6,7 Hz, e as leituras a volta desse dia estavam "
+                  "todas entre 7,9 e 8,2. A guarda passou a duas linhas.",
+    },
+    {
+        "data": "2026-08-17",
+        "afeta": "leituras anteriores a 2026-08-17T12:00:00+00:00",
+        "ate": "2026-08-17T12:00:00+00:00",
+        "o_que": "Nao foram alteradas, mas trazem cerca de 0,1 Hz a mais do que "
+                 "as posteriores.",
+        "porque": "A linha de 0 Hz do espectrograma estava fixada um pixel "
+                  "acima do que dizem os tracinhos da escala da imagem. O "
+                  "desvio e de 0,08 Hz, menor do que a dispersao do proprio "
+                  "metodo (0,35 Hz entre colunas vizinhas da mesma imagem), e "
+                  "por isso os valores antigos ficaram como foram medidos em "
+                  "vez de serem recalculados a posteriori.",
+    },
+]
+
 
 def carregar_historico():
     try:
@@ -282,9 +318,21 @@ def atualizar_historico(leitura):
     corte = (datetime.now(timezone.utc) - timedelta(days=DIAS_HISTORICO)).isoformat()
     limpo = [linha for linha in limpo if linha[0] >= corte]
 
+    # Uma correcao so acompanha o ficheiro enquanto houver no conjunto alguma
+    # linha a que ela diga respeito: ou uma das que nomeia, ou uma anterior ao
+    # seu "ate". Quando essas linhas sairem pela janela dos 30 dias, sai
+    # tambem a nota, que deixou de ter a que se referir.
+    instantes = [linha[0] for linha in limpo]
+    def vale(c):
+        if isinstance(c.get("afeta"), list):
+            return any(t in instantes for t in c["afeta"])
+        return "ate" not in c or any(t < c["ate"] for t in instantes)
+    correcoes = [c for c in CORRECOES if vale(c)]
+
     HISTORICO.write_text(json.dumps(
         {"campos": CAMPOS, "dias": DIAS_HISTORICO,
          "escala": "intensidade 0-100 na escala de cor do espectrograma, nao calibrada",
+         "correcoes": correcoes,
          "dados": limpo}, ensure_ascii=False, separators=(",", ":")) + "\n",
         encoding="utf-8")
     return len(limpo)

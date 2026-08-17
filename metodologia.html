@@ -173,8 +173,15 @@
     <li>Quando uma fonte está offline, o painel indica-o em vez de mostrar o último valor conhecido como se fosse atual. No caso da Ressonância de Schumann, a última medição válida continua visível, mas sempre acompanhada da hora a que foi feita.</li>
   </ul>
 
-  <h2>Correções</h2>
+  <h2 id="correcoes">Correções</h2>
   <p>Se encontrar um erro factual, escreva-nos e corrigimos, com nota visível na página. Preferimos corrigir a fingir que não aconteceu. Quem está por trás disto e com que critério editorial está explicado na página <a href="sobre.html">sobre o projeto</a>.</p>
+
+  <h3>17 de agosto de 2026: duas leituras retiradas e a precisão reduzida</h3>
+  <p>Uma revisão ao leitor do espectrograma encontrou três coisas, e as três estão corrigidas.</p>
+  <p><b>Duas leituras de 6,70 Hz, de 17 de agosto às 03:15 e às 05:21 UTC, passaram a recusadas.</b> Não eram a ressonância: eram a franja da zona de ruído que fica logo abaixo da banda onde procuramos o pico. A regra que recusa picos encostados ao limite da banda cobria apenas a primeira linha de píxeis e deixava passar a segunda, que é exatamente onde caem 6,70 Hz. A fundamental não desce a esse valor, e as medições à volta desse dia estavam todas entre 7,9 e 8,2 Hz. A regra passou a cobrir duas linhas. <b>Os valores não foram apagados</b>: continuam no conjunto de dados, marcados como recusa, e o gráfico corta a linha nesses dois pontos.</p>
+  <p><b>A frequência passou a ser publicada com uma casa decimal, e não duas.</b> A banda onde procuramos a fundamental ocupa 27 linhas de píxeis, o que dá 0,10 Hz por linha: centésimas não existem na imagem, e a segunda casa saía sempre zero. Medida a variação entre colunas vizinhas da mesma imagem, o pico oscila 0,35 Hz. Publicar "8,20 Hz" prometia uma precisão que o método não tem.</p>
+  <p><b>A linha dos 0 Hz estava fixada um píxel acima do que dizem os tracinhos da escala da própria imagem</b>, o que punha todas as leituras cerca de 0,08 Hz acima do valor certo. As medições anteriores a esta data não foram recalculadas, porque o desvio é menor do que a dispersão do método e reescrever números medidos seria pior do que declarar o desvio. Está declarado aqui e dentro do <a href="historico.html">próprio conjunto de dados</a>.</p>
+  <p>Na mesma revisão corrigiu-se também o painel, que apresentava a leitura como "medição atual" quando pode ter algumas horas, e que agora mostra sempre a hora a que foi feita.</p>
 
   <p>Para ver como estes números se comportam ao longo do tempo, em vez de num instante só, há o <a href="historico.html">histórico da Ressonância de Schumann</a>, com a nossa série de medições e os dados em bruto para descarregar, o <a href="arquivo.html">arquivo do índice Kp dos últimos 30 dias</a> e as <a href="leitura/index.html">leituras diárias</a>, uma por dia desde 5 de agosto de 2026.</p>
 

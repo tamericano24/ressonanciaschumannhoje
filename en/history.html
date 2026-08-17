@@ -92,6 +92,7 @@
     <p class="sub">Each point is one reading of the spectrogram. The line breaks wherever there was no trustworthy measurement.</p>
     <div class="serie" id="sr-serie"></div>
     <p class="src" id="sr-historico-nota"></p>
+    <p class="src"><b>Correction, 17 August 2026.</b> Two readings of 6.70 Hz from that day were reclassified as refused: they were noise from below the search band, caught by a guard that was one pixel row too narrow. They remain in the dataset, marked as refusals, and the line breaks at those points. Readings before that date carry about 0.1 Hz too much, from a one-pixel error in how the image scale was read, and were not recalculated. The dataset carries this record in its <code>correcoes</code> field.</p>
   </div>
 
   <div class="disclaimer" id="sr-historico-vazio">
@@ -121,6 +122,8 @@
   <p><a class="btn" href="https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/historico.json" rel="noopener" target="_blank">Download the series as JSON →</a></p>
 
   <p>The format is a list of rows with four fields: the timestamp in UTC, the peak frequency in hertz, the intensity on the 0 to 100 colour scale, and the state of the reading. A null frequency means the reading was refused, and the state says why. The last thirty days are kept.</p>
+
+  <p>The file also carries a <code>correcoes</code> field, recording anything changed by hand after publication: which readings, what changed and why. Anyone downloading the data sees the corrections alongside the numbers. A correction stays in the file for as long as the readings it refers to.</p>
 
   <p>If you use this data, we would appreciate attribution to this site and to the original source, the Space Observing System at Tomsk State University. The intensity comes from the spectrogram colour scale and is <b>not calibrated in picotesla</b>, because the station does not publish the calibration: comparing values between days is legitimate, converting them into physical units is not.</p>
 

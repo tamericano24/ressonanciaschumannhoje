@@ -95,6 +95,7 @@
     <p class="sub">Cada ponto é uma leitura do espectrograma. A linha corta onde não houve medição de confiança.</p>
     <div class="serie" id="sr-serie"></div>
     <p class="src" id="sr-historico-nota"></p>
+    <p class="src"><b>Correção de 17 de agosto de 2026.</b> Duas leituras desse dia, de 6,70 Hz, passaram a recusadas: eram ruído de baixo da banda apanhado por uma regra que era larga de mais. Ficam no conjunto de dados, marcadas como recusa, e a linha corta nelas. As leituras anteriores a esse dia trazem cerca de 0,1 Hz a mais, por um erro de um píxel na leitura da escala da imagem, e não foram recalculadas. <a href="metodologia.html#correcoes">O que mudou e porquê</a>.</p>
   </div>
 
   <div class="disclaimer" id="sr-historico-vazio">
@@ -124,6 +125,8 @@
   <p><a class="btn" href="https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/historico.json" rel="noopener" target="_blank">Descarregar a série em JSON →</a></p>
 
   <p>O formato é uma lista de linhas com quatro campos: o instante em UTC, a frequência do pico em hertz, a intensidade na escala de cor de 0 a 100, e o estado da leitura. Uma frequência a <code>null</code> quer dizer leitura recusada, e o estado diz porquê. Guardam-se os últimos trinta dias.</p>
+
+  <p>O ficheiro traz também um campo <code>correcoes</code>, com o registo de tudo o que foi mudado à mão depois de publicado: que leituras, o que mudou e porquê. Assim quem descarrega os dados vê as correções ao lado dos números, sem ter de vir cá saber. Uma correção fica no ficheiro enquanto lá estiverem as leituras a que diz respeito.</p>
 
   <p>Se usar estes dados, agradecemos a atribuição a este site e à origem, o Space Observing System da Universidade Estatal de Tomsk. A intensidade vem na escala de cor do espectrograma e <b>não está calibrada em picotesla</b>, porque a estação não publica a calibração: comparar valores entre dias é legítimo, converter em unidades físicas não é.</p>
 

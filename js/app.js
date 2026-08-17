@@ -241,6 +241,11 @@
   // ----------------------------------------------------------
   var SOURCES = [
     { id: "spectro", nome: "Espectrograma (SOS Tomsk)", cadencia: "origem renova a cada ~20 min" },
+    // A imagem e o número são duas fontes distintas e têm de ter linhas
+    // distintas: a imagem vem de Tomsk, o número vem do nosso robô através
+    // do GitHub. Marcá-los na mesma linha faria uma falha de um apagar o
+    // estado do outro, e a linha deixava de dizer o que quer que fosse.
+    { id: "medicao", nome: "Leitura da Schumann (nosso robô)", cadencia: "nova leitura a cada ~1 h 30" },
     { id: "kp",      nome: "Índice Kp (NOAA)",          cadencia: "origem renova a cada 3 h" },
     { id: "xray",    nome: "Raios-X solares (GOES)",    cadencia: "origem renova a cada minuto" },
     { id: "protons", nome: "Fluxo de protões (GOES)",   cadencia: "origem renova a cada 5 min" },
@@ -508,8 +513,34 @@
   }
 
   function carregarSchumann() {
-    return getJSON(SRC.schumann).then(renderSchumann).catch(function () {
-      renderSchumann(null);
+    return getJSON(SRC.schumann).then(function (d) {
+      renderSchumann(d);
+      mark("medicao", true);
+    }).catch(function (e) {
+      // Uma falha de rede não apaga um número datado.
+      //
+      // Isto chamava renderSchumann(null), que punha "?" e "sem leitura" por
+      // cima do valor que o prerender.py já tinha escrito no HTML. Trocava
+      // informação verdadeira e com hora à vista ("medido às 10:07 UTC") por
+      // uma mensagem de erro, e bastava um pedido falhado em cada cinco
+      // minutos para o medidor principal do site ficar vazio.
+      //
+      // A regra da casa continua a valer: não se mostra um valor velho como
+      // se fosse de agora. Mas o valor que lá está não se apresenta como
+      // atual, traz a hora a que foi medido. O que se faz é acrescentar que
+      // a fonte ao vivo não respondeu, e marcá-la em baixo na lista das
+      // fontes, em vez de deitar fora o que se sabe.
+      var v = document.getElementById("idx-value");
+      var temNumero = v && /\d/.test(v.textContent || "");
+      if (temNumero) {
+        var leg = document.getElementById("sr-legenda");
+        if (leg && leg.textContent.indexOf("sem resposta") === -1)
+          leg.textContent += " · a fonte ao vivo não respondeu";
+      } else {
+        renderSchumann(null);
+      }
+      mark("medicao", false);
+      console.warn("Schumann:", e);
     });
   }
 

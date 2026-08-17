@@ -13,7 +13,7 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/assets/icone-apple.png">
 <meta name="apple-mobile-web-app-title" content="Schumann Hoje">
-<link rel="stylesheet" href="css/style.css?v=50">
+<link rel="stylesheet" href="css/style.css?v=51">
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
@@ -89,6 +89,7 @@
       <tr><td>Previsão a 3 dias</td><td>NOAA SWPC (boletim de texto)</td><td>3 vezes por dia</td></tr>
       <tr><td>Alertas de clima espacial</td><td>NOAA SWPC</td><td>Quando emitidos</td></tr>
       <tr><td>Sismos M4,5+</td><td>United States Geological Survey (USGS)</td><td>A cada minuto</td></tr>
+    <tr><td>Sismos em Portugal, incluindo os pequenos</td><td>Instituto Português do Mar e da Atmosfera (IPMA)</td><td>A cada minuto</td></tr>
       <tr><td>Fluxo de protões (≥10 MeV) e escala S</td><td>Satélites GOES / NOAA SWPC</td><td>A cada 5 minutos</td></tr>
       <tr><td>Fluxo solar F10.7</td><td>NOAA SWPC</td><td>Várias vezes por dia</td></tr>
       <tr><td>Escalas NOAA R, S e G</td><td>NOAA SWPC</td><td>Contínua</td></tr>
@@ -171,6 +172,7 @@
     <li>Uma única estação não mede o planeta inteiro: mede a cavidade Terra-ionosfera tal como é vista da Sibéria.</li>
     <li>O índice Kp é global e médio, condições locais podem diferir bastante.</li>
     <li>Quando uma fonte está offline, o painel indica-o em vez de mostrar o último valor conhecido como se fosse atual. No caso da Ressonância de Schumann, a última medição válida continua visível, mas sempre acompanhada da hora a que foi feita.</li>
+    <li>Há duas listas de sismos e não uma, porque nenhuma das fontes chega para as duas coisas. O catálogo do USGS é mundial e não regista sismos pequenos em Portugal: interrogado sobre toda a região, com trinta dias e sem limite nenhum de magnitude, devolve apenas eventos de magnitude 4,3 ou superior. O do IPMA regista os pequenos, mas só cobre Portugal e o que está à sua volta. As duas listas estão separadas também porque as escalas não coincidem: o sismo dos Açores de 21 de julho de 2026 foi M4,2 para o IPMA e M5,3 para o USGS, e juntá-las daria dois números para o mesmo abalo.</li>
   </ul>
 
   <h2 id="correcoes">Correções</h2>
@@ -198,7 +200,7 @@
   </div>
 </footer>
 
-<script src="js/app.js?v=50"></script>
+<script src="js/app.js?v=51"></script>
 </body>
 </html>
 

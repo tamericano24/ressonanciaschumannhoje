@@ -41,7 +41,7 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <!-- O sufixo ?v= força os navegadores a irem buscar a versão nova depois de cada
      atualização. Incremente-o sempre que mudar o CSS ou o JavaScript. -->
-<link rel="stylesheet" href="css/style.css?v=50">
+<link rel="stylesheet" href="css/style.css?v=51">
 
 <!-- Dados estruturados. O "dateModified" e os valores do Dataset são reescritos
      a cada publicação pelo prerender.py: é o que faz o Google mostrar uma data
@@ -631,7 +631,7 @@
       <div class="card">
         <div class="section-head" style="margin-bottom:12px">
           <h3 style="margin:0">Mapa sísmico mundial</h3>
-          <p>Todos os sismos de magnitude 2,5 ou superior nas últimas 48 horas</p>
+          <p>Sismos de magnitude 2,5 ou superior no catálogo mundial do USGS, nas últimas 48 horas</p>
         </div>
 
         <div class="quake-map" id="quake-map"></div>
@@ -652,10 +652,32 @@
           <span><i style="background:#f43f5e"></i>M6,5+</span>
         </div>
 
-        <h4 style="margin:18px 0 8px;font-size:15px">Todos os sismos das últimas 48 horas</h4>
+        <h4 style="margin:18px 0 8px;font-size:15px">Sismos de magnitude 2,5 ou superior nas últimas 48 horas</h4>
         <ul class="quake-feed" id="quake-feed"><li class="muted">A carregar…</li></ul>
         <p class="src">Passe o rato por uma linha para a localizar no mapa. Clique para a fixar. A bandeira é a do país onde o sismo se deu; um traço quer dizer mar aberto, fora de qualquer país.</p>
-        <p class="src">Sismos: USGS. Contornos: Natural Earth (domínio público). O mapa é desenhado no seu navegador a partir dos dados, sem imagens de terceiros.</p>
+        <!-- Esta lista dizia "Todos os sismos das últimas 48 horas", o que era
+             falso e enganava justamente quem cá vinha por causa de Portugal: o
+             catálogo do USGS é mundial e não regista sismos pequenos aqui. Nas
+             mesmas 48 horas em que tinha zero eventos em Portugal, o IPMA tinha
+             dezassete. Daí o cartão seguinte. -->
+        <p class="src">Sismos: USGS. Contornos: Natural Earth (domínio público). O mapa é desenhado no seu navegador a partir dos dados, sem imagens de terceiros. O catálogo do USGS é mundial e regista sobretudo sismos de magnitude média para cima: os sismos pequenos em Portugal não aparecem aqui, aparecem no cartão a seguir.</p>
+      </div>
+
+      <div class="card" id="sismos-portugal" style="margin-top:16px;scroll-margin-top:80px">
+        <div class="section-head" style="margin-bottom:12px">
+          <h3 style="margin:0">Sismos em Portugal</h3>
+          <p>Registados pelo IPMA nas últimas 48 horas, incluindo os pequenos</p>
+        </div>
+
+        <div class="metric-row" style="margin-bottom:14px">
+          <div class="metric"><b id="pt-quake-count"><span class="skeleton"></span></b><span>Sismos · 48 h</span></div>
+          <div class="metric"><b id="pt-quake-sentidos"><span class="skeleton"></span></b><span>Sentidos pela população</span></div>
+        </div>
+
+        <ul class="quake-feed" id="pt-quake-feed"><li class="muted">A carregar…</li></ul>
+
+        <p class="src">Fonte: Instituto Português do Mar e da Atmosfera. A rede do IPMA cobre o continente, a Madeira e os Açores, e alcança o mar e a terra em redor: por isso aparecem também sismos em Espanha e em Marrocos.</p>
+        <p class="src">As magnitudes desta lista <b>não são comparáveis com as da lista acima</b>. O IPMA e o USGS usam escalas diferentes e dão valores diferentes ao mesmo sismo: o dos Açores de 21 de julho de 2026 foi M4,2 para um e M5,3 para o outro. Por isso as duas listas estão separadas, cada uma com a sua fonte, em vez de fundidas numa só.</p>
       </div>
 
       <!-- Os vulcões têm mapa próprio. Antes eram um triângulo no meio dos
@@ -881,9 +903,9 @@
   </div>
 </footer>
 
-<script src="js/world-path.js?v=50"></script>
-<script src="js/bandeiras.js?v=50"></script>
-<script src="js/app.js?v=50"></script>
+<script src="js/world-path.js?v=51"></script>
+<script src="js/bandeiras.js?v=51"></script>
+<script src="js/app.js?v=51"></script>
 </body>
 </html>
 

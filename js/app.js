@@ -29,6 +29,26 @@
     quakes: "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson",
     quakes48: "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson",
     quakesMes: "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.geojson",
+    // Sismos em Portugal, do IPMA.
+    //
+    // O USGS e um catalogo mundial e nao regista sismos pequenos em Portugal:
+    // interrogado sobre toda a regiao, 30 dias, SEM limite de magnitude,
+    // devolve 8 eventos, todos M4,3 ou acima. Nas mesmas 48 horas em que o
+    // USGS tinha zero sismos em Portugal, o IPMA tinha 17. Baixar o limiar do
+    // USGS nao resolvia nada, porque os dados nao existem la.
+    //
+    // A area 7 e o continente e a Madeira, a 3 sao os Acores. A rede do IPMA
+    // cobre tambem o mar e a terra a volta, por isso aparecem eventos em
+    // Espanha e em Marrocos: e o que a fonte da, e a legenda di-lo.
+    //
+    // Envia Access-Control-Allow-Origin: *, portanto o navegador le
+    // diretamente, sem intermediario. O campo "time" vem em UTC, confirmado
+    // comparando o mesmo sismo nas duas fontes: 13:13:13 no IPMA contra
+    // 13:13:11 no USGS.
+    sismosPT: [
+      "https://api.ipma.pt/open-data/observation/seismic/7.json",
+      "https://api.ipma.pt/open-data/observation/seismic/3.json"
+    ],
     vulcoes: "https://eonet.gsfc.nasa.gov/api/v3/events?category=volcanoes&status=open&limit=100",
     // Espectrograma da estação de Tomsk (Universidade Estatal de Tomsk, Rússia).
     // Atenção: o antigo endereço sosrff.tsu.ru/new/shm.jpg deixou de ser atualizado
@@ -226,6 +246,7 @@
     { id: "protons", nome: "Fluxo de protões (GOES)",   cadencia: "origem renova a cada 5 min" },
     { id: "vento",   nome: "Vento solar (ACE/DSCOVR)",  cadencia: "origem renova a cada minuto" },
     { id: "quakes",  nome: "Sismos (USGS)",             cadencia: "origem renova a cada minuto" },
+    { id: "sismosPT",nome: "Sismos em Portugal (IPMA)", cadencia: "origem renova a cada minuto" },
     { id: "vulcoes", nome: "Vulcões ativos (NASA EONET)", cadencia: "origem renova diariamente" },
     { id: "alerts",  nome: "Alertas (NOAA)",            cadencia: "só quando há alertas" },
     { id: "forecast",nome: "Previsão 3 dias (NOAA)",    cadencia: "3 boletins por dia" }
@@ -1926,6 +1947,81 @@
     }).catch(function (e) { console.warn("Sismos 30 dias:", e); });
   }
 
+  // ----------------------------------------------------------
+  // Sismos em Portugal, pelo IPMA
+  //
+  // Lista à parte e nunca misturada com a do USGS, de propósito. As duas
+  // fontes medem em escalas diferentes e dão números diferentes ao mesmo
+  // sismo: o dos Açores de 21 de julho é M4,2 no IPMA e M5,3 no USGS. Juntá-las
+  // daria ou duas linhas para o mesmo evento ou um número escolhido a dedo.
+  // Cada lista fica com a sua fonte à vista e o leitor sabe o que está a ler.
+  // ----------------------------------------------------------
+
+  function loadSismosPT() {
+    var host = document.getElementById("pt-quake-feed");
+    if (!host) return Promise.resolve();
+
+    // Uma área pode falhar sem levar a outra atrás: mais vale a lista do
+    // continente sozinha do que nenhuma.
+    var pedidos = SRC.sismosPT.map(function (u) {
+      return getJSON(u).then(function (d) { return (d && d.data) || []; })
+                       .catch(function () { return null; });
+    });
+
+    return Promise.all(pedidos).then(function (partes) {
+      if (partes.every(function (p) { return p === null; })) throw new Error("sem resposta");
+
+      var limite = Date.now() - 48 * 3600 * 1000;
+      var lista = [];
+      partes.forEach(function (p) {
+        (p || []).forEach(function (e) {
+          var t = parseUTC(e.time);
+          if (!t || t.getTime() < limite) return;
+          // -99 é o valor que o IPMA usa quando não determinou magnitude.
+          var m = parseFloat(e.magnitud);
+          lista.push({
+            t: t,
+            mag: isFinite(m) && m > -90 ? m : null,
+            onde: (e.obsRegion || "").trim(),
+            prof: e.depth,
+            sentido: !!e.sensed,
+            grau: e.degree
+          });
+        });
+      });
+
+      lista.sort(function (a, b) { return b.t - a.t; });
+      set("pt-quake-count", String(lista.length));
+
+      if (!lista.length) {
+        host.innerHTML = '<li class="muted">Nenhum sismo registado pelo IPMA nas últimas 48 horas.</li>';
+      } else {
+        host.innerHTML = lista.map(function (s) {
+          return "<li>" +
+            '<span class="mag" style="color:' + (s.mag === null ? "#6b7391" : corSismo(s.mag)) + '">' +
+            (s.mag === null ? "—" : "M" + num(s.mag)) + "</span>" +
+            '<span class="loc">' + escapeHTML(s.onde) +
+            (s.sentido ? ' <b style="color:#fbbf24">· sentido</b>' +
+              (s.grau ? " (intensidade " + escapeHTML(String(s.grau)) + ")" : "") : "") + "</span>" +
+            '<span class="qd">' + (s.prof != null ? Math.round(s.prof) + " km · " : "") +
+            ago(s.t) + "</span></li>";
+        }).join("");
+      }
+
+      // Número e não frase: os mosaicos ao lado são todos números grandes, e
+      // uma frase ali dentro passa a duas linhas e desalinha a fila.
+      var sentidos = lista.filter(function (s) { return s.sentido; }).length;
+      set("pt-quake-sentidos", String(sentidos));
+
+      mark("sismosPT", true);
+    }).catch(function (e) {
+      host.innerHTML = '<li class="muted">Não foi possível contactar o IPMA.</li>';
+      set("pt-quake-count", "?");
+      mark("sismosPT", false);
+      console.warn("Sismos IPMA:", e);
+    });
+  }
+
   // Lista dos vulcões, ligada ao mapa dos vulcões da mesma maneira que a
   // lista dos sismos está ligada ao mapa dos sismos.
   function renderVolcanoList() {
@@ -3153,6 +3249,7 @@
     aoAproximar("vs-chart", loadVentoSolar);
     aoAproximar("f107-value", loadF107);
     aoAproximar("quake-map", function () { loadQuakes48(); loadVulcoes(); loadQuakesMes(); });
+    aoAproximar("pt-quake-feed", loadSismosPT);
     // A idade do espectrograma vem agora dentro do schumann.json, tratada em
     // renderSchumann(), e já não precisa de um pedido só para ela.
   }

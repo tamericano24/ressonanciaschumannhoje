@@ -1323,7 +1323,14 @@
   // uma medição que não existiu.
   // ----------------------------------------------------------
 
-  var SR_MIN_PONTOS = 12;      // menos de 6 horas não vale um gráfico
+  // Mínimo de medições para o gráfico aparecer.
+  //
+  // Era 12, na conta de haver 48 leituras por dia. Não há: o cron do GitHub
+  // Actions pede de 30 em 30 minutos mas o serviço executa quando pode, e na
+  // prática dá cerca de uma leitura por hora e meia. Com 12 o gráfico levava
+  // quase um dia a aparecer. Oito medições já mostram a oscilação e a legenda
+  // por baixo diz sempre quantas são, portanto ninguém é induzido em erro.
+  var SR_MIN_PONTOS = 8;
 
   function serieSchumann(hostId, linhas) {
     var host = document.getElementById(hostId);

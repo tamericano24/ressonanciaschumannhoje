@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Schumann resonance history, reading by reading</title>
-<meta name="description" content="The Schumann resonance peak frequency over the past days, measured every 30 minutes from the Tomsk spectrogram. Raw data available as an open JSON download.">
+<meta name="description" content="The Schumann resonance peak frequency over the past days, read from the Tomsk spectrogram roughly every hour and a half. Raw data available as an open JSON download.">
 <link rel="canonical" href="https://ressonanciaschumannhoje.com/en/history">
 <link rel="alternate" hreflang="pt" href="https://ressonanciaschumannhoje.com/historico">
 <link rel="alternate" hreflang="en" href="https://ressonanciaschumannhoje.com/en/history">
@@ -13,7 +13,7 @@
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/assets/icone-apple.png">
-<link rel="stylesheet" href="../css/style.css?v=48">
+<link rel="stylesheet" href="../css/style.css?v=49">
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
@@ -23,7 +23,7 @@
    "@id": "https://ressonanciaschumannhoje.com/en/history#page",
    "url": "https://ressonanciaschumannhoje.com/en/history",
    "name": "Schumann resonance history, reading by reading",
-   "description": "The Schumann resonance peak frequency over the past days, measured every 30 minutes from the Tomsk spectrogram.",
+   "description": "The Schumann resonance peak frequency over the past days, read from the Tomsk spectrogram.",
    "inLanguage": "en",
    "isPartOf": { "@type": "WebSite", "@id": "https://ressonanciaschumannhoje.com/#site" },
    "about": { "@type": "Thing", "name": "Schumann resonance" },
@@ -34,7 +34,7 @@
    "@type": "Dataset",
    "@id": "https://ressonanciaschumannhoje.com/en/history#series",
    "name": "Schumann resonance time series measured at Tomsk",
-   "description": "Peak frequency and intensity of the Schumann resonance fundamental, measured every 30 minutes from the public spectrogram of the Space Observing System at Tomsk State University. Covers the last 30 days. Readings that cannot be trusted are recorded as refused, with the reason, rather than estimated or omitted.",
+   "description": "Peak frequency and intensity of the Schumann resonance fundamental, read from the public spectrogram of the Space Observing System at Tomsk State University. Covers the last 30 days. Readings that cannot be trusted are recorded as refused, with the reason, rather than estimated or omitted.",
    "url": "https://ressonanciaschumannhoje.com/en/history",
    "inLanguage": "en",
    "isAccessibleForFree": true,
@@ -79,9 +79,11 @@
   <p class="meta"><a href="index.html">English</a> / History</p>
 
   <h1>Schumann resonance history</h1>
-  <p class="meta">The peak frequency over the past days, measured every half hour</p>
+  <p class="meta">The peak frequency over the past days, reading by reading</p>
 
-  <p>This page shows our own series of Schumann resonance measurements. Every 30 minutes a program reads the public spectrogram from the Tomsk station, finds the peak of the fundamental, and records the frequency and the intensity. The result is kept, and that is what appears here.</p>
+  <p>This page shows our own series of Schumann resonance measurements. A program reads the public spectrogram from the Tomsk station, finds the peak of the fundamental, and records the frequency and the intensity. The result is kept, and that is what appears here.</p>
+
+  <p class="src">The program is scheduled every 30 minutes, but it runs on GitHub Actions, which executes scheduled jobs when capacity allows. In practice that works out at roughly one reading every hour and a half. We would rather say so than advertise a cadence that is not met.</p>
 
   <p><b>No public source publishes these values as numbers.</b> We checked file by file: the station publishes an image and nothing else. Anyone showing a live "F1 = 7.70 Hz" is reading it from the image, as we do, or inventing it. The difference is in saying so, and in showing the method.</p>
 
@@ -93,7 +95,7 @@
   </div>
 
   <div class="disclaimer" id="sr-historico-vazio">
-    <strong>The series is still filling up.</strong> Measurements began being stored on 16 August 2026, and the chart only appears once there are six hours of readings. If you arrived before that, come back tomorrow: each day adds forty-eight points.
+    <strong>The series is still filling up.</strong> Measurements began being stored on 16 August 2026, and the chart appears once there are eight readings. If you arrived before that, come back later.
   </div>
 
   <h2>Is the frequency rising?</h2>
@@ -142,6 +144,6 @@
   </div>
 </footer>
 
-<script src="../js/app.js?v=48"></script>
+<script src="../js/app.js?v=49"></script>
 </body>
 </html>

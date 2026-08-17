@@ -428,6 +428,24 @@ Ficou por decidir entre **mudar o texto** para deixar claro que é um diário
 pessoal, que é o que eu faria, ou **montar o backend** com Durable Objects, que
 implica plano pago e limite de votos por IP. Não pôr números de arranque.
 
+## O robô da Schumann não corre de 30 em 30 minutos
+
+O `cron` do [schumann.yml](.github/workflows/schumann.yml) pede de meia em meia
+hora, mas o GitHub Actions executa tarefas agendadas **quando tem
+disponibilidade**. Medido em produção: **10 leituras em 14 horas e meia**, ou
+seja cerca de uma por hora e meia, e pior de madrugada.
+
+Isto já causou dois erros:
+
+- O gráfico da série exigia 12 medições para aparecer, na conta errada de haver
+  48 por dia. Levava quase um dia a aparecer e parecia avariado. Passou a **8**.
+- As páginas do histórico diziam "cada dia acrescenta quarenta e oito pontos",
+  o que é falso. Foi corrigido, e passaram a explicar a cadência real.
+
+**Ao escrever qualquer coisa sobre a frequência das leituras, usar a cadência
+real e não a do `cron`.** Se um dia isto tiver de ser fiável, o agendamento do
+GitHub não serve e é preciso outro disparador.
+
 ## A secção em inglês, e porque só tem três páginas
 
 O painel é todo escrito por JavaScript em português: **764 cadeias visíveis,

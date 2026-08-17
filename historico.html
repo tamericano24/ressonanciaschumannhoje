@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Histórico da Ressonância de Schumann, medição a medição</title>
-<meta name="description" content="A frequência do pico da Ressonância de Schumann ao longo dos dias, medida de meia em meia hora no espectrograma de Tomsk. Com os dados em bruto para descarregar.">
+<meta name="description" content="A frequência do pico da Ressonância de Schumann ao longo dos dias, lida do espectrograma de Tomsk. Com os dados em bruto para descarregar.">
 <link rel="canonical" href="https://ressonanciaschumannhoje.com/historico">
 <link rel="alternate" hreflang="pt" href="https://ressonanciaschumannhoje.com/historico">
 <link rel="alternate" hreflang="en" href="https://ressonanciaschumannhoje.com/en/history">
@@ -14,7 +14,7 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/assets/icone-apple.png">
 <meta name="apple-mobile-web-app-title" content="Schumann Hoje">
-<link rel="stylesheet" href="css/style.css?v=48">
+<link rel="stylesheet" href="css/style.css?v=49">
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
@@ -24,7 +24,7 @@
    "@id": "https://ressonanciaschumannhoje.com/historico#pagina",
    "url": "https://ressonanciaschumannhoje.com/historico",
    "name": "Histórico da Ressonância de Schumann, medição a medição",
-   "description": "A frequência do pico da fundamental ao longo dos dias, medida de meia em meia hora no espectrograma da estação de Tomsk.",
+   "description": "A frequência do pico da fundamental ao longo dos dias, lida do espectrograma da estação de Tomsk.",
    "inLanguage": "pt",
    "isPartOf": { "@type": "WebSite", "@id": "https://ressonanciaschumannhoje.com/#site" },
    "about": { "@type": "Thing", "name": "Ressonância de Schumann" },
@@ -35,7 +35,7 @@
    "@type": "Dataset",
    "@id": "https://ressonanciaschumannhoje.com/historico#serie",
    "name": "Série temporal da Ressonância de Schumann medida em Tomsk",
-   "description": "Frequência do pico e intensidade da fundamental da Ressonância de Schumann, medidas de 30 em 30 minutos a partir do espectrograma público do Space Observing System da Universidade Estatal de Tomsk. Cobre os últimos 30 dias. As leituras sem confiança ficam registadas como recusadas, com o motivo, em vez de serem estimadas ou omitidas.",
+   "description": "Frequência do pico e intensidade da fundamental da Ressonância de Schumann, lidas do espectrograma público do Space Observing System da Universidade Estatal de Tomsk. Cobre os últimos 30 dias. As leituras sem confiança ficam registadas como recusadas, com o motivo, em vez de serem estimadas ou omitidas.",
    "url": "https://ressonanciaschumannhoje.com/historico",
    "inLanguage": "pt",
    "isAccessibleForFree": true,
@@ -80,9 +80,11 @@
   <p class="meta"><a href="index.html">Painel</a> / Histórico</p>
 
   <h1>Histórico da Ressonância de Schumann</h1>
-  <p class="meta">A frequência do pico ao longo dos dias, medida de meia em meia hora</p>
+  <p class="meta">A frequência do pico ao longo dos dias, leitura a leitura</p>
 
-  <p>Esta página mostra a nossa própria série de medições da Ressonância de Schumann. De trinta em trinta minutos, um programa lê o espectrograma público da estação de Tomsk, encontra o pico da fundamental e regista a frequência e a intensidade. O resultado fica guardado, e é isso que se vê aqui.</p>
+  <p>Esta página mostra a nossa própria série de medições da Ressonância de Schumann. Um programa lê o espectrograma público da estação de Tomsk, encontra o pico da fundamental e regista a frequência e a intensidade. O resultado fica guardado, e é isso que se vê aqui.</p>
+
+  <p class="src">O programa está agendado de trinta em trinta minutos, mas corre no GitHub Actions, que executa as tarefas agendadas quando tem disponibilidade. Na prática dá cerca de uma leitura por hora e meia. Preferimos dizer isto a anunciar uma cadência que não se cumpre.</p>
 
   <p><b>Não existe nenhuma fonte pública que publique estes valores em número.</b> Verificámos ficheiro a ficheiro: a estação publica uma imagem e mais nada. Quem apresenta "F1 = 7,70 Hz" ao vivo está a lê-lo da imagem, tal como nós, ou a inventá-lo. A diferença está em dizê-lo, e em mostrar o método.</p>
 
@@ -96,7 +98,7 @@
   </div>
 
   <div class="disclaimer" id="sr-historico-vazio">
-    <strong>A série ainda está a encher.</strong> As medições começaram a ser guardadas a 16 de agosto de 2026, e o gráfico só aparece a partir de seis horas de leituras. Se chegou aqui antes disso, volte amanhã: cada dia acrescenta quarenta e oito pontos.
+    <strong>A série ainda está a encher.</strong> As medições começaram a ser guardadas a 16 de agosto de 2026, e o gráfico aparece a partir de oito leituras. Se chegou aqui antes disso, volte mais tarde.
   </div>
 
   <h2>A frequência está a subir?</h2>
@@ -146,6 +148,6 @@
   </div>
 </footer>
 
-<script src="js/app.js?v=48"></script>
+<script src="js/app.js?v=49"></script>
 </body>
 </html>

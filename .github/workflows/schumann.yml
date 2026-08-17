@@ -79,16 +79,16 @@ jobs:
 
       - name: Publicar tambem na branch principal (para evitar rate limiting)
         run: |
-          # Atualiza a pasta /dados na branch main sem perder o código do site
-          git fetch origin main --quiet
-          git checkout origin/main -- .
+          # Os ficheiros schumann.json e historico.json ja estao na raiz do repo
+          # (foram criados pelo ler-schumann.py). Basta move-los para /dados e
+          # fazer commit/push no branch atual (main).
           mkdir -p dados
           cp schumann.json historico.json dados/
+          git config user.name  "leitura-automatica"
+          git config user.email "actions@users.noreply.github.com"
           git add dados/schumann.json dados/historico.json
           # Só faz commit se houver mudanças
           if ! git diff --cached --quiet; then
-            git config user.name  "leitura-automatica"
-            git config user.email "actions@users.noreply.github.com"
             git commit --quiet -m "Atualizar dados: schumann.json e historico.json"
             git push --quiet \
               "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" HEAD:main

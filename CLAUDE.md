@@ -280,20 +280,44 @@ margem de cada lado, que é o mesmo defeito outra vez. **Ao verificar isto, usar
 uma janela larga**, senão o problema não aparece. O conteúdo das páginas
 continua centrado nos 1180 px, e é assim que se quer.
 
-**Por fazer, por ordem de retorno:**
+**Por fazer, por ordem de retorno** (revisto a 16 de agosto de 2026, no fim da
+sessão que fez a auditoria de pesquisa):
 
-1. **Artigos.** Temos 4, o concorrente tem 89. Continua a ser a maior lacuna.
-   Dos 89 dele, só cerca de 12 são a sério (URL limpo, fontes reais); os outros
-   77 têm carimbo de tempo no URL, um por dia, e são geração automática sem
-   fontes. **Copiar os temas dos 12, ignorar os 77.** Palavras-chave na secção 7
-   do [README.md](README.md). Próximos sugeridos, por não colidirem com páginas
-   que já temos: "Ressonância de Schumann e sono" e "é comprovada pela ciência?".
-2. **Ligações de fora.** É o que falta para passar do 6.º ao 3.º lugar em
-   "ressonância schumann". O trabalho técnico está feito; o domínio tem dias de
-   vida e ninguém aponta para ele. O [incorporar.html](incorporar.html) é a
-   melhor peça que temos para isso: quem põe o widget num site põe também uma
-   ligação. Ver a secção 12 do [README.md](README.md).
-3. **Backend do pulso.** Ver secção 8 do README.
+1. **Ligações de fora.** É o único que decide posições e continua a zero. O
+   trabalho técnico está feito. As três peças com que se pede uma ligação são,
+   por esta ordem: o **conjunto de dados** em [historico.html](historico.html)
+   e [en/history.html](en/history.html), aberto e documentado, que é citável
+   por quem escreve sobre clima espacial; a **descoberta sobre Tomsk**, que
+   três dos cinco concorrentes publicam uma imagem congelada desde 1 de
+   setembro de 2025 e qualquer pessoa confirma pelas datas na imagem; e o
+   **widget** do [incorporar.html](incorporar.html). Ver a secção 12 do
+   [README.md](README.md).
+2. **Search Console.** Submeter o sitemap outra vez e pedir indexação de
+   `/historico`, `/en/`, `/en/methodology` e `/en/history`, que são as quatro
+   páginas novas. Só o Tiago pode fazer isto.
+3. **A página [sobre.html](sobre.html) tem 296 palavras.** É a página que diz
+   ao Google quem está por trás de um site que fala de saúde, e é curta demais
+   para esse papel. Quem escreve, porquê, com que critério, e porque é que este
+   site recusa leituras que outros publicam.
+4. **Pré-renderizar o [indice-kp-agora.html](indice-kp-agora.html)**, que ainda
+   serve "a carregar" ao Google. Mesmo método do prerender.py.
+5. **Artigos.** Temos 4, o concorrente tem 89. Dos 89 dele, só cerca de 12 são
+   a sério (URL limpo, fontes reais); os outros 77 têm carimbo de tempo no URL,
+   um por dia, e são geração automática sem fontes. **Copiar os temas dos 12,
+   ignorar os 77.** Próximos sugeridos, por não colidirem com páginas que já
+   temos: "Ressonância de Schumann e sono" e "é comprovada pela ciência?".
+6. **Decidir o que fazer ao pulso**, ver a secção acima.
+
+**O que NÃO fazer já.** Não acrescentar mais funcionalidades: o site tem hoje
+mais superfície do que os cinco concorrentes em metodologia, arquivo, widget,
+dados abertos e histórico, e empilhar mais sem tráfego é construir para
+ninguém. Não traduzir o painel sem antes ver se as três páginas em inglês
+trazem visitas, porque passa a custar o dobro manter cada alteração.
+
+**Coisas que só rendem com tempo, e que não precisam de mais trabalho:** o
+gráfico do histórico aparece sozinho quando houver 12 medições, as leituras
+diárias acumulam-se, e a data ao lado do resultado no Google precisa de o robô
+passar algumas vezes.
 4. **Páginas que o concorrente tem e nós não:** `/comunidade`, `/leaderboard`,
    `/galeria`, `/aprender`.
 
@@ -338,6 +362,71 @@ página do site para essa pesquisa. O artigo sobre o índice Kp foi abandonado a
 meio por competir com a [indice-kp-agora.html](indice-kp-agora.html), que já
 cobre o mesmo termo. Duas páginas nossas na mesma pesquisa dividem força em vez
 de somar.
+
+## O peso da página inicial, e o que foi feito para o baixar
+
+A inicial descarregava vários megabytes de JSON a cada visita: o vento solar
+sozinho traz 4 MB entre plasma e campo magnético, mais 656 kB de raios-X,
+467 kB de sismos de 30 dias e 241 kB de protões.
+
+Duas medidas. Os raios-X e os protões passaram para os feeds de **6 horas**
+(160 kB e 59 kB). Tentou-se trocar o vento solar por versões compactas, mas os
+endereços `products/solar-wind/*` devolvem **404** neste servidor da NOAA:
+não existem, não vale a pena tentar outra vez.
+
+O resto ficou **adiado** pela `aoAproximar()`, que só vai buscar os dados
+quando a secção se aproxima do ecrã. Resultado medido: **16 pedidos aos 11
+segundos** sem rolar, contra tudo carregado de uma vez.
+
+**Não usar `IntersectionObserver` aqui.** Foi a primeira tentativa e falha em
+silêncio: com o separador em segundo plano o navegador não entrega os avisos, e
+as secções ficavam por preencher sem um único erro na consola. A vigia usa um
+ouvinte de `scroll`, que é mais bruto e não falha. Há um travão por tempo aos
+**45 segundos**; começou nos 15 e a medição mostrou que disparava sempre antes
+de a pessoa lá chegar, anulando a poupança.
+
+Cuidado ao registar uma secção: **um elemento escondido não tem caixa nenhuma**
+e aparece sempre como estando à vista. Por isso o histórico vigia a secção do
+espectrograma e não o próprio cartão, que nasce com `hidden`.
+
+## A idade do espectrograma já não passa por intermediário
+
+O painel media a idade dos dados lendo os píxeis da imagem no navegador. Como a
+estação não envia cabeçalhos CORS, isso obrigava a passar por um proxy de
+imagens, `images.weserv.nl`: **204 kB e uma dependência de terceiros a cada
+visita**, para calcular um número que o robô já tinha à mão.
+
+Agora o [ler-schumann.py](ler-schumann.py) publica `janela_horas` e
+`horas_registadas` no `schumann.json`, e o `renderSchumann()` usa isso. Foram
+apagadas a `probeSpectroAge()` e a `readLastSample()`, cerca de 95 linhas.
+
+O proxy ainda é usado para a imagem de Cumiana, e aí é legítimo: o vlf.it é
+servido por HTTP e sem proxy dava conteúdo misto.
+
+## Site instalável
+
+Há `manifest.webmanifest`, ícones de 192, 512 e Apple em `assets/`, e um
+[sw.js](sw.js) mínimo. É o que põe o site ao nível dos concorrentes que têm app
+nativa, sem haver app para manter.
+
+**O service worker não guarda nada em cache, de propósito.** Isto é um painel
+ao vivo, e servir cópias guardadas mostraria um Kp de ontem com ar de atual,
+que é o defeito de que acusamos os outros. O tratador de `fetch` existe apenas
+porque o navegador exige um para considerar o site instalável. O `sw.js` leva
+`no-store` no [_headers](_headers): um service worker antigo preso no navegador
+é dos problemas mais difíceis de diagnosticar que há.
+
+## O pulso de sintomas é local, e isso confunde
+
+O bloco "Top 10 de hoje" **nunca foi comunitário**. O `PULSO_API` está vazio,
+não há servidor, e cada pessoa vê apenas os seus próprios registos, guardados
+no `localStorage` do seu próprio navegador. Foi testado e o mecanismo grava bem.
+
+O problema é de expectativa, não de código: o título parece prometer um ranking
+coletivo e entrega um pessoal, e por isso um visitante novo vê sempre zeros.
+Ficou por decidir entre **mudar o texto** para deixar claro que é um diário
+pessoal, que é o que eu faria, ou **montar o backend** com Durable Objects, que
+implica plano pago e limite de votos por IP. Não pôr números de arranque.
 
 ## A secção em inglês, e porque só tem três páginas
 

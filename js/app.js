@@ -132,6 +132,23 @@
   function num(v, casas) { return Number(v).toFixed(casas === undefined ? 1 : casas).replace(".", ","); }
   function decPT(s) { return String(s).replace(".", ","); }
 
+  // A ultima copia boa dos nossos dois ficheiros, no navegador.
+  //
+  // O medidor e o grafico vivem do raw.githubusercontent.com, que aplica
+  // limites por endereco IP. Quando esse limite e atingido, ou quando a rede
+  // falha, o painel ficava sem as duas pecas por que as pessoas ca vem.
+  //
+  // Nao contraria a regra de nao servir dados velhos com ar de atuais: estes
+  // ficheiros trazem dentro a hora a que foram medidos, e essa que se mostra,
+  // e diz-se por escrito que a fonte ao vivo nao respondeu.
+  function guardaCopia(chave, dados) {
+    try { localStorage.setItem("copia:" + chave, JSON.stringify(dados)); } catch (e) { /* cheio ou privado */ }
+  }
+
+  function leCopia(chave) {
+    try { return JSON.parse(localStorage.getItem("copia:" + chave) || "null"); } catch (e) { return null; }
+  }
+
   // Uma casa decimal, e não duas.
   //
   // O pico é encontrado linha a linha no espectrograma, e a banda da
@@ -515,8 +532,14 @@
   function carregarSchumann() {
     return getJSON(SRC.schumann).then(function (d) {
       renderSchumann(d);
+      guardaCopia("schumann", d);
       mark("medicao", true);
     }).catch(function (e) {
+      // A copia guardada costuma ser mais recente do que o que o prerender.py
+      // escreveu no ficheiro, e traz a sua propria hora.
+      var copia = leCopia("schumann");
+      if (copia) renderSchumann(copia);
+
       // Uma falha de rede não apaga um número datado.
       //
       // Isto chamava renderSchumann(null), que punha "?" e "sem leitura" por
@@ -1566,6 +1589,17 @@
     if (!caixa) return;
 
     return getJSON(SRC.historico).then(function (d) {
+      guardaCopia("historico", d);
+      return d;
+    }).catch(function (e) {
+      // Sem isto o cartao do grafico ficava escondido e a pagina com um
+      // buraco. Com a ultima copia, mostra-se a serie que se conhece.
+      var copia = leCopia("historico");
+      if (!copia) throw e;
+      console.warn("Historico da Schumann, a usar a ultima copia:", e);
+      copia.__decopia = true;
+      return copia;
+    }).then(function (d) {
       var linhas = (d && d.dados) || [];
       var medidos = linhas.filter(function (l) { return l[1] !== null && l[1] !== undefined; }).length;
 
@@ -1602,6 +1636,15 @@
           ". Cada ponto é uma medição" + (recusadas ? " e cada cruz em baixo é uma leitura recusada" : "") +
           "; as faixas sombreadas são as horas em que não houve medição de confiança nenhuma. " +
           "A linha corta aí: não se une o que não foi medido.");
+
+      // Se a serie veio da copia guardada, diz-se.
+      if (d && d.__decopia) {
+        var nota = document.getElementById("sr-historico-nota");
+        if (nota) nota.innerHTML += emIngles()
+          ? " <b>The live source did not respond; this is the last copy this browser had.</b>"
+          : " <b>A fonte ao vivo não respondeu: esta é a última cópia que este navegador " +
+            "tinha, e pode faltar-lhe o que foi medido entretanto.</b>";
+      }
     }).catch(function (e) { console.warn("Histórico da Schumann:", e); });
   }
 

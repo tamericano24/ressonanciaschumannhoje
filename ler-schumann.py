@@ -2,8 +2,10 @@
 """
 Leitura da Ressonancia de Schumann a partir do espectrograma de Tomsk.
 
-Corre de 30 em 30 minutos na GitHub Action e escreve schumann.json, que o
-painel le. Ver .github/workflows/schumann.yml
+Agendado de 30 em 30 minutos na GitHub Action, mas o servico so executa
+tarefas agendadas quando tem disponibilidade: medido em producao, da cerca
+de uma leitura por hora e meia. Escreve schumann.json, que o painel le.
+Ver .github/workflows/schumann.yml
 
 Metodo: a imagem publicada por Tomsk e um espectrograma com o eixo vertical
 em frequencia (0 a 40 Hz) e a barra de cores ao lado a servir de escala.
@@ -33,8 +35,13 @@ SAIDA = Path(__file__).parent / "schumann.json"
 
 # Geometria da imagem publicada por Tomsk. Se algum destes valores deixar de
 # bater certo, a leitura para em vez de devolver numeros errados.
+#
+# O TOPO foi 29 durante muito tempo, por um pixel. Os tracinhos da escala de
+# frequencias da propria imagem estao em y = 30, 70, 110 ... 430, exatamente
+# de 40 em 40 pixeis para cada 4 Hz: 0 Hz e a linha 30 e 40 Hz e a linha 430,
+# dez pixeis certos por hertz. Com TOPO = 29 tudo saia 0,08 Hz alto.
 LARGURA, ALTURA = 1540, 460
-TOPO, BASE, ESQ = 29, 430, 59          # 0 Hz, 40 Hz, hora 0 do primeiro dia
+TOPO, BASE, ESQ = 30, 430, 59          # 0 Hz, 40 Hz, hora 0 do primeiro dia
 LARG_DIA, DIAS, HZ_MAX = 480, 3, 40.0
 SPAN_HORAS = DIAS * 24          # a imagem cobre exatamente tres dias
 BARRA_X = (1512, 1527)
@@ -144,7 +151,14 @@ def ler_modo(a, escala, x, nome, nominal, hz_a, hz_b):
     # Um pico encostado ao limite da banda quase sempre e o rebordo de uma zona
     # saturada ao lado, nao a ressonancia. O mesmo para valores no topo da
     # escala de cor. Nos dois casos vale mais nao dar numero.
-    if i <= 0 or i >= len(vals) - 1:
+    #
+    # A margem e de duas linhas e nao de uma. Com uma so, a segunda linha da
+    # banda passava, e era por ai que entravam as leituras mas: a 16 e 17 de
+    # agosto de 2026 sairam dois 6,70 Hz, que e exatamente a segunda linha da
+    # banda da fundamental, no meio de um dia inteiro entre 7,9 e 8,2. A
+    # fundamental nao vai a 6,7 Hz; o que estava ali era a franja da zona de
+    # ruido que fica por baixo da banda. Recusar e a regra da casa.
+    if i <= 1 or i >= len(vals) - 2:
         return {"modo": nome, "nominal_hz": nominal, "estado": "pico_no_limite"}
     if pico >= TOPO_DA_ESCALA:
         return {"modo": nome, "nominal_hz": nominal, "estado": "saturado"}

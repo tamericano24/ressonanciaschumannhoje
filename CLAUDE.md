@@ -104,6 +104,24 @@ Tudo documentado em [metodologia.html](metodologia.html).
 A intensidade vem na escala de cor do espectrograma (0 a 100), **não em
 picotesla**: Tomsk não publica a calibração. Isso está escrito na página.
 
+**A frequência tem uma casa decimal, e não duas.** A banda da fundamental
+(6,6 a 9,2 Hz) ocupa 27 linhas de píxeis, o que dá **0,10 Hz por linha**: nada
+mais fino existe na imagem. O site publicou "8,20 Hz" durante meses, com uma
+segunda casa que saía sempre zero por ser sempre um múltiplo da resolução. A
+dispersão real é ainda maior: medida em 40 colunas seguidas da mesma imagem, o
+pico andou 0,35 Hz. **Não voltar a pôr duas casas.**
+
+**A régua de frequências tem o 0 Hz na linha 30.** Os tracinhos da escala da
+própria imagem estão em y = 30, 70, 110 ... 430, dez píxeis certos por hertz. O
+`TOPO` esteve em 29 e enviesava tudo 0,08 Hz para cima. Se um dia a geometria
+parecer errada, medir os tracinhos em vez de adivinhar.
+
+**A guarda do limite da banda é de duas linhas, não de uma.** Com uma só, a
+segunda linha passava, e era por aí que entravam as leituras más: saíram dois
+6,70 Hz a 16 e 17 de agosto de 2026, que é exatamente essa linha, no meio de um
+dia inteiro entre 7,9 e 8,2 Hz. Custa 3% de recusas a mais e limpou o artefacto
+todo.
+
 ## Preferências do utilizador, já manifestadas
 
 - **Nada de travessões** (o traço longo, U+2014). Foi pedido explicitamente e
@@ -167,6 +185,22 @@ registar", que é verdadeiro em qualquer fuso.
 **Feeds da NOAA em ordem inconsistente.** Uns vêm do mais recente para o mais
 antigo, outros ao contrário. Usar a função `maisRecente()`, nunca `rows[rows.length-1]`.
 
+**A NOAA escreve `NaN` dentro do JSON.** Os feeds do vento solar
+(`rtsw_wind_1m.json`) trazem `NaN` à letra em vez de `null` quando o
+instrumento não mediu: oito ocorrências em 2,5 MB, medido a 17 de agosto de
+2026. `NaN` não existe em JSON, o `JSON.parse` rejeita o documento inteiro, e a
+secção do vento solar ficava vazia **sem um único erro à vista**. O `getJSON()`
+lê agora como texto e tenta outra vez com `NaN` trocado por `null`.
+
+Atenção ao diagnosticar isto a partir de scripts: **o `json` do Python aceita
+`NaN` sem se queixar**, portanto um teste em Python diz que o feed está bom
+enquanto o navegador falha. Confirmar sempre na consola do Chrome.
+
+**Uma fonte em baixo não pode levar outra atrás.** O vento solar são dois
+pedidos e tinha um `catch` único, que apagava o Bz sempre que o plasma
+falhasse, mesmo com o Bz carregado e correto. Dava um painel com o Bt em número
+e o Bz a dizer "indisponível" ao lado. Cada pedido trata do seu falhanço.
+
 **Cloudflare bloqueia o User-Agent do Python.** Para testar o site publicado a
 partir de scripts, enviar um User-Agent de navegador, senão devolve 403.
 
@@ -205,6 +239,13 @@ letras no Chrome e no Edge, porque a Segoe UI Emoji não traz os desenhos das
 bandeiras. Foi testado. Por isso as bandeiras da lista de sismos são
 desenhadas em SVG pelo [js/bandeiras.js](js/bandeiras.js), 149 delas, feitas
 com bandas, discos, cruzes e cantões. **Não trocar por emoji.**
+
+**E os emoji posteriores a 2020 também não.** O Windows 10 ficou com uma Segoe
+UI Emoji sem nada do Emoji 13 para cima. A lista de sintomas usou `U+1FAAB` 🪫
+durante meses e saía um quadrado vazio, nas fichas e no Top 10. Está agora em
+`U+1F614`. **Ao escolher um emoji novo, testar antes**: desenhar o caractere
+num `canvas` e comparar o resultado com o de um codepoint sem desenho
+(`U+10FFFD`). Se as imagens forem iguais, é quadrado vazio.
 
 A [folha-bandeiras.html](folha-bandeiras.html) mostra-as todas de uma vez, para
 conferir cores e desenhos. É página de trabalho, está no `.assetsignore` e não
@@ -442,9 +483,24 @@ Isto já causou dois erros:
 - As páginas do histórico diziam "cada dia acrescenta quarenta e oito pontos",
   o que é falso. Foi corrigido, e passaram a explicar a cadência real.
 
+Medido outra vez a 17 de agosto de 2026, sobre 60 execuções: **1 h 55 de
+intervalo médio, 6 h 48 no pior caso**, dez intervalos acima de três horas,
+zero falhas. Pior de madrugada, como já se sabia.
+
 **Ao escrever qualquer coisa sobre a frequência das leituras, usar a cadência
 real e não a do `cron`.** Se um dia isto tiver de ser fiável, o agendamento do
 GitHub não serve e é preciso outro disparador.
+
+**Daí o painel mostrar sempre a hora da medição.** São duas idades diferentes e
+durante meses só se mostrava uma: o `atraso_horas` diz quanto se recuou dentro
+da imagem, e o campo `atualizado` diz quando o robô correu. O visitante quer a
+soma. A legenda dizia "medição atual da estação de Tomsk" a números que podiam
+ter a manhã inteira, e o mais embaraçoso é que **o HTML que saía do servidor
+era mais honesto do que aquilo que o JavaScript escrevia por cima**: o
+`prerender.py` punha lá "medição de 17 de agosto às 08:03 UTC" e o
+`renderSchumann()` substituía por "medição atual". Agora dizem os dois o mesmo.
+**Não voltar a escrever "atual", "agora" ou "neste momento" ao lado deste
+número.**
 
 ## A secção em inglês, e porque só tem três páginas
 

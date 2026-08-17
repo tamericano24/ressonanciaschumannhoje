@@ -41,7 +41,7 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <!-- O sufixo ?v= força os navegadores a irem buscar a versão nova depois de cada
      atualização. Incremente-o sempre que mudar o CSS ou o JavaScript. -->
-<link rel="stylesheet" href="css/style.css?v=49">
+<link rel="stylesheet" href="css/style.css?v=50">
 
 <!-- Dados estruturados. O "dateModified" e os valores do Dataset são reescritos
      a cada publicação pelo prerender.py: é o que faz o Google mostrar uma data
@@ -80,7 +80,7 @@
       "isPartOf": { "@id": "https://ressonanciaschumannhoje.com/#site" },
       "about": { "@id": "https://ressonanciaschumannhoje.com/#assunto" },
       "primaryImageOfPage": "https://ressonanciaschumannhoje.com/assets/og.png",
-      "dateModified": "2026-08-17T08:03:25+00:00",
+      "dateModified": "2026-08-17T10:07:36+00:00",
       "breadcrumb": { "@id": "https://ressonanciaschumannhoje.com/#trilho" }
     },
     {
@@ -105,7 +105,7 @@
       "@type": "Dataset",
       "@id": "https://ressonanciaschumannhoje.com/#medicao",
       "name": "Ressonância de Schumann medida na estação de Tomsk",
-      "description": "Frequência do pico e intensidade da fundamental e das harmónicas da Ressonância de Schumann, extraídas de meia em meia hora do espectrograma público do Space Observing System da Universidade Estatal de Tomsk. A intensidade vem na escala de cor do espectrograma, de 0 a 100, e não está calibrada em picotesla. As leituras sem confiança são recusadas em vez de estimadas.",
+      "description": "Frequência do pico e intensidade da fundamental e das harmónicas da Ressonância de Schumann, extraídas cerca de uma vez por hora e meia do espectrograma público do Space Observing System da Universidade Estatal de Tomsk. A frequência é dada a uma casa decimal, que é a resolução da imagem. A intensidade vem na escala de cor do espectrograma, de 0 a 100, e não está calibrada em picotesla. As leituras sem confiança são recusadas em vez de estimadas.",
       "url": "https://ressonanciaschumannhoje.com/",
       "inLanguage": "pt",
       "license": "https://ressonanciaschumannhoje.com/termos.html",
@@ -123,7 +123,7 @@
         "contentUrl": "https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/schumann.json"
       },
       "isBasedOn": "https://sos70.ru/",
-      "dateModified": "2026-08-17T08:03:25+00:00"
+      "dateModified": "2026-08-17T10:07:36+00:00"
     },
     {
       "@type": "FAQPage",
@@ -219,11 +219,11 @@
       <div class="gauge-solo">
         <div id="gauge-svg"></div>
         <div class="gauge-label">
-          <div class="gauge-value" id="idx-value">78</div>
-          <div class="gauge-unit" id="idx-word">8,20 Hz</div>
+          <div class="gauge-value" id="idx-value">55</div>
+          <div class="gauge-unit" id="idx-word">8,1 Hz</div>
         </div>
       </div>
-      <p class="gauge-legenda" id="sr-legenda">Pico da fundamental · medição de 17 de agosto às 08:03 UTC</p>
+      <p class="gauge-legenda" id="sr-legenda">Pico da fundamental · medição de 17 de agosto às 10:07 UTC</p>
 
       <div class="strip-head" style="margin-top:28px">
         <i class="live-dot"></i> Agora mesmo · ao vivo
@@ -234,8 +234,8 @@
       <div class="tiles">
         <a class="tile tile--sr" href="metodologia.html">
           <div class="tile-label">〰️ Ressonância de Schumann</div>
-          <div class="tile-value"><span id="t-sr">78</span><small>/ 100</small></div>
-          <div class="tile-sub" id="t-sr-sub">8,20 Hz</div>
+          <div class="tile-value"><span id="t-sr">55</span><small>/ 100</small></div>
+          <div class="tile-sub" id="t-sr-sub">8,1 Hz</div>
           <div class="tile-foot" id="t-sr-foot">Pico da fundamental · Tomsk</div>
         </a>
         <a class="tile" href="metodologia.html">
@@ -313,7 +313,7 @@
            dados ao vivo chegam. Serve dois fins: o visitante vê a fundamental e
            as harmónicas em número, e o Google encontra números reais no HTML em
            vez das reticências que ficavam à espera do JavaScript. -->
-      <p class="spectro-caption" id="sr-modos"><!--PR:modos-->Na medição de 17 de agosto às 08:03 UTC, o pico da fundamental estava em <b>8,20 Hz</b>, com intensidade 78 em 100 na escala de cor do espectrograma. 2.ª harmónica em 13,10 Hz (46), 3.ª harmónica em 19,98 Hz (36). Os modos nominais da cavidade Terra-ionosfera são 7,83, 14,3, 20,8, 27,3 e 33,8 Hz.<!--/PR:modos--></p>
+      <p class="spectro-caption" id="sr-modos"><!--PR:modos-->Na medição de 17 de agosto às 10:07 UTC, o pico da fundamental estava em <b>8,1 Hz</b>, com intensidade 55 em 100 na escala de cor do espectrograma. 2.ª harmónica em 13,9 Hz (41), 3.ª harmónica em 19,9 Hz (35). Os modos nominais da cavidade Terra-ionosfera são 7,83, 14,3, 20,8, 27,3 e 33,8 Hz.<!--/PR:modos--></p>
       <p class="spectro-credit">
         <a href="https://sos70.ru/" rel="noopener nofollow" target="_blank">Space Observing System (SOS-70)</a>, Universidade Estatal de Tomsk ·
         <span id="spectro-updated">a verificar a idade dos dados…</span>
@@ -331,7 +331,7 @@
            secção nenhuma do que um gráfico com dois pontos. -->
       <div class="card sr-historico" id="sr-historico" hidden>
         <h3>Como tem variado, medição a medição</h3>
-        <p class="sub">O pico da fundamental ao longo dos últimos dias, lido por nós do espectrograma de meia em meia hora</p>
+        <p class="sub">O pico da fundamental ao longo dos últimos dias, lido por nós do espectrograma cerca de uma vez por hora e meia</p>
         <div class="serie" id="sr-serie"></div>
         <p class="src" id="sr-historico-nota"></p>
         <p class="src">Esta série é nossa: não existe fonte pública que publique estes valores em número. <a href="historico.html">Ver a série completa e descarregar os dados →</a></p>
@@ -881,9 +881,9 @@
   </div>
 </footer>
 
-<script src="js/world-path.js?v=49"></script>
-<script src="js/bandeiras.js?v=49"></script>
-<script src="js/app.js?v=49"></script>
+<script src="js/world-path.js?v=50"></script>
+<script src="js/bandeiras.js?v=50"></script>
+<script src="js/app.js?v=50"></script>
 </body>
 </html>
 

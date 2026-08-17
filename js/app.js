@@ -35,7 +35,9 @@
     // em setembro de 2025. O feed ao vivo está agora em sos70.ru.
     tomsk: "https://sos70.ru/provider.php?file=shm.jpg",
     // Valor numérico extraído desse espectrograma pelo ler-schumann.py, que
-    // corre de 30 em 30 minutos e publica na branch "dados". Fica fora do
+    // publica na branch "dados". O cron pede de 30 em 30 minutos mas o GitHub
+    // Actions corre quando pode: na prática dá cerca de uma leitura por hora
+    // e meia. Fica fora do
     // projeto de propósito, para o histórico não encher de commits do robô.
     schumann: "https://raw.githubusercontent.com/tamericano24/ressonanciaschumannhoje/dados/schumann.json",
     // Trinta dias de medições, acumuladas pelo mesmo robô. Ver ler-schumann.py.
@@ -72,10 +74,28 @@
     if (el) el.innerHTML = '<span class="err">' + (msg || "indisponível") + "</span>";
   }
 
+  // Não usa r.json() de propósito.
+  //
+  // Os feeds do vento solar da NOAA trazem NaN escrito à letra em vez de null
+  // quando o instrumento não mediu (oito ocorrências em 2,5 MB, medido a 17 de
+  // agosto de 2026). NaN não existe em JSON, e o JSON.parse rejeita o
+  // documento inteiro por causa disso: a secção do vento solar ficava por
+  // preencher, sem um único erro à vista para quem visita.
+  //
+  // Ler como texto e tentar outra vez com NaN trocado por null resolve, e não
+  // custa nada: o r.json() faz exatamente estes dois passos por dentro. A
+  // troca é só onde um valor pode aparecer (depois de ":", "," ou "["), para
+  // nunca tocar num NaN que faça parte de um texto.
   function getJSON(url) {
     return fetch(url, { cache: "no-store" }).then(function (r) {
       if (!r.ok) throw new Error("HTTP " + r.status);
-      return r.json();
+      return r.text();
+    }).then(function (t) {
+      try {
+        return JSON.parse(t);
+      } catch (e) {
+        return JSON.parse(t.replace(/([:,[]\s*)(-?(?:NaN|Infinity))\b/g, "$1null"));
+      }
     });
   }
 
@@ -91,6 +111,19 @@
   // Português usa vírgula decimal. Aplica-se a tudo o que é mostrado ao utilizador.
   function num(v, casas) { return Number(v).toFixed(casas === undefined ? 1 : casas).replace(".", ","); }
   function decPT(s) { return String(s).replace(".", ","); }
+
+  // Uma casa decimal, e não duas.
+  //
+  // O pico é encontrado linha a linha no espectrograma, e a banda da
+  // fundamental (6,6 a 9,2 Hz) ocupa 27 linhas de píxeis: dá 0,10 Hz por
+  // linha, e nada mais fino do que isso existe na imagem. Escrever "8,20 Hz"
+  // prometia centésimas que o método não tem, e a segunda casa saía sempre
+  // zero, por ser sempre um múltiplo da resolução.
+  //
+  // A dispersão real é ainda maior: medida em 40 colunas seguidas da mesma
+  // imagem, o pico andou entre 7,6 e 8,3 Hz, com desvio de 0,35 Hz. Uma casa
+  // decimal continua a ser generosa; duas eram falsas.
+  function hzPico(v) { return Number(v).toFixed(1).replace(".", ",") + " Hz"; }
 
   function hhmm(d) { return pad(d.getUTCHours()) + ":" + pad(d.getUTCMinutes()); }
 
@@ -304,7 +337,9 @@
 
   /* ---------------- Ressonância de Schumann, medida ----------------
      O valor vem de ler-schumann.py, que lê o espectrograma da estação de
-     Tomsk de 30 em 30 minutos e publica o resultado na branch "dados".
+     Tomsk e publica o resultado na branch "dados", cerca de uma vez por hora
+     e meia. É por isso que o painel mostra sempre a hora da medição: o
+     número pode ter a manhã inteira.
 
      Quando o recetor está saturado, quando ainda não há dados da hora, ou
      quando a leitura não é de confiança, NÃO se mostra número nenhum: mostra-se
@@ -334,12 +369,9 @@
   // perigo que a medição não sustenta.
   var COR_SCHUMANN = "is-mild";
 
-  function idade(horas) {
-    var m = Math.round(horas * 60);
-    if (m < 60) return "há " + m + " min";
-    var h = Math.floor(m / 60), r = m % 60;
-    return "há " + h + " h" + (r ? " " + r : "");
-  }
+  // A idade da leitura passou a ser contada a partir do instante da medição,
+  // com o ago() que o resto do painel já usa, e não a partir do atraso dentro
+  // da imagem. A antiga idade(horas) ficou sem quem a chamasse.
 
   // Nomes dos modos por frequência nominal. O JSON traz "2a harmonica" sem
   // acentos, porque é escrito por um script, e isso não se mostra a ninguém.
@@ -359,12 +391,19 @@
              ((d && SR_MOTIVOS[d.estado]) || "fonte indisponível") +
              ". Os modos nominais da cavidade Terra-ionosfera são 7,83, 14,3, 20,8, 27,3 e 33,8 Hz.";
     }
-    var hz = function (v) { return v.toFixed(2).replace(".", ",") + "&nbsp;Hz"; };
-    // Sem "neste momento" aqui: a legenda logo acima já começa assim, e as duas
-    // frases aparecem coladas uma à outra por baixo do espectrograma.
-    var quando = d.estado === "ultima_conhecida" && d.atraso_horas > 0.5
-      ? "Na última medição de confiança, " + idade(d.atraso_horas) + ", o pico da fundamental estava em "
-      : "O pico da fundamental está em ";
+    var hz = function (v) { return hzPico(v).replace(" Hz", "&nbsp;Hz"); };
+
+    // No passado e com a hora à vista, nunca no presente.
+    //
+    // Dizia "O pico da fundamental está em", como se o número fosse do
+    // instante. Não é: vem de um ficheiro que o robô reescreve cerca de uma
+    // vez por hora e meia. O prerender.py já escrevia esta frase datada, e o
+    // JavaScript apagava a data por cima. Passam a dizer as duas o mesmo.
+    var lido = parseUTC(d.atualizado);
+    var inst = lido ? new Date(lido.getTime() - (d.atraso_horas || 0) * 3600000) : null;
+    var quando = inst
+      ? "Na medição das " + hhmm(inst) + " UTC, " + ago(inst) + ", o pico da fundamental estava em "
+      : "Na última medição, o pico da fundamental estava em ";
 
     var t = quando + "<b>" + hz(f.pico_hz) + "</b>, com intensidade " +
             Math.round(f.intensidade) + " em 100 na escala de cor do espectrograma.";
@@ -409,29 +448,42 @@
     var cls = COR_SCHUMANN;
     var velha = d.estado === "ultima_conhecida" && d.atraso_horas > 0.5;
 
+    // Quando foi feita esta medição, em tempo real.
+    //
+    // São duas idades diferentes e antes só se mostrava uma. O atraso_horas
+    // diz quanto se recuou dentro da imagem; o campo "atualizado" diz quando
+    // o robô correu. O que o visitante quer saber é a soma dos dois.
+    //
+    // Isto importa porque o robô não corre de meia em meia hora: o GitHub
+    // Actions executa quando tem disponibilidade, e a medição das últimas 60
+    // execuções deu 1 h 55 de intervalo médio e 6 h 48 no pior caso. A legenda
+    // dizia "medição atual" a dados que podiam ter a manhã inteira.
+    var lido = parseUTC(d.atualizado);
+    var quando = lido ? new Date(lido.getTime() - (d.atraso_horas || 0) * 3600000) : null;
+    var carimbo = quando ? "medido às " + hhmm(quando) + " UTC, " + ago(quando)
+                         : "medido na estação de Tomsk";
+
     // Dentro do anel só cabe o essencial: a intensidade em número grande e a
     // frequência do pico por baixo. Tudo o resto (idade, motivo, harmónicas)
     // vai para a legenda, fora do medidor. O .gauge-unit é maiúsculas com
     // espaçamento largo: uma frase ali dentro transborda por cima do anel.
     drawGauge(f.intensidade, cls);
     set("idx-value", String(Math.round(f.intensidade)), "gauge-value " + cls);
-    set("idx-word", f.pico_hz.toFixed(2).replace(".", ",") + " Hz", "gauge-unit " + cls);
+    set("idx-word", hzPico(f.pico_hz), "gauge-unit " + cls);
 
     // Uma linha curta, discreta. O detalhe todo (harmónicas, escala, regras de
     // recusa) vive na metodologia: debaixo do medidor só cabe o essencial, sob
     // pena de sujar a parte mais vista do painel.
     if (legenda) {
-      legenda.textContent = velha
-        ? "Pico da fundamental · última medição " + idade(d.atraso_horas) + ", Tomsk " +
-          (SR_DESDE[d.motivo_do_atraso] || "sem dados novos") + " desde então"
-        : "Pico da fundamental · medição atual da estação de Tomsk";
+      legenda.textContent = "Pico da fundamental · " + carimbo + (velha
+        ? " · Tomsk " + (SR_DESDE[d.motivo_do_atraso] || "sem dados novos") + " desde então"
+        : "");
     }
 
     // O mesmo valor no mosaico, para o painel não dizer duas coisas diferentes.
     set("t-sr", String(Math.round(f.intensidade)));
-    set("t-sr-sub", f.pico_hz.toFixed(2).replace(".", ",") + " Hz", "tile-sub");
-    set("t-sr-foot", velha ? "Última medição " + idade(d.atraso_horas) + " · Tomsk"
-                           : "Pico da fundamental · Tomsk", "tile-foot");
+    set("t-sr-sub", hzPico(f.pico_hz), "tile-sub");
+    set("t-sr-foot", (quando ? ago(quando) + " · Tomsk" : "Tomsk"), "tile-foot");
   }
 
   function carregarSchumann() {
@@ -1153,11 +1205,20 @@
     if (!el) return;
     if (state.kp === null) return;
     var info = kpInfo(state.kp);
+    // O 7,83 é o valor nominal da cavidade, não a medição.
+    //
+    // Esta frase dizia "neste momento a frequência situa-se em torno de
+    // 7,83 Hz" e a frase seguinte dizia o pico medido, que raramente é 7,83.
+    // Ficavam dois números diferentes para a mesma coisa com um parágrafo de
+    // intervalo, e o primeiro era uma constante escrita à mão.
+    //
+    // "Relido a cada minuto" também estava a mais: o que se relê de minuto a
+    // minuto é a imagem, não o número. Aqui diz-se de qual se está a falar.
     el.innerHTML =
-      "Neste momento a frequência fundamental da Ressonância de Schumann situa-se em torno de " +
-      "<b>7,83&nbsp;Hz</b> e o campo geomagnético está em estado <b>" + info.label.toLowerCase() +
-      "</b> (Kp&nbsp;" + num(state.kp) + "). Em direto da estação da Universidade Estatal " +
-      "de Tomsk, relido a cada minuto.";
+      "A cavidade entre a Terra e a ionosfera ressoa nominalmente em <b>7,83&nbsp;Hz</b>, " +
+      "e o campo geomagnético está em estado <b>" + info.label.toLowerCase() +
+      "</b> (Kp&nbsp;" + num(state.kp) + "). A imagem vem da estação da Universidade Estatal " +
+      "de Tomsk e é relida a cada minuto; o pico que medimos nela está logo abaixo.";
   }
 
   // ----------------------------------------------------------
@@ -1232,10 +1293,19 @@
       var vel = last.proton_speed;
       var clsV = vel >= 700 ? "is-severe" : vel >= 550 ? "is-storm" : vel >= 450 ? "is-active" : "is-calm";
       set("vs-vel", num(vel, 0) + " km/s", clsV);
-      set("vs-dens", num(last.proton_density, 1) + " p/cm³");
+      // A densidade pode faltar na mesma linha em que a velocidade é boa.
+      // Sem esta guarda, um null saía como "0,0 p/cm³", que é um número
+      // inventado com ar de medição.
+      set("vs-dens", isFinite(last.proton_density) && last.proton_density !== null
+        ? num(last.proton_density, 1) + " p/cm³" : "sem dados");
       set("vs-time", "Satélite " + escapeHTML(last.source || "ACE/DSCOVR") + " · " + ago(parseUTC(last.time_tag)));
       resumo.vento = num(vel, 0) + " km/s";
       renderNowSummary();
+      return true;
+    }).catch(function (e) {
+      fail("vs-vel");
+      console.warn("Vento solar, plasma:", e);
+      return false;
     });
 
     var p2 = getJSON(SRC.ventoMag).then(function (rows) {
@@ -1260,13 +1330,21 @@
         : "Bz para norte. O campo do vento solar não se liga ao da Terra: a porta está fechada e a energia passa ao lado.");
 
       bzChart("vs-chart", bons.slice(-720));
-      mark("vento", true);
+      return true;
+    }).catch(function (e) {
+      fail("vs-bz");
+      console.warn("Vento solar, campo magnético:", e);
+      return false;
     });
 
-    return Promise.all([p1, p2]).catch(function (e) {
-      fail("vs-vel"); fail("vs-bz");
-      mark("vento", false);
-      console.warn("Vento solar:", e);
+    // Cada metade trata do seu próprio falhanço.
+    //
+    // Havia aqui um catch único que apagava o Bz sempre que o feed do plasma
+    // falhasse, mesmo com o Bz já carregado e correto. Dava um painel com o Bt
+    // em número e o Bz a dizer "indisponível" ao lado, que se lê como avaria.
+    // Uma fonte em baixo não deve levar a outra atrás.
+    return Promise.all([p1, p2]).then(function (r) {
+      mark("vento", r[0] && r[1]);
     });
   }
 
@@ -1416,11 +1494,11 @@
 
       set("sr-historico-nota", emIngles()
         ? "Over the last " + horas + " hours the fundamental peak ranged between <b>" +
-          min.toFixed(2) + "</b> and <b>" + max.toFixed(2) + "&nbsp;Hz</b>, across " + medidos +
+          min.toFixed(1) + "</b> and <b>" + max.toFixed(1) + "&nbsp;Hz</b>, across " + medidos +
           " measurements" + (recusadas ? ", with " + recusadas + " readings refused as untrustworthy" : "") +
           ". The line breaks where there was no reading: what was not measured is not joined up."
         : "Nas últimas " + horas +
-          " horas, o pico da fundamental andou entre <b>" + num(min, 2) + "</b> e <b>" + num(max, 2) +
+          " horas, o pico da fundamental andou entre <b>" + num(min, 1) + "</b> e <b>" + num(max, 1) +
           "&nbsp;Hz</b>, em " + medidos + " medições" +
           (recusadas ? ", com " + recusadas + " leituras recusadas por falta de confiança" : "") +
           ". A linha corta onde não houve leitura: não se une o que não foi medido.");
@@ -1997,7 +2075,7 @@
     { id: "tonturas",     nome: "Tonturas",             ico: "💫" },
     { id: "musculos",     nome: "Dores musculares",     ico: "💪" },
     { id: "palpitacoes",  nome: "Palpitações",          ico: "❤️" },
-    { id: "desmotivado",  nome: "Falta de vontade",     ico: "🪫" },
+    { id: "desmotivado",  nome: "Falta de vontade",     ico: "😔" },  // pilha fraca (U+1FAAB) sai quadrado vazio no Windows 10: e de 2021
     { id: "sensivel",     nome: "Sensível à luz ou som", ico: "🔆" },
     { id: "calma",        nome: "Calma",                ico: "🕊️" },
     { id: "gratidao",     nome: "Gratidão",             ico: "🌱" },

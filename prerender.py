@@ -92,7 +92,13 @@ def carregar(caminho=None):
 # ----------------------------------------------------------------------
 
 def hz(v):
-    return "{:.2f}".format(v).replace(".", ",") + " Hz"
+    """Uma casa decimal, a condizer com hzPico() do js/app.js.
+
+    A banda da fundamental ocupa 27 linhas de pixeis no espectrograma, o que
+    da 0,10 Hz por linha: centesimas nao existem na imagem, e a segunda casa
+    saia sempre zero. Ao mexer aqui, mexer la.
+    """
+    return "{:.1f}".format(v).replace(".", ",") + " Hz"
 
 
 def idade(horas):
@@ -131,9 +137,11 @@ def carimbo(d):
 def frase_modos(d):
     """A frase dos modos, na versao datada.
 
-    A funcao fraseModos() do js/app.js constroi a mesma frase no presente
-    ("neste momento"), porque no navegador os dados sao mesmo do momento. Esta
-    escreve-a no passado, com a data a vista. Ao mexer numa, mexer na outra.
+    A funcao fraseModos() do js/app.js constroi a mesma frase, tambem no
+    passado e tambem com a hora a vista. Escrevia-a no presente ("o pico esta
+    em"), na ideia de que no navegador os dados sao do momento: nao sao, vem
+    deste mesmo ficheiro, que o robo reescreve cerca de uma vez por hora e
+    meia. Ao mexer numa, mexer na outra.
     """
     f = (d or {}).get("fundamental") or {}
     quando = carimbo(d)

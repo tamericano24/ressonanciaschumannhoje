@@ -1005,6 +1005,12 @@ code {
   border-radius: var(--radius-sm); overflow: hidden;
 }
 .quake-map svg { display: block; width: 100%; height: auto; cursor: crosshair; }
+
+/* O mapa de Portugal é quase quadrado, ao contrário do mapa-múndi que é 2:1.
+   A largura máxima é o que o impede de ocupar o cartão todo e ficar com
+   quinhentos píxeis de altura num ecrã largo. */
+.mapa-pt { max-width: 500px; margin: 0 auto 12px; }
+#pt-quake-fora:empty { display: none; }
 .quake-map .mk { transition: fill-opacity .12s; }
 
 /* Caixa de informação que segue o rato */

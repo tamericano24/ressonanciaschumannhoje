@@ -1734,6 +1734,19 @@
   // dois mapas na mesma página o segundo apagava as marcas do primeiro.
   var marcasPorMapa = {};
 
+  // Cada mapa diz em que projeção e em que tamanho foi desenhado.
+  //
+  // O focaMarca() e o ligaInfoMapa() chamavam projX/projY e MAPA_W/MAPA_H
+  // diretamente, o que os prendia ao mapa-múndi. Com o mapa de Portugal, que
+  // tem outra janela e outra escala, o rato apontava para o sítio errado.
+  // Passam a ir buscar aqui a projeção do mapa em que estão a trabalhar.
+  var projPorMapa = {};
+
+  function projDe(hostId) {
+    return projPorMapa[hostId] ||
+      { px: projX, py: projY, w: MAPA_W, h: MAPA_H };
+  }
+
   function camadaSismos(s, marcas) {
     // Raio proporcional à raiz da energia, sem desfoque: o desfoque
     // transformava os pontos em manchas sobrepostas.
@@ -1874,7 +1887,8 @@
       return;
     }
 
-    var x = projX(lon), y = projY(lat), alvo = null, dMin = Infinity;
+    var pj = projDe(hostId);
+    var x = pj.px(lon), y = pj.py(lat), alvo = null, dMin = Infinity;
     (marcasPorMapa[hostId] || []).forEach(function (m) {
       var d = Math.hypot(m.x - x, m.y - y);
       if (d < dMin) { dMin = d; alvo = m; }
@@ -1911,13 +1925,14 @@
     }
     var foco = svg.querySelector(".mk-foco");
     var marcas = marcasPorMapa[host.id] || [];
+    var pj = projDe(host.id);
 
     function maisPerto(ev) {
       // Converte a posição do rato para coordenadas do desenho e procura a
       // marca mais próxima. É mais tolerante do que exigir acertar no ponto.
       var cx = svg.getBoundingClientRect();
-      var mx = ((ev.clientX - cx.left) / cx.width) * MAPA_W;
-      var my = ((ev.clientY - cx.top) / cx.height) * MAPA_H;
+      var mx = ((ev.clientX - cx.left) / cx.width) * pj.w;
+      var my = ((ev.clientY - cx.top) / cx.height) * pj.h;
       var melhor = null, dMin = Infinity;
       for (var i = 0; i < marcas.length; i++) {
         var m = marcas[i];
@@ -1936,8 +1951,8 @@
       tip.hidden = false;
 
       var cx = svg.getBoundingClientRect();
-      var px = (m.x / MAPA_W) * cx.width;
-      var py = (m.y / MAPA_H) * cx.height;
+      var px = (m.x / pj.w) * cx.width;
+      var py = (m.y / pj.h) * cx.height;
       var largura = tip.offsetWidth || 200;
       tip.style.left = Math.max(6, Math.min(px - largura / 2, cx.width - largura - 6)) + "px";
       tip.style.top  = Math.max(6, py - tip.offsetHeight - 12) + "px";
@@ -2005,6 +2020,112 @@
   // Cada lista fica com a sua fonte à vista e o leitor sabe o que está a ler.
   // ----------------------------------------------------------
 
+  // As cidades que servem para se perceber onde é que o ponto caiu. São
+  // poucas de propósito: a esta escala, mais do que uma dúzia de rótulos
+  // sobrepõem-se uns aos outros e o mapa deixa de se ler. O lado diz para
+  // que lado sai o rótulo, para os do litoral irem por cima do mar e os do
+  // interior por cima de Espanha, em vez de taparem o país.
+  var CIDADES_PT = [
+    { nome: "Braga",     lon: -8.426, lat: 41.545, lado: "d" },
+    { nome: "Porto",     lon: -8.611, lat: 41.150, lado: "e" },
+    { nome: "Bragança",  lon: -6.757, lat: 41.806, lado: "d" },
+    { nome: "Coimbra",   lon: -8.429, lat: 40.207, lado: "e" },
+    { nome: "Guarda",    lon: -7.267, lat: 40.537, lado: "d" },
+    { nome: "Lisboa",    lon: -9.139, lat: 38.722, lado: "e" },
+    { nome: "Évora",     lon: -7.909, lat: 38.571, lado: "d" },
+    { nome: "Beja",      lon: -7.863, lat: 38.015, lado: "d" },
+    { nome: "Faro",      lon: -7.935, lat: 37.019, lado: "e" }
+  ];
+
+  // Escala de cor própria, porque estes sismos são pequenos. Com a escala do
+  // mapa mundial, que só muda de cor acima de M4,5, ficavam todos da mesma
+  // cor e o mapa não dizia nada.
+  function corSismoPT(m) {
+    if (m === null) return "#6b7391";
+    return m >= 4 ? "#f43f5e" : m >= 3 ? "#fb923c" : m >= 2 ? "#fbbf24" : "#38bdf8";
+  }
+
+  function renderMapaPT(lista) {
+    var host = document.getElementById("pt-quake-map");
+    var mapa = window.MAPA_IBERIA;
+    if (!host || !mapa) return 0;
+
+    var c = mapa.caixa, W = mapa.w, H = mapa.h;
+    var lonm = Math.cos((c[2] + c[3]) / 2 * Math.PI / 180);
+    var kx = W / ((c[1] - c[0]) * lonm), ky = H / (c[3] - c[2]);
+    var px = function (lon) { return (lon - c[0]) * lonm * kx; };
+    var py = function (lat) { return (c[3] - lat) * ky; };
+    projPorMapa["pt-quake-map"] = { px: px, py: py, w: W, h: H };
+
+    var s = '<rect width="' + W + '" height="' + H + '" fill="#070d1c"/>';
+
+    // Paralelos e meridianos de grau a grau, muito ténues: ajudam a ler
+    // distâncias sem competir com o desenho.
+    var g;
+    for (g = Math.ceil(c[0]); g <= c[1]; g++)
+      s += '<line x1="' + px(g).toFixed(1) + '" y1="0" x2="' + px(g).toFixed(1) +
+           '" y2="' + H + '" stroke="rgba(125,180,235,.05)"/>';
+    for (g = Math.ceil(c[2]); g <= c[3]; g++)
+      s += '<line x1="0" y1="' + py(g).toFixed(1) + '" x2="' + W + '" y2="' +
+           py(g).toFixed(1) + '" stroke="rgba(125,180,235,.05)"/>';
+
+    // Espanha e Marrocos em tom apagado: estão ali para se perceber onde
+    // acaba o país, não para competirem com ele.
+    s += '<path d="' + mapa.esp + '" fill="#111a2e" stroke="#1e2b47" stroke-width=".7"/>';
+    s += '<path d="' + mapa.mar + '" fill="#111a2e" stroke="#1e2b47" stroke-width=".7"/>';
+    s += '<path d="' + mapa.prt + '" fill="#1b2a4a" stroke="#4a6394" stroke-width="1.1"/>';
+
+    CIDADES_PT.forEach(function (cid) {
+      var x = px(cid.lon), y = py(cid.lat), dir = cid.lado === "e";
+      s += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) +
+           '" r="1.8" fill="#aab8d6"/>' +
+           '<text x="' + (x + (dir ? -4.5 : 4.5)).toFixed(1) + '" y="' + (y + 3).toFixed(1) +
+           '" fill="#aab8d6" font-size="9.5" text-anchor="' + (dir ? "end" : "start") +
+           '" font-family="Segoe UI, system-ui, sans-serif" pointer-events="none">' +
+           escapeHTML(cid.nome) + "</text>";
+    });
+
+    var marcas = [], fora = 0;
+    lista.slice().sort(function (a, b) { return (a.mag || 0) - (b.mag || 0); }).forEach(function (e) {
+      if (!isFinite(e.lon) || !isFinite(e.lat) ||
+          e.lon < c[0] || e.lon > c[1] || e.lat < c[2] || e.lat > c[3]) { fora++; return; }
+
+      var m = e.mag;
+      var r = m === null ? 2 : Math.max(2, Math.pow(Math.max(m, 0.3), 1.15) * 1.5);
+      var cor = corSismoPT(m);
+      var i = marcas.length;
+
+      marcas.push({
+        tipo: "sismo", x: px(e.lon), y: py(e.lat), r: r, cor: cor,
+        titulo: (m === null ? "Sem magnitude" : "M" + num(m, 1)) + " · " + e.onde,
+        linhas: [
+          (e.prof != null ? Math.round(e.prof) + " km de profundidade" : "profundidade desconhecida"),
+          (e.sentido ? "Sentido pela população" + (e.grau ? ", intensidade " + e.grau : "") : "Não foi sentido"),
+          ago(e.t)
+        ]
+      });
+
+      // Um sismo sentido leva um anel à volta: é a informação que o IPMA dá
+      // e o USGS não, e é a que interessa a quem sentiu a casa a tremer.
+      if (e.sentido)
+        s += '<circle cx="' + px(e.lon).toFixed(1) + '" cy="' + py(e.lat).toFixed(1) +
+             '" r="' + (r + 3.5).toFixed(1) + '" fill="none" stroke="' + cor +
+             '" stroke-opacity=".55" stroke-width="1.2"/>';
+
+      s += '<circle class="mk" data-i="' + i + '" cx="' + px(e.lon).toFixed(1) + '" cy="' +
+           py(e.lat).toFixed(1) + '" r="' + r.toFixed(1) + '" fill="' + cor +
+           '" fill-opacity=".85" stroke="#0b1220" stroke-width=".9"/>';
+    });
+
+    s += '<circle class="mk-foco" r="0" fill="none" stroke="#fff" stroke-width="1.6" opacity="0" pointer-events="none"/>';
+
+    marcasPorMapa["pt-quake-map"] = marcas;
+    host.innerHTML = '<svg viewBox="0 0 ' + W + " " + H +
+      '" role="img" aria-label="Mapa de Portugal com os sismos das últimas 48 horas">' + s + "</svg>";
+    ligaInfoMapa(host);
+    return fora;
+  }
+
   function loadSismosPT() {
     var host = document.getElementById("pt-quake-feed");
     if (!host) return Promise.resolve();
@@ -2033,7 +2154,9 @@
             onde: (e.obsRegion || "").trim(),
             prof: e.depth,
             sentido: !!e.sensed,
-            grau: e.degree
+            grau: e.degree,
+            lon: parseFloat(e.lon),
+            lat: parseFloat(e.lat)
           });
         });
       });
@@ -2045,8 +2168,8 @@
         host.innerHTML = '<li class="muted">Nenhum sismo registado pelo IPMA nas últimas 48 horas.</li>';
       } else {
         host.innerHTML = lista.map(function (s) {
-          return "<li>" +
-            '<span class="mag" style="color:' + (s.mag === null ? "#6b7391" : corSismo(s.mag)) + '">' +
+          return '<li data-lon="' + s.lon + '" data-lat="' + s.lat + '" title="Clique para centrar no mapa">' +
+            '<span class="mag" style="color:' + corSismoPT(s.mag) + '">' +
             (s.mag === null ? "—" : "M" + num(s.mag)) + "</span>" +
             '<span class="loc">' + escapeHTML(s.onde) +
             (s.sentido ? ' <b style="color:#fbbf24">· sentido</b>' +
@@ -2055,6 +2178,30 @@
             ago(s.t) + "</span></li>";
         }).join("");
       }
+
+      // O mapa, e a nota do que não coube nele.
+      //
+      // A janela do mapa vai de 13 a 3 graus oeste, o que apanha o continente,
+      // a Madeira e o que houver em Espanha e no norte de Marrocos. Os Açores
+      // ficam a mais de 25 graus oeste: para os incluir era preciso um mapa
+      // quase todo oceano, com Portugal do tamanho de uma unha. Ficam na
+      // lista, e a nota diz quantos são para ninguém pensar que se perderam.
+      var fora = renderMapaPT(lista);
+      set("pt-quake-fora", fora
+        ? fora + (fora === 1 ? " destes sismos fica" : " destes sismos ficam") +
+          " fora do mapa, nos Açores ou mais longe. Estão todos na lista."
+        : "");
+
+      // Passar o rato numa linha acende o ponto no mapa, como no mapa mundial.
+      $$("#pt-quake-feed li[data-lon]").forEach(function (li) {
+        li.addEventListener("mouseenter", function () { focaMarca("pt-quake-map", +li.dataset.lon, +li.dataset.lat, true); });
+        li.addEventListener("mouseleave", function () { focaMarca("pt-quake-map", null); });
+        li.addEventListener("click", function () {
+          $$("#pt-quake-feed li.on").forEach(function (o) { o.classList.remove("on"); });
+          li.classList.add("on");
+          focaMarca("pt-quake-map", +li.dataset.lon, +li.dataset.lat, true);
+        });
+      });
 
       // Número e não frase: os mosaicos ao lado são todos números grandes, e
       // uma frase ali dentro passa a duas linhas e desalinha a fila.

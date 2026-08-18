@@ -18,6 +18,7 @@ Uso:
 import json
 import sys
 import re
+import time
 import urllib.request
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -57,10 +58,17 @@ DIAS_PT = ["segunda-feira", "terça-feira", "quarta-feira", "quinta-feira",
 # Recolha
 # ----------------------------------------------------------------------
 
-def buscar(url, timeout=45):
+def buscar(url, timeout=45, tentativas=3):
     req = urllib.request.Request(url, headers={"User-Agent": "ressonancia-schumann-hoje/1.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return json.loads(r.read().decode("utf-8"))
+    for tentativa in range(tentativas):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return json.loads(r.read().decode("utf-8"))
+        except Exception as e:
+            if tentativa == tentativas - 1:
+                raise
+            print(f"  tentativa {tentativa + 1} falhou para {url}: {e}, a repetir...")
+            time.sleep(2 ** tentativa)
 
 
 def tenta(chave):

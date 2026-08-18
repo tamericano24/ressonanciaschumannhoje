@@ -23,7 +23,9 @@ jobs:
           python-version: "3.12"
 
       - name: Gerar a leitura de hoje
-        run: python gerar-leitura.py
+        run: |
+          python gerar-leitura.py
+          echo "Leitura gerada com sucesso"
 
       # Escreve a última medição da Schumann dentro do index.html, com a data à
       # vista. Sem isto o Google indexa a página com "a carregar" no medidor,
@@ -33,7 +35,9 @@ jobs:
       # Corre uma vez por dia porque é aqui que já há um commit. Para a página
       # mudar mais vezes, basta acrescentar horas ao cron lá em cima.
       - name: Escrever a medição da Schumann no index.html
-        run: python prerender.py
+        run: |
+          python prerender.py
+          echo "prerender.py concluído"
 
       - name: Publicar se houver alterações
         run: |

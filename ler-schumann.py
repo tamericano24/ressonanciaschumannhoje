@@ -23,6 +23,7 @@ Uso:
 import io
 import json
 import sys
+import time
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -56,12 +57,20 @@ MODOS = [
 TOPO_DA_ESCALA = 95.0   # acima disto e saturacao a sangrar, nao leitura
 
 
-def descarregar(url=FEED, timeout=45):
-    req = urllib.request.Request(url, headers={
+def descarregar(url=FEED, timeout=45, tentativas=3):
+    headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return r.read()
+                      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"}
+    for tentativa in range(tentativas):
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return r.read()
+        except Exception as e:
+            if tentativa == tentativas - 1:
+                raise
+            print(f"  tentativa {tentativa + 1} falhou: {e}, a repetir...")
+            time.sleep(2 ** tentativa)
 
 
 def y_de_hz(hz):

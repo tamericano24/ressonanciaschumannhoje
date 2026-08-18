@@ -56,7 +56,10 @@ jobs:
           fi
 
       - name: Ler o espectrograma
-        run: python ler-schumann.py
+        run: |
+          python ler-schumann.py
+          echo "schumann.json gerado:"
+          cat schumann.json
 
       - name: Publicar na branch dados
         run: |

@@ -12,8 +12,8 @@ desktop.ini
 *~
 
 # Resultado do ler-schumann.py. Vivem na branch "dados", nunca aqui.
-schumann.json
-historico.json
+/schumann.json
+/historico.json
 
 # Python (o gerador de leituras não cria nada disto, mas fica salvaguardado)
 __pycache__/

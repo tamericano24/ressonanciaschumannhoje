@@ -592,6 +592,10 @@
   function barChart(hostId, points, opts) {
     var host = document.getElementById(hostId);
     if (!host) return;
+    // Make container responsive: width 100%, max-width 900px (original design width)
+    host.style.width = '100%';
+    host.style.maxWidth = '900px';
+    host.style.boxSizing = 'border-box';
     opts = opts || {};
     var W = 900, H = 240, padL = 34, padB = 30, padT = 12, padR = 10;
     var max = opts.max || Math.max.apply(null, points.map(function (p) { return p.v; })).toFixed(0);
@@ -3450,6 +3454,142 @@
     renderMenu();
   }
 
+  // Função para injetar o botão hamburger no cabeçalho
+  function wireMobileMenuToggle() {
+    var header = document.querySelector('.site-header');
+    if (!header) return;
+
+    // Verificar se já existe um botão de menu (evitar duplicações)
+    if (header.querySelector('.menu-toggle')) return;
+
+    var toggle = document.createElement('button');
+    toggle.className = 'menu-toggle nav-toggle'; // Reutiliza a classe existente nav-toggle
+    toggle.setAttribute('aria-label', 'Abrir menu');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.innerHTML =
+      '<span class="hamburger-box">' +
+        '<span class="hamburger-inner"></span>' +
+      '</span>';
+
+    // Inserir no início do cabeçalho (antes do logotipo/título)
+    header.insertAdjacentElement('afterbegin', toggle);
+  }
+
+  // Função para injetar estilos responsivos via JS
+  function injectMobileMenuStyles() {
+    // Evitar injeção duplicada
+    if (document.getElementById('mobile-menu-styles')) return;
+
+    var style = document.createElement('style');
+    style.id = 'mobile-menu-styles';
+    style.textContent = `
+    /* Botão hamburger - apenas visível em mobile */
+    .menu-toggle {
+      display: none; /* Mostrado apenas em mobile via media query */
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin: 0 0.5rem;
+      flex-shrink: 0;
+      /* Herda cores do tema existente */
+      color: var(--text-faint);
+    }
+
+    .menu-toggle:hover,
+    .menu-toggle:focus {
+      color: var(--text-color);
+      background-color: rgba(0,0,0,0.05);
+    }
+
+    .menu-toggle:active {
+      background-color: rgba(0,0,0,0.1);
+    }
+
+    /* Estilo do hamburger (três linhas) */
+    .hamburger-box {
+      width: 24px;
+      height: 24px;
+      display: inline-block;
+      position: relative;
+    }
+
+    .hamburger-inner {
+      display: block;
+      top: 50%;
+      margin-top: -2px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background-color: currentColor;
+      position: absolute;
+      transition: background 0s ease-out 0.1s;
+    }
+
+    .hamburger-inner::before,
+    .hamburger-inner::after {
+      content: "";
+      display: block;
+      position: absolute;
+      left: 0;
+      width: 24px;
+      height: 4px;
+      background-color: currentColor;
+      transition: transform 0.15s ease-out;
+    }
+
+    .hamburger-inner::before { top: -8px; }
+    .hamburger-inner::after { top: 8px; }
+
+    /* Estado aberto do hamburger (vira X) */
+    .menu-toggle[aria-expanded="true"] .hamburger-inner {
+      background-color: transparent;
+    }
+
+    .menu-toggle[aria-expanded="true"] .hamburger-inner::before {
+      transform: rotate(45deg) translate(6px, -6px);
+    }
+
+    .menu-toggle[aria-expanded="true"] .hamburger-inner::after {
+      transform: rotate(-45deg) translate(6px, 6px);
+    }
+
+    /* Mostrar o botão apenas em ecrãs pequenos */
+    @media (max-width: 768px) {
+      .menu-toggle { display: block; }
+    }
+
+    /* Ajustar largura do menu em mobile */
+    @media (max-width: 768px) {
+      .menu-painel {
+        width: 85vw;
+        max-width: 320px;
+        box-sizing: border-box;
+        /* Garantir que não ultrapasse a largura da tela */
+        max-width: calc(100vw - 1rem);
+      }
+
+      /* Melhorar espaçamento interno para touch */
+      .menu-lista { padding: 1rem 0; }
+      .menu-item { padding: 0.75rem 1rem; }
+    }
+
+    /* Prevenir scroll horizontal quando menu aberto */
+    body.menu-aberto { overflow-x: hidden; }
+
+    /* Melhorar experiência de toque nos links do menu */
+    .menu-item {
+      touch-action: manipulation;
+    }
+  `;
+
+    document.head.appendChild(style);
+  }
+
   function wireNewsletter() {
     var form = document.getElementById("newsletter");
     if (!form) return;
@@ -3569,6 +3709,10 @@
     wireRefresh();
     renderQuakeMap();
     renderVolcanoMap();
+
+    // Menu mobile
+    wireMobileMenuToggle();
+    injectMobileMenuStyles();
 
     // A série da Schumann existe em dois sítios: por baixo do espectrograma,
     // na página inicial, e como conteúdo principal da página do histórico.

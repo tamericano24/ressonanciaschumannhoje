@@ -732,7 +732,11 @@ section { padding: 26px 0; }
 .legend i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; margin-right: 6px; vertical-align: -1px; }
 
 .chart-box { width: 100%; overflow-x: auto; }
-.chart-box svg { display: block; min-width: 420px; width: 100%; height: auto; }
+.chart-box svg { display: block; min-width: 280px; width: 100%; height: auto; }
+
+/* Medidor principal da Schumann Responsivo */
+#gauge-svg { width: 100%; max-width: 200px; }
+#gauge-svg svg { width: 100%; height: auto; }
 
 /* ---------------- Visualizador de imagens com separadores ---------------- */
 
@@ -755,11 +759,7 @@ section { padding: 26px 0; }
 .tab-panel p { color: var(--text-dim); font-size: 14.5px; margin: 0 0 10px; }
 
 /* Botão de atualização manual */
-.refresh {
-  margin-left: auto; display: inline-flex; align-items: center; gap: 8px;
-  background: var(--panel-2); border: 1px solid var(--border); color: var(--text-dim);
-  border-radius: 9px; padding: 7px 14px; font-size: 13px; font-family: var(--font); cursor: pointer;
-}
+.refresh { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; background: var(--panel-2); border: 1px solid var(--border); color: var(--text-dim); border-radius: 9px; padding: 15px 20px; font-size: 13px; font-family: var(--font); cursor: pointer; }
 .refresh:hover { border-color: var(--border-strong); color: var(--text); }
 .refresh[disabled] { opacity: .55; cursor: default; }
 .refresh .spin { display: inline-block; }
@@ -1043,11 +1043,7 @@ code {
   max-height: 300px; overflow-y: auto; margin: 0; padding: 0; list-style: none;
   border: 1px solid var(--border); border-radius: var(--radius-sm);
 }
-.quake-feed li {
-  display: flex; align-items: baseline; gap: 10px;
-  padding: 8px 12px; border-bottom: 1px solid var(--border);
-  font-size: 13px; cursor: pointer;
-}
+\.quake-feed li { display: flex; align-items: baseline; gap: 10px; padding: 15px 16px; border-bottom: 1px solid var(--border); font-size: 13px; cursor: pointer; }
 .quake-feed li:last-child { border-bottom: 0; }
 .quake-feed li:hover, .quake-feed li.on { background: rgba(56, 189, 248, 0.08); }
 .quake-feed .mag {

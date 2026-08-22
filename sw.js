@@ -1,35 +1,140 @@
-/* Service worker mínimo, só para o site poder ser instalado.
+/* Service worker aprimorado com caching estratégico
    ============================================================================
 
-   O Chrome só oferece "Instalar" a um site que tenha manifesto e um service
-   worker com tratador de "fetch". É isso que este ficheiro faz, e mais nada.
+   Estratégia de caching:
+   - Assets estáticos (HTML, CSS, JS, imagens, fontes): Cache-first
+   - Dados ao vivo (APIs, JSON de dados): Network-first
+   - Navigation requests: Network-first com fallback para cache
+   - Terceiros: Network-only
 
-   NÃO guarda nada em cache, de propósito. Isto é um painel ao vivo: um
-   service worker a servir cópias guardadas mostraria um índice Kp de ontem
-   com ar de atual, que é exatamente o defeito de que acusamos os outros
-   sites. Todos os pedidos passam direto para a rede.
-
-   Se um dia se quiser funcionamento sem ligação, a única coisa que pode ser
-   guardada com honestidade é a estrutura da página, nunca os números, e o que
-   estiver guardado tem de aparecer com a data à vista. Ver metodologia.html.
+   Versão do cache: ressonancia-static-v1
    ============================================================================ */
 
-self.addEventListener("install", function () {
-  // Assume o controlo sem esperar que os separadores antigos fechem.
-  self.skipWaiting();
-});
+const CACHE_NAME = 'ressonancia-static-v1';
+const DATA_CACHE_NAME = 'ressonancia-data-v1';
 
-self.addEventListener("activate", function (e) {
-  // Limpa qualquer cache que uma versão futura tenha deixado para trás.
-  e.waitUntil(
-    caches.keys()
-      .then(function (nomes) { return Promise.all(nomes.map(function (n) { return caches.delete(n); })); })
-      .then(function () { return self.clients.claim(); })
+const FILES_TO_CACHE = [
+  '/',
+  '/index.html',
+  '/en/',
+  '/en/index.html',
+  '/metodologia.html',
+  '/en/methodology.html',
+  '/historico.html',
+  '/en/history.html',
+  '/arquivo.html',
+  '/aurora-esta-noite.html',
+  '/sintomas.html',
+  '/en/symptoms.html',
+  '/blog/',
+  '/blog/index.html',
+  '/en/blog/',
+  '/en/blog/index.html',
+  '/faq.html',
+  '/en/faq.html',
+  '/termos.html',
+  '/privacy.html',
+  '/manifest.webmanifest',
+  '/sw.js',
+  '/js/app.js',
+  '/css/style.css',
+  '/assets/favicon.svg',
+  '/assets/icone-192.png',
+  '/assets/icone-512.png',
+  '/assets/icone-apple.png',
+  '/assets/og.png',
+  '/assets/icons/icon-72x72.png',
+  '/assets/icons/icon-96x96.png',
+  '/assets/icons/icon-128x128.png',
+  '/assets/icons/icon-144x144.png',
+  '/assets/icons/icon-152x152.png',
+  '/assets/icons/icon-192x192.png',
+  '/assets/icons/icon-384x384.png',
+  '/assets/icons/icon-512x512.png',
+  '/assets/fonts/orbitron-var.woff2'
+];
+
+self.addEventListener('install', (evt) => {
+  // Precache static resources
+  evt.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(FILES_TO_CACHE))
+      .then(() => self.skipWaiting())
   );
 });
 
-self.addEventListener("fetch", function (e) {
-  // Passagem direta. O tratador existe porque o navegador exige um para
-  // considerar o site instalável, não para intermediar coisa nenhuma.
-  e.respondWith(fetch(e.request));
+self.addEventListener('activate', (evt) => {
+  // Clean up old caches
+  evt.waitUntil(
+    caches.keys()
+      .then((keyList) => {
+        return Promise.all(
+          keyList
+            .filter((key) => key !== CACHE_NAME && key !== DATA_CACHE_NAME)
+            .map((key) => caches.delete(key))
+        );
+      })
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', (evt) => {
+  // Cache-first for static assets
+  if (evt.request.mode === 'navigate') {
+    // For navigation requests, try network first, fall back to cache
+    evt.respondWith(
+      fetch(evt.request)
+        .catch(() => caches.match('/index.html'))
+    );
+    return;
+  }
+  
+  // For static assets from our origin, cache-first
+  if (evt.request.url.startsWith(self.location.origin)) {
+    const url = new URL(evt.request.url);
+    
+    // Don't cache API calls or live data
+    if (
+      url.pathname.startsWith('/dados/') ||
+      url.pathname.includes('api') ||
+      url.pathname.includes('swpc.noaa.gov') ||
+      url.pathname.includes('usgs.gov') ||
+      url.pathname.includes('vlf.it') ||
+      url.pathname.includes('ipma.pt') ||
+      url.pathname.includes('sos70.ru') ||
+      url.pathname.includes('services.swpc.noaa.gov') ||
+      url.pathname.includes('earthquake.usgs.gov') ||
+      evt.request.url.includes('schumann.json') ||
+      evt.request.url.includes('historico.json')
+    ) {
+      // Network-first for live data
+      evt.respondWith(
+        fetch(evt.request)
+          .catch(() => {
+            // If offline, try to return cached error page or fallback
+            return caches.match('/offline.html');
+          })
+      );
+      return;
+    }
+    
+    // Cache-first for static assets
+    evt.respondWith(
+      caches.match(evt.request)
+        .then((cachedResponse) => {
+          return cachedResponse || fetch(evt.request)
+            .then((networkResponse) => {
+              // Cache the network response for next time
+              return caches.open(CACHE_NAME)
+                .then((cache) => {
+                  cache.put(evt.request, networkResponse.clone());
+                  return networkResponse;
+                });
+            });
+        })
+    );
+    return;
+  }
+  
+  // For third-party requests, network-first
+  evt.respondWith(fetch(evt.request));
 });

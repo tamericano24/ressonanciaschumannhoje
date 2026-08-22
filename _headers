@@ -37,7 +37,7 @@
 
 # O HTML nunca fica em cache longa: é o que traz as correções aos visitantes.
 /*.html
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, no-cache
 
 /
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, no-cache

@@ -1,12 +1,12 @@
 {
-  "atualizado": "2026-09-02T18:36:55+00:00",
+  "atualizado": "2026-09-02T19:02:25+00:00",
   "fonte": "https://sos70.ru/provider.php?file=shm.jpg",
   "escala": "intensidade 0-100 na escala de cor do espectrograma, nao calibrada em picotesla",
   "janela_horas": 72,
-  "horas_registadas": 49.5,
+  "horas_registadas": 50.0,
   "estado": "ok",
   "hora_local_tomsk": 1.5,
-  "atraso_horas": 0.0,
+  "atraso_horas": 0.5,
   "motivo_do_atraso": null,
   "fundamental": {
     "modo": "fundamental",
@@ -14,7 +14,7 @@
     "estado": "ok",
     "pico_hz": 6.8,
     "intensidade": 65.1,
-    "fundo": 53.3
+    "fundo": 53.8
   },
   "harmonicas": [
     {
@@ -22,15 +22,15 @@
       "nominal_hz": 14.3,
       "estado": "ok",
       "pico_hz": 14.1,
-      "intensidade": 30.6,
-      "fundo": 24.7
+      "intensidade": 29.5,
+      "fundo": 25.0
     },
     {
       "modo": "3a harmonica",
       "nominal_hz": 20.8,
       "estado": "ok",
-      "pico_hz": 20.2,
-      "intensidade": 24.5,
+      "pico_hz": 20.1,
+      "intensidade": 24.7,
       "fundo": 20.1
     }
   ]

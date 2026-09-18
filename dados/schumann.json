@@ -1,13 +1,13 @@
 {
-  "atualizado": "2026-09-18T18:34:24+00:00",
+  "atualizado": "2026-09-18T21:20:20+00:00",
   "fonte": "https://sos70.ru/provider.php?file=shm.jpg",
   "escala": "intensidade 0-100 na escala de cor do espectrograma, nao calibrada em picotesla",
   "janela_horas": 72,
-  "horas_registadas": 49.5,
+  "horas_registadas": 52.25,
   "estado": "ultima_conhecida",
   "hora_local_tomsk": 22.25,
-  "atraso_horas": 3.25,
-  "motivo_do_atraso": "pico_no_limite",
+  "atraso_horas": 6.0,
+  "motivo_do_atraso": "saturado",
   "fundamental": {
     "modo": "fundamental",
     "nominal_hz": 7.83,

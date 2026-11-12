@@ -1,5 +1,5 @@
 {
-  "atualizado": "2026-11-12T08:30:20+00:00",
+  "atualizado": "2026-11-12T17:11:42+00:00",
   "estado": "fonte_indisponivel",
   "detalhe": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'sos70.ru'. (_ssl.c:1011)>"
 }
